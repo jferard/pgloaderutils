@@ -22,8 +22,10 @@ import java.util.Map;
 public class CSVSniffer implements AsciiSniffer {
 	private static final int DEFAULT_LINE_SIZE = 1024;
 	private static final int ASCII_BYTE_COUNT = 128;
-	private int delimiter;
+	private byte delimiter;
 	private CSVParams csvParams;
+	private byte quote;
+	private byte escape;
 
 	private static List<Byte> asNewList(byte[] array) {
 		final List<Byte> l = new LinkedList<Byte>();
@@ -170,9 +172,25 @@ public class CSVSniffer implements AsciiSniffer {
 								}
 							});
 
+					this.quote = keptQuotes.get(0);
+					this.escape = keptEscapesByQuote.get(quote).get(0);
 					break;
 				}
 			}
 		}
+		this.delimiter =keptDelimiters.get(0);
+		
+	}
+
+	public byte getDelimiter() {
+		return this.delimiter;
+	}
+
+	public byte getQuote() {
+		return this.quote;
+	}
+
+	public byte getEscape() {
+		return this.escape;
 	}
 }
