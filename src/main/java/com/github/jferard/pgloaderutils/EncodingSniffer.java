@@ -15,8 +15,10 @@ public class EncodingSniffer {
 
 	private Charset charset;
 	private PipedOutputStream out;
+	private AsciiSniffer asciiSniffer;
 
 	public EncodingSniffer(final AsciiSniffer asciiSniffer) throws IOException {
+		this.asciiSniffer = asciiSniffer;
 		if (asciiSniffer != null) {
 			this.out = new PipedOutputStream();
 			final InputStream inputStream = new PipedInputStream(this.out);
@@ -76,7 +78,8 @@ public class EncodingSniffer {
 			i++;
 			// Lead byte analysis
 			if ((b & 0x80) == 0x00) { // < 128
-				this.out.write(b);
+				if (this.out != null)
+					this.out.write(b);
 				b = bufferedStream.read();
 				continue;
 			} else if ((b & 0xe0) == 0xc0)
