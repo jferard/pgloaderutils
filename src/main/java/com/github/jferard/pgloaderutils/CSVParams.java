@@ -8,20 +8,20 @@ public class CSVParams {
 	private static final int DELIMITER = 1;
 	private static final int QUOTE = 2;
 	private static final int ESCAPE = 4;
-	private final int[] allowedDelimiters;
-	private final int[] allowedQuotes;
+	private final byte[] allowedDelimiters;
+	private final byte[] allowedQuotes;
 	private final int minFields;
-	private final int[] allowedEscapes;
-	private final int[] tab;
+	private final byte[] allowedEscapes;
+	private final byte[] tab;
 
 	// TODO : builder
-	CSVParams(int[] allowedDelimiters, int[] allowedQuotes,
-			int[] allowedEscapes, int minFields) {
-		this.allowedDelimiters = allowedDelimiters == null ? new int[] { ',', ';', '\t', '|' } : allowedDelimiters;
-		this.allowedQuotes = allowedQuotes == null ? new int[] { '"', '\'' } : allowedQuotes;
-		this.allowedEscapes = allowedEscapes == null ? new int[] { '\\' } : allowedEscapes;
+	CSVParams(byte[] allowedDelimiters, byte[] allowedQuotes,
+			byte[] allowedEscapes, int minFields) {
+		this.allowedDelimiters = allowedDelimiters == null ? new byte[] { ',', ';', '\t', '|' } : allowedDelimiters;
+		this.allowedQuotes = allowedQuotes == null ? new byte[] { '"', '\'' } : allowedQuotes;
+		this.allowedEscapes = allowedEscapes == null ? new byte[] { '\\' } : allowedEscapes;
 		this.minFields = minFields;
-		this.tab = new int[ASCII_CHAR_COUNT];
+		this.tab = new byte[ASCII_CHAR_COUNT];
 		for (int d : this.allowedDelimiters) {
 			this.tab[d] |= CSVParams.DELIMITER;
 		}
@@ -45,15 +45,15 @@ public class CSVParams {
 		return (this.tab[c] & CSVParams.ESCAPE) != 0;
 	}
 	
-	public int[] getAllowedDelimiters() {
+	public byte[] getAllowedDelimiters() {
 		return this.allowedDelimiters;
 	}
 
-	public int[] getAllowedQuotes() {
+	public byte[] getAllowedQuotes() {
 		return this.allowedQuotes;
 	}
 
-	public int[] getAllowedEscapes() {
+	public byte[] getAllowedEscapes() {
 		return this.allowedEscapes;
 	}
 

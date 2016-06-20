@@ -1,10 +1,9 @@
 package com.github.jferard.pgloaderutils;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LineParser {
+public class StreamParser {
 	private static final int CR = 0x0D;
 	private static final int LF = 0x0A;
 
@@ -13,18 +12,20 @@ public class LineParser {
 	private int lastChar;
 	private Line curLine;
 
-	LineParser(int defaultSize) {
+	StreamParser(int defaultSize) {
 		this.lastChar = 0;
 		this.size = defaultSize;
 		this.lines = new LinkedList<Line>();
 		this.curLine = new Line(this.size);
 	}
 
-	void put(int c) {
+	void put(byte c) {
 		if (this.lastChar == CR) {
 			if (c == LF) {
 				this.lastChar = LF;
 			} else {
+				this.lines.add(this.curLine);
+				this.curLine = new Line(this.size);
 				this.curLine.append(c);
 				this.lastChar = 0;
 			}

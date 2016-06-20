@@ -1,5 +1,6 @@
 package com.github.jferard.pgloaderutils;
 
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,11 +22,11 @@ public class Line {
 	private static final int CLOSED_QUOTED_RECORD = 5;
 	private static final int QUOTE_IN_QUOTED_RECORD = 6;
 
-	private int[] array;
+	private byte[] array;
 	private int i;
 
 	public Line(int size) {
-		this.array = new int[size];
+		this.array = new byte[size];
 		this.i = 0;
 	}
 
@@ -86,10 +87,10 @@ public class Line {
 		return this.i;
 	}
 
-	public void append(int c) {
+	public void append(byte c) {
 		this.array[this.i++] = c;
 		if (this.i >= this.array.length) {
-			int[] newArray = new int[this.array.length * 2];
+			byte[] newArray = new byte[this.array.length * 2];
 			System.arraycopy(this.array, 0, newArray, 0, this.i);
 			this.array = newArray;
 		}
@@ -110,11 +111,11 @@ public class Line {
 		int j;
 		for (j = 0; j < this.i; j++) {
 			if (this.array[j] == delim) {
-				parts.add(new Part(this.array, from, j - 1));
+				parts.add(new Part(this.array, from, j));
 				from = j + 1;
 			}
 		}
-		parts.add(new Part(this.array, from, this.i - 1));
+		parts.add(new Part(this.array, from, this.i));
 		return parts;
 	}
 
@@ -233,5 +234,10 @@ public class Line {
 			}
 		}
 		return parts;
+	}
+	
+	@Override
+	public String toString() {
+		return new String(this.array, 0, this.i, Charset.forName("ASCII"));
 	}
 }

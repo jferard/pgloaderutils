@@ -21,13 +21,13 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class CSVSniffer implements AsciiSniffer {
 	private static final int DEFAULT_LINE_SIZE = 1024;
-	private static final int INT_COUNT = 128;
+	private static final int ASCII_BYTE_COUNT = 128;
 	private int delimiter;
 	private CSVParams csvParams;
 
-	private static List<Integer> asNewList(int[] array) {
-		final List<Integer> l = new LinkedList<Integer>();
-		for (int i : array)
+	private static List<Byte> asNewList(byte[] array) {
+		final List<Byte> l = new LinkedList<Byte>();
+		for (byte i : array)
 			l.add(i);
 		return l;
 	}
@@ -47,22 +47,22 @@ public class CSVSniffer implements AsciiSniffer {
 
 	@Override
 	public void sniff(final InputStream inputStream) throws IOException {
-		LineParser lineParser = new LineParser(DEFAULT_LINE_SIZE);
+		StreamParser streamParser = new StreamParser(DEFAULT_LINE_SIZE);
 
-		final int[] allowedDelimiters = this.csvParams.getAllowedDelimiters();
-		final int[] allowedQuotes = this.csvParams.getAllowedQuotes();
-		final int[] allowedEscapes = this.csvParams.getAllowedEscapes();
-		final List<Integer> keptDelimiters = CSVSniffer
+		final byte[] allowedDelimiters = this.csvParams.getAllowedDelimiters();
+		final byte[] allowedQuotes = this.csvParams.getAllowedQuotes();
+		final byte[] allowedEscapes = this.csvParams.getAllowedEscapes();
+		final List<Byte> keptDelimiters = CSVSniffer
 				.asNewList(allowedDelimiters);
 
 		int c = inputStream.read();
 		while (c != -1) {
-			lineParser.put(c);
+			streamParser.put((byte) c);
 			c = inputStream.read();
 		}
 
-		final List<Line> lines = lineParser.getLines();
-		int[][] delimCountByLine = new int[INT_COUNT][lines.size()];
+		final List<Line> lines = streamParser.getLines();
+		int[][] delimCountByLine = new int[ASCII_BYTE_COUNT][lines.size()];
 		int l = 0;
 		for (Line line : lines) {
 			for (int delim : allowedDelimiters)
@@ -70,8 +70,8 @@ public class CSVSniffer implements AsciiSniffer {
 			l++;
 		}
 
-		final double[] means = new double[INT_COUNT];
-		final double[] variances = new double[INT_COUNT];
+		final double[] means = new double[ASCII_BYTE_COUNT];
+		final double[] variances = new double[ASCII_BYTE_COUNT];
 		for (int delim : allowedDelimiters) {
 			StatisticsBasic statisticsBasic = new StatisticsBasic(
 					delimCountByLine[delim]);
@@ -81,9 +81,9 @@ public class CSVSniffer implements AsciiSniffer {
 				keptDelimiters.remove(delim);
 		}
 
-		Collections.sort(keptDelimiters, new Comparator<Integer>() {
+		Collections.sort(keptDelimiters, new Comparator<Byte>() {
 			@Override
-			public int compare(Integer d1, Integer d2) {
+			public int compare(Byte d1, Byte d2) {
 				if (variances[d1] < variances[d2])
 					return 1;
 				else if (variances[d1] > variances[d2])
@@ -95,16 +95,16 @@ public class CSVSniffer implements AsciiSniffer {
 
 		// consider the regular lines
 		for (int delim : keptDelimiters) {
-			final List<Integer> keptQuotes = CSVSniffer
+			final List<Byte> keptQuotes = CSVSniffer
 					.asNewList(allowedQuotes);
-			final Map<Integer, List<Integer>> keptEscapesByQuote = new HashMap<Integer, List<Integer>>();
-			for (Integer quote : keptQuotes)
+			final Map<Byte, List<Byte>> keptEscapesByQuote = new HashMap<Byte, List<Byte>>();
+			for (Byte quote : keptQuotes)
 				keptEscapesByQuote.put(quote,
 						CSVSniffer.asNewList(allowedEscapes));
 
-			final int[] quotes = new int[INT_COUNT];
-			final int[][] escapes = new int[INT_COUNT][INT_COUNT];
-			for (Line line : lineParser.getLines()) {
+			final int[] quotes = new int[ASCII_BYTE_COUNT];
+			final int[][] escapes = new int[ASCII_BYTE_COUNT][ASCII_BYTE_COUNT];
+			for (Line line : streamParser.getLines()) {
 				int count = line.getCount(delim);
 				if (count == means[delim]) {
 					List<Part> parts = line.asParts(delim);
@@ -132,11 +132,11 @@ public class CSVSniffer implements AsciiSniffer {
 				continue;
 
 			// consider the irregular lines
-			for (Line line : lineParser.getLines()) {
+			for (Line line : streamParser.getLines()) {
 				int count = line.getCount(delim);
 				if (count > means[delim]) {
-					for (Integer quote : keptQuotes) {
-						for (Integer escape : keptEscapesByQuote.get(quote)) {
+					for (Byte quote : keptQuotes) {
+						for (Byte escape : keptEscapesByQuote.get(quote)) {
 							List<Part> parts = line.asParts(delim, quote,
 									escape);
 							if (parts.size() == means[delim]) {
@@ -150,21 +150,21 @@ public class CSVSniffer implements AsciiSniffer {
 			}
 
 			if (keptQuotes.size() > 0) {
-				final Integer quote = Collections.max(keptQuotes,
-						new Comparator<Integer>() {
+				final Byte quote = Collections.max(keptQuotes,
+						new Comparator<Byte>() {
 
 							@Override
-							public int compare(Integer q1, Integer q2) {
+							public int compare(Byte q1, Byte q2) {
 								return quotes[q2] - quotes[q1];
 							}
 						});
-				List<Integer> keptEscapes = keptEscapesByQuote.get(quote);
+				List<Byte> keptEscapes = keptEscapesByQuote.get(quote);
 				if (keptEscapes.size() > 0) {
-					Integer escape = Collections.max(keptQuotes,
-							new Comparator<Integer>() {
+					Byte escape = Collections.max(keptQuotes,
+							new Comparator<Byte>() {
 
 								@Override
-								public int compare(Integer e1, Integer e2) {
+								public int compare(Byte e1, Byte e2) {
 									return escapes[quote][e2]
 											- escapes[quote][e1];
 								}

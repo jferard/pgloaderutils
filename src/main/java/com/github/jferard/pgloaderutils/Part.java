@@ -1,14 +1,12 @@
 package com.github.jferard.pgloaderutils;
 
-import java.util.List;
-
 public class Part {
 
-	private int[] array;
+	private byte[] array;
 	private int from;
 	private int to;
 
-	public Part(int[] array, int from, int to) {
+	public Part(byte[] array, int from, int to) {
 		this.array = array;
 		this.from = from;
 		this.to = to;
@@ -18,16 +16,16 @@ public class Part {
 		while (this.array[this.from] == ' ')
 			this.from++;
 		
-		while (this.array[this.to] == ' ')
+		while (this.array[this.to-1] == ' ')
 			this.to--;
 	}
 	
-	public int getFirstChar() {
+	public byte getFirstChar() {
 		return this.array[this.from];
 	}
 
-	public int getLastChar() {
-		return this.array[this.to];
+	public byte getLastChar() {
+		return this.array[this.to-1];
 	}
 
 	public int findCharBefore(int quote) {
