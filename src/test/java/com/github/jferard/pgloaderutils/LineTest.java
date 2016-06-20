@@ -9,6 +9,9 @@ import org.junit.Test;
 
 public class LineTest {
 
+	private static final byte COMMA = (byte) ',';
+	private static final byte SINGLE_QUOTE = (byte)'\'';
+	private static final byte PIPE = (byte)'|';
 	private static final Charset CS = Charset.forName("ASCII");;
 
 	@Test
@@ -16,8 +19,8 @@ public class LineTest {
 		Line line = new Line(1);
 		for (byte b : "a|b|c".getBytes(CS))
 			line.append(b);
-		Assert.assertEquals(2, line.getCount('|'));
-		List<Part> parts = line.asParts('|');
+		Assert.assertEquals(2, line.getCount(PIPE));
+		List<Part> parts = line.asParts(PIPE);
 		Assert.assertEquals(3, parts.size());
 		Assert.assertEquals('a', parts.get(0).getFirstChar());
 		Assert.assertEquals('a', parts.get(0).getLastChar());
@@ -32,8 +35,8 @@ public class LineTest {
 		Line line = new Line(1);
 		for (byte b : "a|b|c".getBytes(CS))
 			line.append(b);
-		Assert.assertEquals(0, line.getCount(','));
-		List<Part> parts = line.asParts(',');
+		Assert.assertEquals(0, line.getCount(COMMA));
+		List<Part> parts = line.asParts(COMMA);
 		Assert.assertEquals(1, parts.size());
 		Assert.assertEquals('a', parts.get(0).getFirstChar());
 		Assert.assertEquals('c', parts.get(0).getLastChar());
@@ -44,7 +47,7 @@ public class LineTest {
 		Line line = new Line(1);
 		for (byte b : "'a' | 'b | c' | 'c''d'".getBytes(CS))
 			line.append(b);
-		List<Part> parts = line.asParts('|', '\'' , '\'');
+		List<Part> parts = line.asParts(PIPE, SINGLE_QUOTE, SINGLE_QUOTE);
 		Assert.assertEquals(3, parts.size());
 		Assert.assertEquals("a", parts.get(0).toString());
 		Assert.assertEquals("b | c", parts.get(1).toString());

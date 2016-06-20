@@ -65,7 +65,7 @@ public class CSVSniffer implements AsciiSniffer {
 		int[][] delimCountByLine = new int[ASCII_BYTE_COUNT][lines.size()];
 		int l = 0;
 		for (Line line : lines) {
-			for (int delim : allowedDelimiters)
+			for (byte delim : allowedDelimiters)
 				delimCountByLine[delim][l] = line.getCount(delim);
 			l++;
 		}
@@ -94,7 +94,7 @@ public class CSVSniffer implements AsciiSniffer {
 		});
 
 		// consider the regular lines
-		for (int delim : keptDelimiters) {
+		for (byte delim : keptDelimiters) {
 			final List<Byte> keptQuotes = CSVSniffer
 					.asNewList(allowedQuotes);
 			final Map<Byte, List<Byte>> keptEscapesByQuote = new HashMap<Byte, List<Byte>>();
