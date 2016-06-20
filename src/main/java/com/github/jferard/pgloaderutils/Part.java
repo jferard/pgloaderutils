@@ -1,5 +1,7 @@
 package com.github.jferard.pgloaderutils;
 
+import java.nio.charset.Charset;
+
 public class Part {
 
 	private byte[] array;
@@ -42,5 +44,10 @@ public class Part {
 			j--;
 		}
 		return c;
+	}
+	
+	@Override
+	public String toString() {
+		return new String(this.array, this.from, this.to-this.from, Charset.forName("ASCII"));
 	}
 }
