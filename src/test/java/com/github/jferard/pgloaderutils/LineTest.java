@@ -42,16 +42,4 @@ public class LineTest {
 		Assert.assertEquals('c', parts.get(0).getLastChar());
 	}
 	
-	@Test
-	public final void test3() throws UnsupportedEncodingException {
-		Line line = new Line(1);
-		for (byte b : "'a' | 'b | c' | 'c''d'".getBytes(CS))
-			line.append(b);
-		List<Part> parts = line.asParts(PIPE, SINGLE_QUOTE, SINGLE_QUOTE);
-		Assert.assertEquals(3, parts.size());
-		Assert.assertEquals("a", parts.get(0).toString());
-		Assert.assertEquals("b | c", parts.get(1).toString());
-		Assert.assertEquals("c''d", parts.get(2).toString());
-	}
-	
 }

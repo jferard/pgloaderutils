@@ -6,34 +6,40 @@ import java.util.List;
 
 public class Line {
 	private byte[] array;
-	private int i;
+	private int size;
 
-	public Line(int size) {
-		this.array = new byte[size];
-		this.i = 0;
+	public Line(int maxSize) {
+		this.array = new byte[maxSize];
+		this.size = 0;
+	}
+
+	public Line(byte[] bytes, int maxSize) {
+		this.array = new byte[maxSize];
+		System.arraycopy(bytes, 0, this.array, 0, bytes.length);
+		this.size = bytes.length;
 	}
 
 	public int getSize() {
-		return this.i;
+		return this.size;
 	}
 
 	public void append(byte c) {
 		assert c >= 0;
-		this.array[this.i++] = c;
+		this.array[this.size++] = c;
 		this.checkArrayLength();
 	}
 
 	protected void checkArrayLength() {
-		if (this.i >= this.array.length) {
+		if (this.size >= this.array.length) {
 			byte[] newArray = new byte[this.array.length * 2];
-			System.arraycopy(this.array, 0, newArray, 0, this.i);
+			System.arraycopy(this.array, 0, newArray, 0, this.size);
 			this.array = newArray;
 		}
 	}
 
 	public int getCount(byte c) {
 		int count = 0;
-		for (int j = 0; j < this.i; j++) {
+		for (int j = 0; j < this.size; j++) {
 			if (this.array[j] == c)
 				count++;
 		}
@@ -41,29 +47,20 @@ public class Line {
 	}
 
 	public List<Part> asParts(byte delim) {
-		LineParser lineParser = new LineParser(this.array, this.i);
-		return lineParser.parse(delim);
+		List<Part> parts = new LinkedList<Part>();
+		int from = 0;
+		for (int j = 0; j < this.size; j++) {
+			if (this.array[j] == delim) {
+				parts.add(new Part(this.array, from, j));
+				from = j + 1;
+			}
+		}
+		parts.add(new Part(this.array, from, this.size));
+		return parts;
 	}
-
-	/**
-	 * 
-	 * @param delim
-	 * @param quote
-	 * @param escape
-	 * @return
-	 * 
-	 */
-	public List<Part> asParts(byte delim, byte quote, byte escape) {
-		LineParser lineParser = new LineParser(this.array, this.i);
-		if (escape == quote)
-			return lineParser.parse(delim, quote);
-		else
-			return lineParser.parse(delim, quote, escape);
-	}
-
 
 	@Override
 	public String toString() {
-		return new String(this.array, 0, this.i, Charset.forName("ASCII"));
+		return new String(this.array, 0, this.size, Charset.forName("ASCII"));
 	}
 }
