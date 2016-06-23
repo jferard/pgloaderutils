@@ -6,7 +6,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>pgLoader Utils</name>
 	<description>Some utillities for loading csv data into a PosgtreSQL database</description>
-
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.postgresql</groupId>
@@ -42,6 +44,12 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-csv</artifactId>
 			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>19.0</version>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 </project>

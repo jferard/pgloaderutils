@@ -89,6 +89,7 @@ public class EncodingSniffer {
 			else if ((b & 0xf8) == 0xf0)
 				expectedLen = 4;
 			else {
+				this.charset = null;
 				return;
 			}
 
@@ -98,6 +99,7 @@ public class EncodingSniffer {
 			while (--expectedLen > 0) {
 				b = bufferedStream.read();
 				if ((b & 0xc0) != 0x80) {
+					this.charset = null;
 					return;
 				}
 			}

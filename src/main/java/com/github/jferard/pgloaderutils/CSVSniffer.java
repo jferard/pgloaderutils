@@ -5,57 +5,168 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.NoSuchElementException;
 
 /**
- * Three things to determine : delimiter, quotechar, escapechar
- * 
+ * Three things to determine : finalDelimiter, quotechar, escapechar
+ *
  * Consider the following line : a\|a,"a|a","a|a","a|a"
- * 
+ *
  * @author Julien Férard
  *
  */
 @SuppressWarnings("unused")
 public class CSVSniffer implements AsciiSniffer {
-	private static final int DEFAULT_LINE_SIZE = 1024;
 	private static final int ASCII_BYTE_COUNT = 128;
-	private byte delimiter;
-	private CSVParams csvParams;
-	private byte quote;
-	private byte escape;
+	private static final int BONUS_FOR_IRREGULAR_LINES = 5;
+	private static final int DEFAULT_LINE_SIZE = 1024;
 
-	private static List<Byte> asNewList(byte[] array) {
+	private static List<Byte> asNewList(final byte[] array) {
 		final List<Byte> l = new LinkedList<Byte>();
-		for (byte i : array)
+		for (final byte i : array)
 			l.add(i);
 		return l;
 	}
 
-	public CSVSniffer(CSVParams csvParams) {
+	private final CSVParams csvParams;
+	private byte finalDelimiter;
+	private byte finalEscape;
+	private byte finalQuote;
+
+	public CSVSniffer(final CSVParams csvParams) {
 		this.csvParams = csvParams;
 	}
 
-	public void sniff(String path) throws IOException {
-		InputStream stream = new FileInputStream(path);
-		try {
-			this.sniff(stream);
-		} finally {
-			stream.close();
+	public byte getFinalDelimiter() {
+		return this.finalDelimiter;
+	}
+
+	public byte getFinalEscape() {
+		return this.finalEscape;
+	}
+
+	public byte getFinalQuote() {
+		return this.finalQuote;
+	}
+
+	/*
+	protected boolean checkDeliminer(StreamParser streamParser,
+			final List<Line> lines, byte delim, final int roundedMean) {
+		this.quotes = new int[ASCII_BYTE_COUNT];
+		this.escapes = new int[ASCII_BYTE_COUNT]; // [ASCII_BYTE_COUNT];
+		for (Line line : streamParser.getLines()) {
+			int count = line.getCount(delim);
+			if (count == roundedMean) {
+				this.processRegularLines(delim, line);
+			}
+		}
+	
+		if (this.keptQuotes.isEmpty())
+			return false;
+	
+		// consider the irregular lines
+		for (Line line : lines) {
+			int count = line.getCount(delim);
+			if (count > roundedMean) {
+				this.processIrregularLines(delim, line);
+			}
+		}
+	
+		for (Map.Entry<Byte, List<Byte>> entry : this.keptEscapesByQuote
+				.entrySet())
+			if (entry.getValue().isEmpty())
+				this.keptQuotes.remove(entry.getKey());
+	
+		if (this.keptQuotes.isEmpty())
+			return false;
+	
+		final byte quote = Collections.max(this.keptQuotes,
+				new Comparator<Byte>() {
+	
+					@Override
+					public int compare(Byte q1, Byte q2) {
+						return CSVSniffer.this.quotes[q2]
+								- CSVSniffer.this.quotes[q1];
+					}
+				});
+	
+		List<Byte> keptEscapes = this.keptEscapesByQuote.get(quote);
+		assert !keptEscapes.isEmpty();
+	
+		/*
+		this.finalEscape = Collections.max(this.keptQuotes,
+				new Comparator<Byte>() {
+	
+					@Override
+					public int compare(Byte e1, Byte e2) {
+						return CSVSniffer.this.escapes[quote][e2]
+								- CSVSniffer.this.escapes[quote][e1];
+					}
+				});
+		*
+	
+		this.finalQuote = quote;
+	
+		return true;
+	}
+	*/
+
+	/*
+	private void processIrregularLines(byte delim, Line line) {
+		for (Byte quote : this.keptQuotes) {
+			final List<Byte> list = this.keptEscapesByQuote.get(quote);
+			Iterator<Byte> iterator = list.iterator();
+			while (iterator.hasNext()) {
+				Byte escape = iterator.next();
+				List<Part> parts = line.asParts(delim, quote, escape);
+				if (parts.size() == this.roundedMeans[delim]) {
+					this.quotes[quote] += BONUS_FOR_IRREGULAR_LINES;
+					// this.escapes[quote][escape] += BONUS_FOR_IRREGULAR_LINES;
+				} else {
+					// iterator.remove();
+				}
+			}
 		}
 	}
+	
+	private void processRegularLines(byte delim, Line line) {
+		List<Part> parts = line.asParts(delim);
+		for (Part part : parts) {
+			part.trim();
+			final int firstChar = part.getFirstChar();
+			if (this.csvParams.isAllowedQuote(firstChar)) {
+				if (part.getLastChar() == firstChar) {
+					this.quotes[firstChar]++;
+					int charBeforeQuote = part.findCharBefore(firstChar);
+					if (charBeforeQuote >= 0) {
+						// if (this.csvParams.isAllowedEscape(charBeforeQuote))
+						// this.escapes[firstChar][charBeforeQuote]++;
+					} else if (charBeforeQuote == Part.MULTIPLE) { // finalQuote
+																	// should be
+																	// correctly
+																	// escaped
+																	// at least
+																	// in one
+																	// field
+						// keep error line
+						this.keptQuotes.remove(Byte.valueOf((byte) firstChar));
+					}
+				}
+			}
+		}
+	}*/
 
 	@Override
 	public void sniff(final InputStream inputStream) throws IOException {
-		StreamParser streamParser = new StreamParser(DEFAULT_LINE_SIZE);
+		final StreamParser streamParser = new StreamParser(
+				CSVSniffer.DEFAULT_LINE_SIZE);
 
 		final byte[] allowedDelimiters = this.csvParams.getAllowedDelimiters();
 		final byte[] allowedQuotes = this.csvParams.getAllowedQuotes();
 		final byte[] allowedEscapes = this.csvParams.getAllowedEscapes();
-		final List<Byte> keptDelimiters = CSVSniffer
-				.asNewList(allowedDelimiters);
 
 		int c = inputStream.read();
 		while (c != -1) {
@@ -64,133 +175,112 @@ public class CSVSniffer implements AsciiSniffer {
 		}
 
 		final List<Line> lines = streamParser.getLines();
-		int[][] delimCountByLine = new int[ASCII_BYTE_COUNT][lines.size()];
+		final int[][] delimCountByLine = new int[CSVSniffer.ASCII_BYTE_COUNT][lines
+				.size()];
 		int l = 0;
-		for (Line line : lines) {
-			for (byte delim : allowedDelimiters)
+		for (final Line line : lines) {
+			for (final byte delim : allowedDelimiters)
 				delimCountByLine[delim][l] = line.getCount(delim);
 			l++;
 		}
 
-		final double[] means = new double[ASCII_BYTE_COUNT];
-		final double[] variances = new double[ASCII_BYTE_COUNT];
-		for (int delim : allowedDelimiters) {
-			StatisticsBasic statisticsBasic = new StatisticsBasic(
-					delimCountByLine[delim]);
-			means[delim] = statisticsBasic.getMean();
-			variances[delim] = statisticsBasic.getVariance();
-			if (variances[delim] >= 0.25)
-				keptDelimiters.remove(delim);
+		try {
+			this.finalDelimiter = this.computeDelimiter(delimCountByLine,
+					allowedDelimiters);
+			this.finalQuote = this.computeQuote(lines, allowedQuotes);
+			this.finalEscape = this.computeEscape(lines, allowedEscapes);
+		} catch (final NoSuchElementException e) {
+			throw e;
+		}
+	}
+
+	private byte computeEscape(final List<Line> lines,
+			final byte[] allowedEscapes) {
+		final int[] escapes = new int[CSVSniffer.ASCII_BYTE_COUNT];
+		List<Byte> keptEscapes = CSVSniffer.asNewList(allowedEscapes);
+		keptEscapes.add(this.finalQuote);
+
+		for (final Line line : lines) {
+			final List<Part> parts = line.asParts(this.finalDelimiter);
+			for (final Part part : parts) {
+				part.trim();
+				part.trimOne(this.finalQuote);
+			}
+			for (final Part part : parts) {
+				final int c = part.findCharBefore(this.finalQuote);
+				if (c >= 0 && keptEscapes.contains(Byte.valueOf((byte) c)))
+					escapes[c]++;
+			}
 		}
 
-		Collections.sort(keptDelimiters, new Comparator<Byte>() {
+		return Collections.max(keptEscapes, new Comparator<Byte>() {
+
 			@Override
-			public int compare(Byte d1, Byte d2) {
-				if (variances[d1] < variances[d2])
-					return 1;
-				else if (variances[d1] > variances[d2])
-					return -1;
-				else
-					return 0;
+			public int compare(final Byte e1, final Byte e2) {
+				return escapes[e1] - escapes[e2];
 			}
 		});
+	}
 
-		// consider the regular lines
-		for (byte delim : keptDelimiters) {
-			final List<Byte> keptQuotes = CSVSniffer
-					.asNewList(allowedQuotes);
-			final Map<Byte, List<Byte>> keptEscapesByQuote = new HashMap<Byte, List<Byte>>();
-			for (Byte quote : keptQuotes)
-				keptEscapesByQuote.put(quote,
-						CSVSniffer.asNewList(allowedEscapes));
+	public void sniff(final String path) throws IOException {
+		final InputStream stream = new FileInputStream(path);
+		try {
+			this.sniff(stream);
+		} finally {
+			stream.close();
+		}
+	}
 
-			final int[] quotes = new int[ASCII_BYTE_COUNT];
-			final int[][] escapes = new int[ASCII_BYTE_COUNT][ASCII_BYTE_COUNT];
-			for (Line line : streamParser.getLines()) {
-				int count = line.getCount(delim);
-				if (count == means[delim]) {
-					List<Part> parts = line.asParts(delim);
-					for (Part part : parts) {
-						part.trim();
-						final int firstChar = part.getFirstChar();
-						if (this.csvParams.isAllowedQuote(firstChar)) {
-							if (part.getLastChar() != firstChar)
-								keptQuotes.remove(firstChar);
-							else {
-								quotes[firstChar]++;
-								int charBeforeQuote = part
-										.findCharBefore(firstChar);
-								if (charBeforeQuote == -2)
-									keptQuotes.remove(firstChar);
-								else if (charBeforeQuote != -1 && this.csvParams
-										.isAllowedEscape(charBeforeQuote))
-									escapes[firstChar][charBeforeQuote]++;
-							}
-						}
-					}
-				}
+	private byte computeDelimiter(final int[][] delimCountByLine,
+			final byte[] allowedDelimiters) {
+		final double[] variances = new double[CSVSniffer.ASCII_BYTE_COUNT];
+		final int[] roundedMeans = new int[CSVSniffer.ASCII_BYTE_COUNT];
+		final List<Byte> keptDelimiters = CSVSniffer
+				.asNewList(allowedDelimiters);
+
+		final Iterator<Byte> it = keptDelimiters.iterator();
+		while (it.hasNext()) {
+			final byte delim = it.next();
+			final StatisticsBasic statisticsBasic = new StatisticsBasic(
+					delimCountByLine[delim]);
+			roundedMeans[delim] = (int) Math.round(statisticsBasic.getMean());
+			variances[delim] = statisticsBasic.getVariance();
+			if (roundedMeans[delim] < 1 || variances[delim] > 4)
+				it.remove();
+		}
+
+		return Collections.max(keptDelimiters, new Comparator<Byte>() {
+			@Override
+			public int compare(final Byte d1, final Byte d2) {
+				return (int) Math.signum(variances[d1] - variances[d2]);
 			}
-			if (keptQuotes.isEmpty())
-				continue;
+		});
+	}
 
-			// consider the irregular lines
-			for (Line line : streamParser.getLines()) {
-				int count = line.getCount(delim);
-				if (count > means[delim]) {
-					for (Byte quote : keptQuotes) {
-						for (Byte escape : keptEscapesByQuote.get(quote)) {
-							List<Part> parts = line.asParts(delim, quote,
-									escape);
-							if (parts.size() == means[delim]) {
-								quotes[quote]++;
-								escapes[quote][escape]++;
-							} else
-								keptEscapesByQuote.get(quote).remove(escape);
-						}
-					}
-				}
+	private byte computeQuote(final List<Line> lines,
+			final byte[] allowedQuotes) {
+		final int[] quotes = new int[CSVSniffer.ASCII_BYTE_COUNT];
+		final List<Byte> keptQuotes = CSVSniffer.asNewList(allowedQuotes);
+
+		for (final Line line : lines) {
+			final List<Part> parts = line.asParts(this.finalDelimiter);
+			for (final Part part : parts) {
+				part.trim();
 			}
-
-			if (keptQuotes.size() > 0) {
-				final Byte quote = Collections.max(keptQuotes,
-						new Comparator<Byte>() {
-
-							@Override
-							public int compare(Byte q1, Byte q2) {
-								return quotes[q2] - quotes[q1];
-							}
-						});
-				List<Byte> keptEscapes = keptEscapesByQuote.get(quote);
-				if (keptEscapes.size() > 0) {
-					Byte escape = Collections.max(keptQuotes,
-							new Comparator<Byte>() {
-
-								@Override
-								public int compare(Byte e1, Byte e2) {
-									return escapes[quote][e2]
-											- escapes[quote][e1];
-								}
-							});
-
-					this.quote = keptQuotes.get(0);
-					this.escape = keptEscapesByQuote.get(quote).get(0);
-					break;
+			for (final byte q : keptQuotes) {
+				for (final Part part : parts) {
+					if (part.hasQuote(q))
+						quotes[q]++;
 				}
 			}
 		}
-		this.delimiter =keptDelimiters.get(0);
-		
-	}
 
-	public byte getDelimiter() {
-		return this.delimiter;
-	}
+		return Collections.max(keptQuotes, new Comparator<Byte>() {
 
-	public byte getQuote() {
-		return this.quote;
-	}
-
-	public byte getEscape() {
-		return this.escape;
+			@Override
+			public int compare(final Byte q1, final Byte q2) {
+				return quotes[q1] - quotes[q2];
+			}
+		});
 	}
 }
