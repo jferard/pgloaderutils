@@ -19,7 +19,7 @@ import java.util.NoSuchElementException;
  *
  */
 @SuppressWarnings("unused")
-public class CSVSniffer implements AsciiSniffer {
+public class CSVSniffer implements Sniffer {
 	private static final int ASCII_BYTE_COUNT = 128;
 	private static final int BONUS_FOR_IRREGULAR_LINES = 5;
 	private static final int DEFAULT_LINE_SIZE = 1024;
@@ -65,6 +65,9 @@ public class CSVSniffer implements AsciiSniffer {
 		int i = 0;
 		while (c != -1 && i<size) {
 			i++;
+			if (c >= CSVSniffer.ASCII_BYTE_COUNT)
+				continue;
+			
 			streamParser.put((byte) c);
 			c = inputStream.read();
 		}

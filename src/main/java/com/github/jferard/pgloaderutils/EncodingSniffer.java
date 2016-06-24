@@ -9,33 +9,11 @@ import java.io.PipedOutputStream;
 import java.nio.charset.Charset;
 
 @SuppressWarnings("unused")
-public class EncodingSniffer {
+public class EncodingSniffer implements Sniffer {
 	public final static Charset UTF_8 = Charset.forName("UTF-8");
 	public final static Charset US_ASCII = Charset.forName("US-ASCII");
 
 	private Charset charset;
-	private PipedOutputStream out;
-	private AsciiSniffer asciiSniffer;
-
-	public EncodingSniffer(final AsciiSniffer asciiSniffer, final int size)
-			throws IOException {
-		this.asciiSniffer = asciiSniffer;
-		if (asciiSniffer != null) {
-			this.out = new PipedOutputStream();
-			final InputStream inputStream = new PipedInputStream(this.out);
-			Thread thread = new Thread() {
-				@Override
-				public void run() {
-					try {
-						asciiSniffer.sniff(inputStream, size);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			};
-			thread.start();
-		}
-	}
 
 	public void sniff(String path, final int size) throws IOException {
 		InputStream stream = new FileInputStream(path);
@@ -74,20 +52,18 @@ public class EncodingSniffer {
 		}
 
 		int i = 0;
-		int b = bufferedStream.read();
-		while (b != -1 && i < size) {
+		int c = bufferedStream.read();
+		while (c != -1 && i < size) {
 			i++;
 			// Lead byte analysis
-			if ((b & 0x80) == 0x00) { // < 128
-				if (this.out != null)
-					this.out.write(b);
-				b = bufferedStream.read();
+			if ((c & 0x80) == 0x00) { // < 128
+				c = bufferedStream.read();
 				continue;
-			} else if ((b & 0xe0) == 0xc0)
+			} else if ((c & 0xe0) == 0xc0)
 				expectedLen = 2;
-			else if ((b & 0xf0) == 0xe0)
+			else if ((c & 0xf0) == 0xe0)
 				expectedLen = 3;
-			else if ((b & 0xf8) == 0xf0)
+			else if ((c & 0xf8) == 0xf0)
 				expectedLen = 4;
 			else {
 				this.charset = null;
@@ -98,13 +74,13 @@ public class EncodingSniffer {
 
 			// Trailing bytes
 			while (--expectedLen > 0) {
-				b = bufferedStream.read();
-				if ((b & 0xc0) != 0x80) {
+				c = bufferedStream.read();
+				if ((c & 0xc0) != 0x80) {
 					this.charset = null;
 					return;
 				}
 			}
-			b = bufferedStream.read();
+			c = bufferedStream.read();
 		}
 		this.charset = charset;
 	}
