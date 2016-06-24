@@ -17,7 +17,7 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void testUTF_8() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer(null);
+		EncodingSniffer encodingSniffer = new EncodingSniffer(null, 10);
 		InputStream stream = new ByteArrayInputStream(
 				STR.getBytes(UTF_8));
 		encodingSniffer.sniff(stream, 1000);
@@ -26,7 +26,7 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void testUTF_8b() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer(null);
+		EncodingSniffer encodingSniffer = new EncodingSniffer(null, 10);
 		InputStream stream = new ByteArrayInputStream(
 				STR.getBytes(UTF_8));
 		encodingSniffer.sniff(stream, 10);
@@ -35,7 +35,7 @@ public class EncodingSnifferTest {
 	
 	@Test
 	public final void testISO() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer(null);
+		EncodingSniffer encodingSniffer = new EncodingSniffer(null, 10);
 		InputStream stream = new ByteArrayInputStream(
 				STR.getBytes(ISO8859_15));
 		encodingSniffer.sniff(stream, 1000);
@@ -44,7 +44,7 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void testASCII() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer(null);
+		EncodingSniffer encodingSniffer = new EncodingSniffer(null, 10);
 		InputStream stream = new ByteArrayInputStream(
 				STR.getBytes(ASCII));
 		encodingSniffer.sniff(stream, 1000);

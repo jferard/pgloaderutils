@@ -17,7 +17,8 @@ public class EncodingSniffer {
 	private PipedOutputStream out;
 	private AsciiSniffer asciiSniffer;
 
-	public EncodingSniffer(final AsciiSniffer asciiSniffer) throws IOException {
+	public EncodingSniffer(final AsciiSniffer asciiSniffer, final int size)
+			throws IOException {
 		this.asciiSniffer = asciiSniffer;
 		if (asciiSniffer != null) {
 			this.out = new PipedOutputStream();
@@ -26,7 +27,7 @@ public class EncodingSniffer {
 				@Override
 				public void run() {
 					try {
-						asciiSniffer.sniff(inputStream);
+						asciiSniffer.sniff(inputStream, size);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

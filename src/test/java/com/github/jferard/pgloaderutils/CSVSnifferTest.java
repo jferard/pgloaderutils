@@ -26,24 +26,21 @@ public class CSVSnifferTest {
 	 */
 	@Test
 	public final void test() throws IOException {
-		CSVSniffer csvSniffer = new CSVSniffer(new CSVParams(
-				new byte[] { ',', ';', '|' }, new byte[] { '\'', '"' },
-				new byte[] { '\'', '"', '\\' }, 0));
+		CSVSniffer csvSniffer = new CSVSniffer(CSVConstraints.builder().build());
 		InputStream stream = new ByteArrayInputStream(
 				this.joiner.join("Year,Make,Model", "1997,Ford,E350",
 						"2000,Mercury,Cougar").getBytes(ASCII));
 
-		csvSniffer.sniff(stream);
+		csvSniffer.sniff(stream, 1000);
 		Assert.assertEquals(',', (char) csvSniffer.getFinalDelimiter());
-		Assert.assertEquals('\'', (char) csvSniffer.getFinalQuote());
-		Assert.assertEquals('\'', (char) csvSniffer.getFinalEscape());
+		Assert.assertEquals(0, (char) csvSniffer.getFinalQuote());
+		Assert.assertEquals(0, (char) csvSniffer.getFinalEscape());
 	}
 
 	@Test
 	public final void test2() throws IOException {
 		CSVSniffer csvSniffer = new CSVSniffer(
-				new CSVParams(new byte[] { ',', ';', '|' },
-						new byte[] { '\'', '"' }, new byte[] { '\\' }, 0));
+				CSVConstraints.builder().build());
 		InputStream stream = new ByteArrayInputStream(this.joiner
 				.join("Year,Make,Model,Description,Price",
 						"1997,Ford,E350,\"ac, abs, moon\",3000.00",
@@ -52,7 +49,7 @@ public class CSVSnifferTest {
 						"1996,Jeep,Grand Cherokee,\"MUST SELL!\n air, moon roof, loaded\",4799.00")
 				.getBytes(ASCII));
 
-		csvSniffer.sniff(stream);
+		csvSniffer.sniff(stream, 1000);
 		System.out.println((char) csvSniffer.getFinalDelimiter());
 		Assert.assertEquals(',', (char) csvSniffer.getFinalDelimiter());
 		Assert.assertEquals('"', (char) csvSniffer.getFinalQuote());

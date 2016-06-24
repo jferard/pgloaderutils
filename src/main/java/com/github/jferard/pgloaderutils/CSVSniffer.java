@@ -31,12 +31,12 @@ public class CSVSniffer implements AsciiSniffer {
 		return l;
 	}
 
-	private final CSVParams csvParams;
+	private final CSVConstraints csvParams;
 	private byte finalDelimiter;
 	private byte finalEscape;
 	private byte finalQuote;
 
-	public CSVSniffer(final CSVParams csvParams) {
+	public CSVSniffer(final CSVConstraints csvParams) {
 		this.csvParams = csvParams;
 	}
 
@@ -52,115 +52,8 @@ public class CSVSniffer implements AsciiSniffer {
 		return this.finalQuote;
 	}
 
-	/*
-	protected boolean checkDeliminer(StreamParser streamParser,
-			final List<Line> lines, byte delim, final int roundedMean) {
-		this.quotes = new int[ASCII_BYTE_COUNT];
-		this.escapes = new int[ASCII_BYTE_COUNT]; // [ASCII_BYTE_COUNT];
-		for (Line line : streamParser.getLines()) {
-			int count = line.getCount(delim);
-			if (count == roundedMean) {
-				this.processRegularLines(delim, line);
-			}
-		}
-	
-		if (this.keptQuotes.isEmpty())
-			return false;
-	
-		// consider the irregular lines
-		for (Line line : lines) {
-			int count = line.getCount(delim);
-			if (count > roundedMean) {
-				this.processIrregularLines(delim, line);
-			}
-		}
-	
-		for (Map.Entry<Byte, List<Byte>> entry : this.keptEscapesByQuote
-				.entrySet())
-			if (entry.getValue().isEmpty())
-				this.keptQuotes.remove(entry.getKey());
-	
-		if (this.keptQuotes.isEmpty())
-			return false;
-	
-		final byte quote = Collections.max(this.keptQuotes,
-				new Comparator<Byte>() {
-	
-					@Override
-					public int compare(Byte q1, Byte q2) {
-						return CSVSniffer.this.quotes[q2]
-								- CSVSniffer.this.quotes[q1];
-					}
-				});
-	
-		List<Byte> keptEscapes = this.keptEscapesByQuote.get(quote);
-		assert !keptEscapes.isEmpty();
-	
-		/*
-		this.finalEscape = Collections.max(this.keptQuotes,
-				new Comparator<Byte>() {
-	
-					@Override
-					public int compare(Byte e1, Byte e2) {
-						return CSVSniffer.this.escapes[quote][e2]
-								- CSVSniffer.this.escapes[quote][e1];
-					}
-				});
-		*
-	
-		this.finalQuote = quote;
-	
-		return true;
-	}
-	*/
-
-	/*
-	private void processIrregularLines(byte delim, Line line) {
-		for (Byte quote : this.keptQuotes) {
-			final List<Byte> list = this.keptEscapesByQuote.get(quote);
-			Iterator<Byte> iterator = list.iterator();
-			while (iterator.hasNext()) {
-				Byte escape = iterator.next();
-				List<Part> parts = line.asParts(delim, quote, escape);
-				if (parts.size() == this.roundedMeans[delim]) {
-					this.quotes[quote] += BONUS_FOR_IRREGULAR_LINES;
-					// this.escapes[quote][escape] += BONUS_FOR_IRREGULAR_LINES;
-				} else {
-					// iterator.remove();
-				}
-			}
-		}
-	}
-	
-	private void processRegularLines(byte delim, Line line) {
-		List<Part> parts = line.asParts(delim);
-		for (Part part : parts) {
-			part.trim();
-			final int firstChar = part.getFirstChar();
-			if (this.csvParams.isAllowedQuote(firstChar)) {
-				if (part.getLastChar() == firstChar) {
-					this.quotes[firstChar]++;
-					int charBeforeQuote = part.findCharBefore(firstChar);
-					if (charBeforeQuote >= 0) {
-						// if (this.csvParams.isAllowedEscape(charBeforeQuote))
-						// this.escapes[firstChar][charBeforeQuote]++;
-					} else if (charBeforeQuote == Part.MULTIPLE) { // finalQuote
-																	// should be
-																	// correctly
-																	// escaped
-																	// at least
-																	// in one
-																	// field
-						// keep error line
-						this.keptQuotes.remove(Byte.valueOf((byte) firstChar));
-					}
-				}
-			}
-		}
-	}*/
-
 	@Override
-	public void sniff(final InputStream inputStream) throws IOException {
+	public void sniff(final InputStream inputStream, final int size) throws IOException {
 		final StreamParser streamParser = new StreamParser(
 				CSVSniffer.DEFAULT_LINE_SIZE);
 
@@ -169,7 +62,9 @@ public class CSVSniffer implements AsciiSniffer {
 		final byte[] allowedEscapes = this.csvParams.getAllowedEscapes();
 
 		int c = inputStream.read();
-		while (c != -1) {
+		int i = 0;
+		while (c != -1 && i<size) {
+			i++;
 			streamParser.put((byte) c);
 			c = inputStream.read();
 		}
@@ -222,10 +117,10 @@ public class CSVSniffer implements AsciiSniffer {
 		});
 	}
 
-	public void sniff(final String path) throws IOException {
+	public void sniff(final String path, final int size) throws IOException {
 		final InputStream stream = new FileInputStream(path);
 		try {
-			this.sniff(stream);
+			this.sniff(stream, size);
 		} finally {
 			stream.close();
 		}
