@@ -53,8 +53,7 @@ public class EncodingSniffer implements Sniffer {
 
 		int i = 0;
 		int c = bufferedStream.read();
-		while (c != -1 && i < size) {
-			i++;
+		while (c != -1 && i++ < size) {
 			// Lead byte analysis
 			if ((c & 0x80) == 0x00) { // < 128
 				c = bufferedStream.read();
@@ -75,6 +74,9 @@ public class EncodingSniffer implements Sniffer {
 			// Trailing bytes
 			while (--expectedLen > 0) {
 				c = bufferedStream.read();
+				if (i++ > size)
+					break;
+				
 				if ((c & 0xc0) != 0x80) {
 					this.charset = null;
 					return;

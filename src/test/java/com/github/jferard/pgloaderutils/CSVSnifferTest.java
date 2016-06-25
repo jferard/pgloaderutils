@@ -26,7 +26,7 @@ public class CSVSnifferTest {
 	 */
 	@Test
 	public final void test() throws IOException {
-		CSVSniffer csvSniffer = new CSVSniffer(CSVConstraints.builder().build());
+		CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().build());
 		InputStream stream = new ByteArrayInputStream(
 				this.joiner.join("Year,Make,Model", "1997,Ford,E350",
 						"2000,Mercury,Cougar").getBytes(ASCII));
@@ -39,7 +39,7 @@ public class CSVSnifferTest {
 
 	@Test
 	public final void test2() throws IOException {
-		CSVSniffer csvSniffer = new CSVSniffer(
+		CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
 				CSVConstraints.builder().build());
 		InputStream stream = new ByteArrayInputStream(this.joiner
 				.join("Year,Make,Model,Description,Price",
@@ -50,7 +50,6 @@ public class CSVSnifferTest {
 				.getBytes(ASCII));
 
 		csvSniffer.sniff(stream, 1000);
-		System.out.println((char) csvSniffer.getFinalDelimiter());
 		Assert.assertEquals(',', (char) csvSniffer.getFinalDelimiter());
 		Assert.assertEquals('"', (char) csvSniffer.getFinalQuote());
 		Assert.assertEquals('"', (char) csvSniffer.getFinalEscape());

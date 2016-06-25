@@ -63,4 +63,8 @@ public class Line {
 	public String toString() {
 		return new String(this.array, 0, this.size, Charset.forName("ASCII"));
 	}
+
+	public byte[] toArray() {
+		return this.array;
+	}
 }
