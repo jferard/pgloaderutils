@@ -19,20 +19,14 @@
  ******************************************************************************/
 package com.github.jferard.pgloaderutils;
 
-import java.util.List;
+import org.apache.commons.csv.CSVFormat;
 
-import org.apache.commons.csv.CSVRecord;
-
-/**
- * The class CSVRecordCleaner clean and transforms a CSVRecord to a List.
- * 
- * @author Julien Férard
- */
-public interface CSVRecordCleaner {
-
-	/**
-	 * @param record the commons csv record
-	 * @return ths list of strings
-	 */
-	List<String> cleanRecord(CSVRecord record);
+public class CSVLoaderHelper {
+	public CSVFormat getCSVFormat(char delimiter, char quote, char escape) {
+		CSVFormat format = CSVFormat.DEFAULT.withDelimiter(delimiter)
+				.withQuote(quote);
+		if (escape != quote)
+			format.withEscape(escape);
+		return format;
+	}
 }

@@ -19,20 +19,19 @@
  ******************************************************************************/
 package com.github.jferard.pgloaderutils;
 
-import java.util.List;
+import java.io.IOException;
+import java.io.Reader;
 
-import org.apache.commons.csv.CSVRecord;
+public abstract class OpenableReader extends Reader {
+	private IOException ioException;
 
-/**
- * The class CSVRecordCleaner clean and transforms a CSVRecord to a List.
- * 
- * @author Julien Férard
- */
-public interface CSVRecordCleaner {
+	abstract void open() throws IOException;
 
-	/**
-	 * @param record the commons csv record
-	 * @return ths list of strings
-	 */
-	List<String> cleanRecord(CSVRecord record);
+	public void setException(IOException e) {
+		this.ioException = e;
+	}
+	
+	public IOException getException() {
+		return this.ioException;
+	}
 }
