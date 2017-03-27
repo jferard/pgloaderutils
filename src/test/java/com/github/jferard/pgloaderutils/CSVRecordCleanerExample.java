@@ -1,9 +1,8 @@
 package com.github.jferard.pgloaderutils;
 
-import java.util.AbstractList;
-import java.util.List;
-
 import org.apache.commons.csv.CSVRecord;
+
+import java.util.Iterator;
 
 public class CSVRecordCleanerExample implements CSVRecordCleaner {
 
@@ -11,22 +10,34 @@ public class CSVRecordCleanerExample implements CSVRecordCleaner {
 	 * @see com.github.jferard.csvsniffer.CSVRecordCleaner#cleanRecord(org.apache.commons.csv.CSVRecord)
 	 */
 	@Override
-	public List<String> cleanRecord(final CSVRecord record) {
-		return new AbstractList<String> () {
-	
+	public Iterable<String> cleanRecord(final CSVRecord record) {
+		return new Iterable<String>() {
 			@Override
-			public String get(int i) {
-				final String s = record.get(i);
-				if (i == 11 || i == 12 || i == 16) // numbers
-					return s.replaceAll(",", "."); // from continental to US
-				else
-					return s;
-			}
-	
-			@Override
-			public int size() {
-				return record.size();
-			}};
-	}
+			public Iterator<String> iterator() {
+				return new Iterator<String>() {
+					private int i = 0;
 
+					@Override
+					public boolean hasNext() {
+						return this.i < record.size();
+					}
+
+					@Override
+					public String next() {
+						String s = record.get(this.i);
+						if (this.i == 11 || this.i == 12 || this.i == 16) // numbers
+							s = s.replaceAll(",", "."); // from continental to US
+
+						this.i++;
+						return s;
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+				};
+			}
+		};
+	}
 }

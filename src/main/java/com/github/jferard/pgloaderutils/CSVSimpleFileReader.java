@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.Reader;
+import java.util.logging.Logger;
 
 /**
  * Normalized File Reader
@@ -33,7 +34,8 @@ public class CSVSimpleFileReader extends OpenableReader {
 	private Reader modifiedStreamReader;
 	private Reader reader;
 	private PipedWriter pipedWriter;
-	
+	private static final int ONE_MB = 1024 * 1024;
+
 	public CSVSimpleFileReader(Reader reader) throws IOException {
 		this.reader = reader;
 		this.pipedWriter = new PipedWriter();
@@ -42,10 +44,15 @@ public class CSVSimpleFileReader extends OpenableReader {
 	
 	@Override
 	public void open() throws IOException {
+		int i = 0;
 		int c = this.reader.read();
 		while (c != -1) {
 			this.pipedWriter.write(c);
 			c = this.reader.read();
+			i++;
+			if (i % (16*ONE_MB) == 0) {
+				Logger.getLogger("").info("MBytes read: "+i/ ONE_MB);
+			}
 		}
 		this.reader.close();
 		this.pipedWriter.close();

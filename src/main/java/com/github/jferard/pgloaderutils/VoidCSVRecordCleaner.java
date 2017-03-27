@@ -19,14 +19,14 @@
  ******************************************************************************/
 package com.github.jferard.pgloaderutils;
 
-import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
 
-public class CSVLoaderHelper {
-	public CSVFormat getCSVFormat(char delimiter, char quote, char escape) {
-		CSVFormat format = CSVFormat.DEFAULT.withDelimiter(delimiter)
-				.withQuote(quote);
-		if (escape != quote)
-			format.withEscape(escape);
-		return format;
+public class VoidCSVRecordCleaner implements CSVRecordCleaner {
+
+	/*
+	 */
+	@Override
+	public Iterable<String> cleanRecord(final CSVRecord record) {
+		return record;
 	}
 }

@@ -61,10 +61,31 @@ public class CSVLoaderForPostgreSQL {
 		this.analyzeQuery = analyzeQuery;
 	}
 
-	public static CSVLoaderForPostgreSQL fromTableName(String tableName) {
+	public static CSVLoaderForPostgreSQL toTable(String tableName) {
 		return new CSVLoaderForPostgreSQL("TRUNCATE " + tableName,
 				"COPY " + tableName
 						+ " FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
+				"ANALYZE " + tableName);
+	}
+
+	public static CSVLoaderForPostgreSQL toTable(String tableName, String columns) {
+		return new CSVLoaderForPostgreSQL("TRUNCATE " + tableName,
+				"COPY " + tableName + " " + columns
+						+ " FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
+				"ANALYZE " + tableName);
+	}
+
+	public static CSVLoaderForPostgreSQL toTable(String tableName, char delimiter, char quote) {
+		return new CSVLoaderForPostgreSQL("TRUNCATE " + tableName,
+				"COPY " + tableName
+						+ " FROM STDIN WITH (FORMAT csv, DELIMITER '"+delimiter+"', QUOTE '"+quote+"')",
+				"ANALYZE " + tableName);
+	}
+
+	public static CSVLoaderForPostgreSQL toTable(String tableName, String columns, char delimiter, char quote) {
+		return new CSVLoaderForPostgreSQL("TRUNCATE " + tableName,
+				"COPY " + tableName + " " + columns
+						+ " FROM STDIN WITH (FORMAT csv, DELIMITER '"+delimiter+"', QUOTE '"+quote+"')",
 				"ANALYZE " + tableName);
 	}
 

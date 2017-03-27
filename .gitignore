@@ -4,9 +4,11 @@
 .pmd
 .ruleset
 .settings
+*.iml
 
 # directories
 .settings
+.idea
 target
 reports
 
