@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/jferard/pgloaderutils.svg?branch=master)](https://travis-ci.org/jferard/pgloaderutils)
+[![Code Coverage](https://img.shields.io/codecov/c/github/jferard/pgloaderutils/master.svg)](https://codecov.io/github/jferard/pgloaderutils?branch=master)
+
 # pgLoader Utils
 (C) J. Férard 2016
 
