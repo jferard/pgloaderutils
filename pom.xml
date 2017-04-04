@@ -5,7 +5,37 @@
 	<artifactId>pgloaderutils</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>pgLoader Utils</name>
-	<description>Some utillities for loading csv data into a PosgtreSQL database</description>
+	<description>Some utilities for loading csv data into a PosgtreSQL database</description>
+
+    <inceptionYear>2016</inceptionYear>
+    <licenses>
+        <license>
+            <name>GPL v3</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+            <distribution>repo</distribution>        
+        </license>
+    </licenses>
+
+    <developers>
+            <developer>
+                <id>jferard</id>
+                <name>Julien Férard</name>
+                <timezone>0</timezone>
+                <url>https://github.com/jferard</url>
+            </developer>
+    </developers>
+
+    <issueManagement>
+        <system>github</system>
+        <url>http://github.com/jferard/pgloaderutils/issues</url>
+    </issueManagement>
+    <scm>
+        <connection>scm:git:git@github.com:jferard/pgloaderutils.git</connection>
+        <developerConnection>scm:git:git@github.com:jferard/pgloaderutils.git</developerConnection>
+        <url>git@github.com:jferard/pgloaderutils.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jre>1.6</jre>
