@@ -1,5 +1,6 @@
 package com.github.jferard.pgloaderutils;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import org.apache.commons.csv.CSVFormat;
 import org.junit.Test;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -303,8 +305,8 @@ public class CSVLoaderForPostgreSQLIT {
 
 					CSVLoaderForPostgreSQL loader = CSVLoaderForPostgreSQL
 							.toTable("sirc");
-					final Reader reader = new InputStreamReader(new FileInputStream(
-							"C:\\Users\\Julien\\Downloads\\sirc-17804_9075_14209_201612_L_M_20170104_171522721.csv"),
+					final Reader reader = new InputStreamReader(Resources.getResource
+							("sirc-17804_9075_14209_201612_L_M_20170104_171522721.csv").openStream(),
 							"ISO-8859-1");
 					final OpenableReader csvReader = CSVCleanerFileReader.fromReader(reader, CSVFormat
 							.RFC4180.withDelimiter(';'),
