@@ -89,6 +89,14 @@ public class CSVLoaderForPostgreSQL {
 				"ANALYZE " + tableName);
 	}
 
+	/**
+	 * Add the data from a CSV file to a PostgreSQL connection
+	 * @param connection the PostgreSQL connection
+	 * @param reader an OpenableReader for a CSV file
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException
+	 * @throws InterruptedException
+	 */
 	public void populate(Connection connection, final OpenableReader reader)
 			throws IOException, SQLException, InterruptedException {
 		boolean storedAutoCommit = connection.getAutoCommit();

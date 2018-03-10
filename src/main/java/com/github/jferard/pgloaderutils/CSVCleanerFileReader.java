@@ -36,7 +36,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Normalized File Reader
+ * Normalized File Reader. An OpenableReader that cleans records on the fly.
  *
  * @author Julien Férard
  */

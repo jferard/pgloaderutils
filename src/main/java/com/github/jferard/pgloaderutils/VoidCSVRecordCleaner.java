@@ -21,10 +21,10 @@ package com.github.jferard.pgloaderutils;
 
 import org.apache.commons.csv.CSVRecord;
 
+/**
+ * A CSVRecordCleaner that does nothing.
+ */
 public class VoidCSVRecordCleaner implements CSVRecordCleaner {
-
-	/*
-	 */
 	@Override
 	public Iterable<String> cleanRecord(final CSVRecord record) {
 		return record;

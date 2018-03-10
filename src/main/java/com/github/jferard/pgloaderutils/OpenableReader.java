@@ -22,12 +22,31 @@ package com.github.jferard.pgloaderutils;
 import java.io.IOException;
 import java.io.Reader;
 
+/**
+ * An OpenableReader is a basic reader that must be opened.
+ * All read instructions are blocked until {@code open()} is called.
+ *
+ * This is useful to write a multi-threaded application:
+ * <pre>
+ *     thread.start(); // this thread reads data from reader, and closes it
+ *     reader.open();  // open the floodgates
+ *     thread.join();  // wait for the end of flood
+ * </pre>
+ */
 public abstract class OpenableReader extends Reader {
 	private IOException ioException;
 
-	abstract void open() throws IOException;
+    /**
+     * Unlock read
+     * @throws IOException
+     */
+    abstract void open() throws IOException;
 
-	public void setException(IOException e) {
+    /**
+     *
+     * @param e
+     */
+    public void setException(IOException e) {
 		this.ioException = e;
 	}
 	

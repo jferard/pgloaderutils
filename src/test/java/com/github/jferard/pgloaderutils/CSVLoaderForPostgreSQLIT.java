@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Logger;
 
 public class CSVLoaderForPostgreSQLIT {
 	public final void test() throws IOException, InterruptedException {
@@ -38,7 +39,7 @@ public class CSVLoaderForPostgreSQLIT {
 					final StringReader stringReader = new StringReader("\"a\", 1.0, \"b,c\"\n"
 							+ "\"d\", 2.0, \"f,g\"\n");
 					final CSVSimpleFileReader csvReader = new CSVSimpleFileReader(
-							stringReader);
+							stringReader, Logger.getLogger(""), 16);
 					loader.populate(connection,
 							csvReader);
 				} finally {
@@ -52,6 +53,7 @@ public class CSVLoaderForPostgreSQLIT {
 		}
 	}
 
+	@Test
 	public final void testResource() throws IOException, InterruptedException {
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -173,7 +175,7 @@ public class CSVLoaderForPostgreSQLIT {
 							("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv").openStream(),
 							"ISO-8859-1");
 					final CSVSimpleFileReader csvReader = new CSVSimpleFileReader(
-							reader);
+							reader, Logger.getLogger(""), 16);
 					loader.populate(connection,
 							csvReader);
 				} finally {

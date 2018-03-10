@@ -3,11 +3,17 @@ package com.github.jferard.pgloaderutils;
 import java.util.Map;
 
 /**
- * Replaces keys in a template query
+ * Replaces keys in a template query. The template has the format: "some text {key} some other text".
+ * If valueByKey[key] == value, then the template is converted to "some text value some other text"
  *
  * @author Julien Férard
  */
 public class QueryProvider {
+    /**
+     * @param template the template, keys are written between brackets.
+     * @param valueByKey the map key->value
+     * @return the query
+     */
     public String newQuery(String template, Map<String, String> valueByKey) {
         StringBuilder queryBuilder = new StringBuilder();
 
