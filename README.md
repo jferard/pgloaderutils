@@ -1,15 +1,19 @@
-<<<<<<< HEAD
 [![Build Status](https://travis-ci.org/jferard/pgloaderutils.svg?branch=master)](https://travis-ci.org/jferard/pgloaderutils)
 [![Code Coverage](https://img.shields.io/codecov/c/github/jferard/pgloaderutils/master.svg)](https://codecov.io/github/jferard/pgloaderutils?branch=master)
 
 # pgLoader Utils
-(C) J. Férard 2016
+(C) J. Férard 2016-2018
 
-Some utillities for loading csv data into a PosgtreSQL database, under GPL v3.
+Some utilities for loading csv data into a PosgtreSQL database: detect file encoding, CSV format and populate database, under GPL v3.
 
 ## Presentation
 pgLoader Utils is a small set of classes to make PostgreSQL bulk load simpler.
 It allows to process the CSV file on the fly (e.g. to format dates).
+
+The CSV Sniffer part is a slow but (I hope) reliable sniffer that detects, for a given CSV file :
+- its encoding, among three values : ASCII, UTF-8, "other" ;
+- its delimiter char, quote char and escape char ;
+- whether it has or not a header.
 
 ## Usage
 Here is an example:
@@ -47,20 +51,6 @@ Here is an example:
         e.printStackTrace();
     }
 
-=======
-[![Build Status](https://travis-ci.org/jferard/csvsniffer.svg?branch=master)](https://travis-ci.org/jferard/csvsniffer)
-[![Code Coverage](https://img.shields.io/codecov/c/github/jferard/csvsniffer/master.svg)](https://codecov.io/github/jferard/csvsniffer?branch=master)
-
-# CSV Sniffer
-(C) J. Férard 2016
-
-A simple sniffer to detect file encoding and CSV format of a file, under GPL v3.
-
-## Introduction
-CSV Sniffer is a slow but (I hope) reliable sniffer that detects, for a given CSV file :
-- its encoding, among three values : ASCII, UTF-8, "other" ;
-- its delimiter char, quote char and escape char ;
-- whether it has or not a header.
 
 ## Constraints on CSV format
 ### Mandatory constraints
@@ -91,4 +81,3 @@ The character which is more present before delimiter in really (by commons csv) 
 
 ### Header
 If there is a full digit record in first line, then this line is not the header. Else, first and following lines must match.
->>>>>>> csvsniffer/master
