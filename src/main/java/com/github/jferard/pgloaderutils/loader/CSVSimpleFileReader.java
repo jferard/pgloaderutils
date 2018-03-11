@@ -1,6 +1,8 @@
-/*******************************************************************************
- * pgLoader Utils - Some utillities for loading csv data into a PosgtreSQL database
- *    Copyright (C) 2016 J. Férard <https://github.com/jferard>
+/*
+ * Some utilities for loading csv data into a PosgtreSQL database:
+ * detect file encoding, CSV format and populate database
+ *
+ *     Copyright (C) 2016, 2018 J. Férard <https://github.com/jferard>
  *
  * This file is part of pgLoader Utils.
  *
@@ -16,7 +18,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- ******************************************************************************/
+ */
 package com.github.jferard.pgloaderutils.loader;
 
 import java.io.IOException;
