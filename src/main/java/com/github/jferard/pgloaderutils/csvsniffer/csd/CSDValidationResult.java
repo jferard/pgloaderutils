@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- * A CSDValidationResult is composed of CSVValidationErrors.
+ * A CSDValidationResult is composed of CSDValidationErrors.
  */
-public class CSDValidationResult<F extends CSDField> implements Iterable<CSDValidationError>{
+public class CSDValidationResult<F extends CSDFieldPattern> implements Iterable<CSDValidationError>{
     private final List<CSDValidationError> errors;
     private Logger logger;
     private SizedIterable<F> schemaPattern;
@@ -67,7 +67,7 @@ public class CSDValidationResult<F extends CSDField> implements Iterable<CSDVali
         this.logger.severe("Line 1: "+ msg);
     }
 
-    public void incorrectColumnName(String columnName, String value) {
+    public void incorrectColumnName(F field, String value) {
         String msg = "The column name read '" + value + "' does not match the schema : '"+value + "'.";
         this.errors.add(new CSDValidationError(1, CSDValidationError.Type.INCORRECT_COLUMN_NAME, msg));
         this.logger.severe("Line 1: "+ msg);

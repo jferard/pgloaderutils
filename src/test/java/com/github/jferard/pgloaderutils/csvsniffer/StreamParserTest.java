@@ -41,12 +41,11 @@ public class StreamParserTest {
 		
 		List<Line> lines = streamParser.getLines();
 		
-		Assert.assertEquals(5, lines.size());
+		Assert.assertEquals(4, lines.size());
 		Assert.assertEquals("line1", lines.get(0).toString());
 		Assert.assertEquals("line2", lines.get(1).toString());
 		Assert.assertEquals("line3", lines.get(2).toString());
 		Assert.assertEquals("", lines.get(3).toString());
-		Assert.assertEquals("", lines.get(4).toString());
 	}
 
 	@Test

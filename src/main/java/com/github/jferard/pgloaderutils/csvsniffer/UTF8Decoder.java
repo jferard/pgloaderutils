@@ -27,8 +27,8 @@ import java.io.InputStream;
 import java.nio.charset.CharacterCodingException;
 
 /**
- * The class UTF8Decode provides a stream of code points. It guarantees that if
- * the stream cannot be decoded, the stream will be reset in a stable state :
+ * The class UTF8Decoder provides a stream of code points. It guarantees that if
+ * the stream cannot be decoded, the stream will be reset in a stable state:
  * the last bytes that cannot be merged in a code point are reset in the stream.
  * 
  * In detail: each utf-8 encoding of a unicode code point is made of one leading
@@ -55,6 +55,11 @@ public class UTF8Decoder {
 			this.is = new BufferedInputStream(is);
 	}
 
+	/**
+	 * Gobble BOM or do nothing.
+	 * @return true if there was a BOM
+	 * @throws IOException if an I/O error occurs.
+	 */
 	public boolean gobbleBOM() throws IOException {
 		this.is.mark(3);
 		if (this.is.read() == Constants.BOM_1 && this.is.read() == Constants.BOM_2
@@ -69,7 +74,7 @@ public class UTF8Decoder {
 	/**
 	 * DECODING UTF-8 https://www.ietf.org/rfc/rfc2279.txt
 	 * 
-	 * @return -1 if end of stream
+	 * @return the next unicode value as an int, -1 if end of stream
 	 */
 	public int readUnicodeValue() throws CharacterCodingException, IOException {
 		this.is.mark(3);

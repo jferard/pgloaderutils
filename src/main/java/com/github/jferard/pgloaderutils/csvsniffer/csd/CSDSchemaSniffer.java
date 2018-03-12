@@ -31,19 +31,17 @@ import java.util.logging.Logger;
 /**
  * The CSDSchemaSniffer is a sniffer. Given a CSDSchemaPattern, a CSVParser and a maximul line, it will return a
  * CSDSchema (or null).
- *
  */
-public class CSDSchemaSniffer<F extends CSDField> {
+public class CSDSchemaSniffer<F extends CSDFieldPattern> {
+    public static <G extends CSDFieldPattern> CSDSchemaSniffer<G> create(Logger logger, CSDFieldFactory<G> factory) {
+        CSDUtil u = new CSDUtil(logger);
+        CSDValidatorHelper<G> hv = new CSDValidatorHelper<G>(logger, new FlexibleColumnMatcher(logger, u, 2));
+        return new CSDSchemaSniffer<G>(logger, factory, hv);
+    }
     private final Logger logger;
     private CSDValidationResult<F> result;
     private CSDFieldFactory<F> factory;
     private CSDValidatorHelper<F> validatorHelper;
-
-    public static <G extends CSDField> CSDSchemaSniffer<G> create(Logger logger, CSDFieldFactory<G> factory) {
-        CSDUtil u = new CSDUtil(logger);
-        CSDValidatorHelper<G> hv = new CSDValidatorHelper<G>(logger, new FlexibleColumnMatcher(logger, u));
-        return new CSDSchemaSniffer<G>(logger, factory, hv);
-    }
 
     public CSDSchemaSniffer(Logger logger, CSDFieldFactory<F> factory, CSDValidatorHelper<F> validatorHelper) {
         this.logger = logger;
@@ -53,8 +51,8 @@ public class CSDSchemaSniffer<F extends CSDField> {
 
     /**
      * @param schemaPattern the pattern to be tested
-     * @param parser the CSVCRecord provider
-     * @param maxLine the maximum number of lines
+     * @param parser        the CSVCRecord provider
+     * @param maxLine       the maximum number of lines
      * @return the real CSDSchema, or null if the pattern does not match.
      */
     public CSDSchema<F> sniff(CSDSchemaPattern<F> schemaPattern, CSVParser parser, int maxLine) {
@@ -67,20 +65,18 @@ public class CSDSchemaSniffer<F extends CSDField> {
         }
 
         CSVRecord firstRecord = it.next();
-        if (!this.validateHeaderOrFirstRecord(result, schemaPattern, firstRecord))
-            return null;
+        if (!this.validateHeaderOrFirstRecord(result, schemaPattern, firstRecord)) return null;
 
-        int i=1;
-        while (it.hasNext() && i < maxLine)
-            this.validatorHelper.validateRecord(result, schemaPattern, it.next(), i++);
+        int i = 1;
+        while (it.hasNext() && i < maxLine) this.validatorHelper.validateRecord(result, schemaPattern, it.next(), i++);
 
-        if (this.result.errorCount() > maxLine)
-            return null;
-        
+        if (this.result.errorCount() > maxLine) return null;
+
         return schemaPattern.newSchema(factory, firstRecord);
     }
 
-    private boolean validateHeaderOrFirstRecord(CSDValidationResult<F> result, CSDSchemaPattern<F> schemaPattern, CSVRecord firstRecord) {
+    private boolean validateHeaderOrFirstRecord(CSDValidationResult<F> result, CSDSchemaPattern<F> schemaPattern,
+                                                CSVRecord firstRecord) {
         int headerErrorCount = this.validatorHelper.validateHeader(this.result, schemaPattern, firstRecord);
 
         switch (headerErrorCount) {

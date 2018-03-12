@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * A CSDSchemaPattern is a collection of CSDFields, with or without "wildcard" field.
  */
-public class CSDSchemaPattern<F extends CSDField> implements SizedIterable<F> {
+public class CSDSchemaPattern<F extends CSDFieldPattern> implements SizedIterable<F> {
     private Collection<F> fields;
     private boolean optionalHeader;
 
@@ -47,7 +47,7 @@ public class CSDSchemaPattern<F extends CSDField> implements SizedIterable<F> {
     public int size() {
         int schemaSize = 0;
         for (F field : fields) {
-            if (field.getCode().equals("*"))
+            if (field.isWildCard())
                 break;
 
             schemaSize++;
@@ -73,7 +73,7 @@ public class CSDSchemaPattern<F extends CSDField> implements SizedIterable<F> {
         List<F> newFields = new ArrayList<F>(this.fields.size());
 
         for (F field : this.fields) {
-            if (field.getCode().equals("*")) {
+            if (field.isWildCard()) {
                 this.addFields(factory, newFields, field, firstRecord, this.fields.size());
                 break;
             }

@@ -39,134 +39,126 @@ import java.util.List;
  */
 @SuppressWarnings("unused")
 public class CSVFormatSniffer implements Sniffer {
-	static final int ASCII_BYTE_COUNT = 128;
-	private static final int BONUS_FOR_IRREGULAR_LINES = 5;
-	private static final int DEFAULT_LINE_SIZE = 1024;
-	private final CSVConstraints csvParams;
-	private byte finalDelimiter;
-	private byte finalEscape;
-	private byte finalQuote;
+    static final int ASCII_BYTE_COUNT = 128;
+    private static final int BONUS_FOR_IRREGULAR_LINES = 5;
+    private static final int DEFAULT_LINE_SIZE = 1024;
 
-	public CSVFormatSniffer(final CSVConstraints csvParams) {
-		this.csvParams = csvParams;
-	}
+    static List<Byte> asNewList(final byte[] array) {
+        final List<Byte> l = new LinkedList<Byte>();
+        for (final byte i : array)
+            l.add(i);
+        return l;
+    }
+    private final CSVConstraints csvParams;
+    private byte finalDelimiter;
+    private byte finalEscape;
+    private byte finalQuote;
 
-	static List<Byte> asNewList(final byte[] array) {
-		final List<Byte> l = new LinkedList<Byte>();
-		for (final byte i : array)
-			l.add(i);
-		return l;
-	}
+    public CSVFormatSniffer(final CSVConstraints csvParams) {
+        this.csvParams = csvParams;
+    }
 
-	public byte getDelimiter() {
-		return this.finalDelimiter;
-	}
+    public byte getDelimiter() {
+        return this.finalDelimiter;
+    }
 
-	public byte getEscape() {
-		return this.finalEscape;
-	}
+    public byte getEscape() {
+        return this.finalEscape;
+    }
 
-	public byte getQuote() {
-		return this.finalQuote;
-	}
+    public byte getQuote() {
+        return this.finalQuote;
+    }
 
-	@Override
-	public void sniff(final InputStream inputStream, final int size)
-			throws IOException, ParseException {
-		final byte[] allowedDelimiters = this.csvParams.getAllowedDelimiters();
-		final byte[] allowedQuotes = this.csvParams.getAllowedQuotes();
-		final byte[] allowedEscapes = this.csvParams.getAllowedEscapes();
+    @Override
+    public void sniff(final InputStream inputStream, final int size) throws IOException, ParseException {
+        final byte[] allowedDelimiters = this.csvParams.getAllowedDelimiters();
+        final byte[] allowedQuotes = this.csvParams.getAllowedQuotes();
+        final byte[] allowedEscapes = this.csvParams.getAllowedEscapes();
 
-		// n fields -> n-1 delimiters
-		final int minDelimiters = this.csvParams.getMinFields() - 1;
+        // n fields -> n-1 delimiters
+        final int minDelimiters = this.csvParams.getMinFields() - 1;
 
-		final List<Line> lines = this.getLines(inputStream, size);
-		DelimiterComputer delimiterComputer = new DelimiterComputer(lines, allowedDelimiters, minDelimiters);
-		this.finalDelimiter = delimiterComputer.compute();
-		this.finalQuote = this.computeQuote(lines, allowedQuotes);
-		this.finalEscape = this.computeEscape(lines, allowedEscapes);
-	}
+        final List<Line> lines = this.getLines(inputStream, size);
+        DelimiterComputer delimiterComputer = new DelimiterComputer(lines, allowedDelimiters, minDelimiters);
+        this.finalDelimiter = delimiterComputer.compute();
+        this.finalQuote = this.computeQuote(lines, allowedQuotes);
+        this.finalEscape = this.computeEscape(lines, allowedEscapes);
+    }
 
-	private List<Line> getLines(InputStream inputStream, int size) throws IOException {
-		final StreamParser streamParser = new StreamParser(
-				CSVFormatSniffer.DEFAULT_LINE_SIZE);
-		int c = inputStream.read();
-		int i = 0;
-		while (c != -1 && i++ < size) {
-			if (c < CSVFormatSniffer.ASCII_BYTE_COUNT)
-				streamParser.put((byte) c);
+    private List<Line> getLines(InputStream inputStream, int size) throws IOException {
+        final StreamParser streamParser = new StreamParser(CSVFormatSniffer.DEFAULT_LINE_SIZE);
+        int c = inputStream.read();
+        int i = 0;
+        while (c != -1 && i++ < size) {
+            if (c < CSVFormatSniffer.ASCII_BYTE_COUNT) streamParser.put((byte) c);
 
-			c = inputStream.read();
-		}
+            c = inputStream.read();
+        }
 
-		return streamParser.getLines();
-	}
+        return streamParser.getLines();
+    }
 
-	private byte computeEscape(final List<Line> lines,
-							   final byte[] allowedEscapes) {
-		final int[] escapes = new int[CSVFormatSniffer.ASCII_BYTE_COUNT];
-		List<Byte> keptEscapes = CSVFormatSniffer.asNewList(allowedEscapes);
-		keptEscapes.add(this.finalQuote);
+    private byte computeEscape(final List<Line> lines, final byte[] allowedEscapes) {
+        final int[] escapes = new int[CSVFormatSniffer.ASCII_BYTE_COUNT];
+        List<Byte> keptEscapes = CSVFormatSniffer.asNewList(allowedEscapes);
+        keptEscapes.add(this.finalQuote);
 
-		for (final Line line : lines) {
-			final List<Part> parts = line.asParts(this.finalDelimiter);
-			for (final Part part : parts) {
-				part.trim();
-				part.trimOne(this.finalQuote);
-			}
-			for (final Part part : parts) {
-				final int c = part.findCharBefore(this.finalQuote);
-				if (c >= 0 && keptEscapes.contains(Byte.valueOf((byte) c)))
-					escapes[c]++;
-			}
-		}
+        for (final Line line : lines) {
+            final List<Part> parts = line.asParts(this.finalDelimiter);
+            for (final Part part : parts) {
+                part.trim();
+                part.trimOne(this.finalQuote);
+            }
+            for (final Part part : parts) {
+                final int c = part.findCharBefore(this.finalQuote);
+                if (c >= 0 && keptEscapes.contains(Byte.valueOf((byte) c))) escapes[c]++;
+            }
+        }
 
-		return Collections.max(keptEscapes, new Comparator<Byte>() {
-			@Override
-			public int compare(final Byte e1, final Byte e2) {
-				return escapes[e1] - escapes[e2];
-			}
-		});
-	}
+        return Collections.max(keptEscapes, new Comparator<Byte>() {
+            @Override
+            public int compare(final Byte e1, final Byte e2) {
+                return escapes[e1] - escapes[e2];
+            }
+        });
+    }
 
-	public void sniff(final String path, final int size) throws IOException, ParseException {
-		final InputStream stream = new FileInputStream(path);
-		try {
-			this.sniff(stream, size);
-		} finally {
-			stream.close();
-		}
-	}
+    public void sniff(final String path, final int size) throws IOException, ParseException {
+        final InputStream stream = new FileInputStream(path);
+        try {
+            this.sniff(stream, size);
+        } finally {
+            stream.close();
+        }
+    }
 
-	private byte computeQuote(final List<Line> lines,
-							  final byte[] allowedQuotes) {
-		final int[] quotes = new int[CSVFormatSniffer.ASCII_BYTE_COUNT];
-		final List<Byte> keptQuotes = CSVFormatSniffer.asNewList(allowedQuotes);
+    private byte computeQuote(final List<Line> lines, final byte[] allowedQuotes) {
+        final int[] quotes = new int[CSVFormatSniffer.ASCII_BYTE_COUNT];
+        final List<Byte> keptQuotes = CSVFormatSniffer.asNewList(allowedQuotes);
 
-		int partCount = 0;
-		for (final Line line : lines) {
-			final List<Part> parts = line.asParts(this.finalDelimiter);
-			for (final Part part : parts) {
-				part.trim();
-				partCount++;
-			}
-			for (final byte q : keptQuotes) {
-				for (final Part part : parts) {
-					quotes[q] += part.quoteValue(q);
-				}
-			}
-		}
+        int partCount = 0;
+        for (final Line line : lines) {
+            final List<Part> parts = line.asParts(this.finalDelimiter);
+            for (final Part part : parts) {
+                part.trim();
+                partCount++;
+            }
+            for (final byte q : keptQuotes) {
+                for (final Part part : parts) {
+                    quotes[q] += part.quoteValue(q);
+                }
+            }
+        }
 
-		Byte max = Collections.max(keptQuotes, new Comparator<Byte>() {
+        Byte max = Collections.max(keptQuotes, new Comparator<Byte>() {
 
-			@Override
-			public int compare(final Byte q1, final Byte q2) {
-				return quotes[q1] - quotes[q2];
-			}
-		});
-		if (5*quotes[max] >= partCount)
-			return max;
-		else
-			return '\0';
-	}
+            @Override
+            public int compare(final Byte q1, final Byte q2) {
+                return quotes[q1] - quotes[q2];
+            }
+        });
+        if (5 * quotes[max] >= partCount) return max;
+        else return '\0';
+    }
 }

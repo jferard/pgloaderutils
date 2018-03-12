@@ -21,55 +21,61 @@
  */
 package com.github.jferard.pgloaderutils.csvsniffer;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 
+/**
+ * An EncodingSniffer is a very basic sniffer, that checks if a stream is UTF-8, US ASCII or another stream.
+ */
 public class EncodingSniffer implements Sniffer {
-	private Charset charset;
+    private Charset charset;
 
-	public void sniff(String path, final int size) throws IOException {
-		InputStream stream = new FileInputStream(path);
-		try {
-			this.sniff(stream, size);
-		} finally {
-			stream.close();
-		}
-	}
+    /**
+     * @param file the path of the file
+     * @param size the size in expected codepoints to check
+     * @return UTF-8, US-ASCII or null Charset. If null, the charset can be any
+     * of the existing "1 byte per char" charsets.
+     * @throws IOException
+     */
+    public void sniff(File file, final int size) throws IOException {
+        InputStream stream = new FileInputStream(file);
+        try {
+            this.sniff(stream, size);
+        } finally {
+            stream.close();
+        }
+    }
 
-	/**
-	 * @param stream
-	 *            the input stream
-	 * @return
-	 * @return UTF-8, US-ASCII or null Charset. If null, the charset can be any
-	 *         of the existing "1 byte per char" charsets.
-	 * @throws IOException
-	 */
-	@Override
-	public void sniff(InputStream stream, final int size)
-			throws IOException {
-		this.charset = Constants.US_ASCII;
+    /**
+     * @param stream the input stream
+     * @param size   the size in expected codepoints to check
+     * @return UTF-8, US-ASCII or null Charset. If null, the charset can be any
+     * of the existing "1 byte per char" charsets.
+     * @throws IOException
+     */
+    @Override
+    public void sniff(InputStream stream, final int size) throws IOException {
+        this.charset = Constants.US_ASCII;
 
-		UTF8Decoder decoder = new UTF8Decoder(stream);
-		if (decoder.gobbleBOM())
-			this.charset = Constants.UTF_8;
+        UTF8Decoder decoder = new UTF8Decoder(stream);
+        if (decoder.gobbleBOM()) this.charset = Constants.UTF_8;
 
-		try {
-			for (int i = 0; i < size; i++) {
-				int c = decoder.readUnicodeValue();
-				if (c == -1)
-					return;
-				else if (c >= Constants.B10000000)
-					this.charset = Constants.UTF_8;
-			}
-		} catch (CharacterCodingException e) {
-			this.charset = null;
-		}
-	}
+        try {
+            for (int i = 0; i < size; i++) {
+                int c = decoder.readUnicodeValue();
+                if (c == -1) return;
+                else if (c >= Constants.B10000000) this.charset = Constants.UTF_8;
+            }
+        } catch (CharacterCodingException e) {
+            this.charset = null;
+        }
+    }
 
-	public Charset getCharset() {
-		return this.charset;
-	}
+    public Charset getCharset() {
+        return this.charset;
+    }
 }

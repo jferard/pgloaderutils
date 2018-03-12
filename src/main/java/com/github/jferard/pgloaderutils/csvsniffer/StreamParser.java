@@ -24,44 +24,55 @@ package com.github.jferard.pgloaderutils.csvsniffer;
 import java.util.LinkedList;
 import java.util.List;
 
-/** The StreamParser class parses a stream in lines without the encoding information. */
+/**
+ * The StreamParser class parses a stream in lines without the encoding information.
+ */
 class StreamParser {
-	private static final int CR = 0x0D;
-	private static final int LF = 0x0A;
+    private static final int CR = 0x0D;
+    private static final int LF = 0x0A;
 
-	List<Line> lines;
-	private int size;
-	private int lastChar;
-	private Line curLine;
+    List<Line> lines;
+    private int size;
+    private int lastChar;
+    private Line curLine;
 
-	StreamParser(int defaultSize) {
-		this.lastChar = 0;
-		this.size = defaultSize;
-		this.lines = new LinkedList<Line>();
-		this.curLine = new Line(this.size);
-	}
+    StreamParser(int defaultSize) {
+        this.lastChar = 0;
+        this.size = defaultSize;
+        this.lines = new LinkedList<Line>();
+        this.curLine = new Line(this.size);
+    }
 
-	void put(byte c) {
-		if (this.lastChar == CR) {
-			if (c == LF) {
-				this.lastChar = LF;
-			} else {
-				this.lines.add(this.curLine);
-				this.curLine = new Line(this.size);
-				this.curLine.append(c);
-				this.lastChar = 0;
-			}
-		} else {
-			if (c == CR || c == LF) {
-				this.lines.add(this.curLine);
-				this.curLine = new Line(this.size);
-				this.lastChar = c;
-			} else
-				this.curLine.append(c);
-		}
-	}
+    /**
+     * Add a byte. If the byte is a newline char, then a new line is created.
+     * @param c
+     */
+    void put(byte c) {
+        if (this.lastChar == 0) {
+            this.putAux(c);
+        } else { // CR or LF
+            if (this.isNotSecondPartOfEOL(c)) {
+                this.putAux(c);
+            } // else forget it
+            this.lastChar = 0;
+        }
+    }
 
-	public List<Line> getLines() {
-		return this.lines;
-	}
+    private void putAux(byte c) {
+        if (c == CR || c == LF) { // a new line
+            this.lines.add(this.curLine);
+            this.curLine = new Line(this.size);
+            this.lastChar = c;
+        } else {
+            this.curLine.append(c);
+        }
+    }
+
+    private boolean isNotSecondPartOfEOL(byte c) {
+        return !(c == LF && this.lastChar == CR);
+    }
+
+    public List<Line> getLines() {
+        return this.lines;
+    }
 }

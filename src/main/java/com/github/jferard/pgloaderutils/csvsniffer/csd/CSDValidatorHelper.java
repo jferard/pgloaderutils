@@ -27,8 +27,9 @@ import org.apache.commons.csv.CSVRecord;
 import java.util.logging.Logger;
 
 /**
+ * A CSDValidatorHelper validates a header or a normal record.
  */
-class CSDValidatorHelper<F extends CSDField> {
+class CSDValidatorHelper<F extends CSDFieldPattern> {
     private Logger logger;
     private ColumnMatcher matcher;
 
@@ -52,13 +53,9 @@ class CSDValidatorHelper<F extends CSDField> {
 
         int j = 0;
         for (F field : fields) {
-            if (field.getCode().equals("*"))
-                break;
-
-            String columnName = field.getColumnName();
             String value = firstRecord.get(j++);
-            if (!matcher.match(columnName, value)) {
-                result.incorrectColumnName(columnName, value);
+            if (!matcher.match(field, value)) {
+                result.incorrectColumnName(field, value);
                 headerErrorCount++;
             }
         }
@@ -81,9 +78,6 @@ class CSDValidatorHelper<F extends CSDField> {
         int errorCount = 0;
         int j = 0;
         for (F field : fields) {
-            if (field.getCode().equals("*"))
-                break;
-
             String value = record.get(j++);
             if (!field.validate(value)) {
                 result.incorrectValue(line, value, field);

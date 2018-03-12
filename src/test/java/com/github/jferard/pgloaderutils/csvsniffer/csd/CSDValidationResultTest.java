@@ -35,18 +35,18 @@ import java.util.logging.Logger;
  */
 public class CSDValidationResultTest {
     private Logger logger;
-    private CSDSchemaPattern<CSDField> sp;
+    private CSDSchemaPattern<CSDFieldPattern> sp;
 
     @Before
     public void setUp() {
         this.logger = PowerMock.createNiceMock(Logger.class);
-        this.sp = (CSDSchemaPattern<CSDField>) PowerMock.createMock(CSDSchemaPattern.class);
+        this.sp = (CSDSchemaPattern<CSDFieldPattern>) PowerMock.createMock(CSDSchemaPattern.class);
     }
 
     @Test
     public void testEmpty() {
         PowerMock.replayAll();
-        CSDValidationResult<CSDField> vr = new CSDValidationResult<CSDField>(logger, sp);
+        CSDValidationResult<CSDFieldPattern> vr = new CSDValidationResult<CSDFieldPattern>(logger, sp);
 
 
         Assert.assertEquals(0, vr.errorCount());
@@ -57,12 +57,13 @@ public class CSDValidationResultTest {
 
     @Test
     public void testBunchOfErrors() {
+
         PowerMock.replayAll();
-        CSDValidationResult<CSDField> vr = new CSDValidationResult<CSDField>(logger, sp);
+        CSDValidationResult<CSDFieldPattern> vr = new CSDValidationResult<CSDFieldPattern>(logger, sp);
         vr.noLine();
         vr.badHeader();
-        vr.incorrectColumnName("a", "b");
-        vr.incorrectValue(10, "c", TestUtil.getMandatoryField());
+        vr.incorrectColumnName(CSDTestHelper.namedField("a"), "b");
+        vr.incorrectValue(10, "c", CSDTestHelper.getMandatoryField());
         vr.missingHeader();
         vr.schemaHasTooManyFieldsForHeader(null);
         vr.schemaHasTooManyFieldsForRecord(20, null);

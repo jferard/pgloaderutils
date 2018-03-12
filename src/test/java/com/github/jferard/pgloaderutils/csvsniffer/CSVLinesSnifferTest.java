@@ -131,7 +131,7 @@ public class CSVLinesSnifferTest {
 	@Test
 	public final void test3() throws IOException, ParseException {
 		CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
-				CSVConstraints.builder().build());
+				CSVConstraints.builder().allowedDelimiters(new byte[] { ',', ';', '\t', '|' }).build());
 		InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" +
 				".csv").openStream();
 		csvSniffer.sniff(stream, 100000);

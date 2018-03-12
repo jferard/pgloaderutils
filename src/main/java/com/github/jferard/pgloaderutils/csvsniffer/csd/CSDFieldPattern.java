@@ -22,12 +22,9 @@
 
 package com.github.jferard.pgloaderutils.csvsniffer.csd;
 
-public interface CSDField {
-    String getType();
-
-    String getColumnName();
-
-    boolean isOptional();
-
-    boolean validate(String value);
+/**
+ * Created by jferard on 02/04/17.
+ */
+public interface CSDFieldPattern extends CSDField {
+    boolean isWildCard();
 }

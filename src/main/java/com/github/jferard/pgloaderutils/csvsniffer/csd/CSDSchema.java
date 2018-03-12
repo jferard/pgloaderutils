@@ -37,6 +37,7 @@ public class CSDSchema<F extends CSDField> implements SizedIterable<F> {
         this.optionalHeader = optionalHeader;
     }
 
+    @Override
     public int size() {
         return this.fields.size();
     }
@@ -55,9 +56,9 @@ public class CSDSchema<F extends CSDField> implements SizedIterable<F> {
         StringBuilder sb = new StringBuilder("(");
         Iterator<F> it = fields.iterator();
         if (it.hasNext()) {
-            sb.append(it.next().getCode());
+            sb.append(it.next());
             while (it.hasNext())
-                sb.append(", ").append(it.next().getCode());
+                sb.append(", ").append(it.next());
         }
         sb.append(")");
         return sb.toString();

@@ -38,10 +38,10 @@ import java.util.logging.Logger;
  * Created by jferard on 07/04/17.
  */
 public class CSDSchemaValidatorTest {
-    private CSDSchemaValidator<CSDField> validator;
+    private CSDSchemaValidator<CSDFieldPattern> validator;
     private Logger logger;
-    private CSDValidatorHelper<CSDField> vh;
-    private CSDSchema<CSDField> s;
+    private CSDValidatorHelper<CSDFieldPattern> vh;
+    private CSDSchema<CSDFieldPattern> s;
 
     @Before
     public void setUp() {
@@ -49,7 +49,7 @@ public class CSDSchemaValidatorTest {
         this.vh = PowerMock.createMock(CSDValidatorHelper.class);
         this.s = PowerMock.createMock(CSDSchema.class);
 
-        this.validator = new CSDSchemaValidator<CSDField>(this.logger, this.vh);
+        this.validator = new CSDSchemaValidator<CSDFieldPattern>(this.logger, this.vh);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class CSDSchemaValidatorTest {
         CSVParser p = CSVFormat.RFC4180.parse(new StringReader(""));
 
         PowerMock.replayAll();
-        CSDValidationResult<CSDField> r = this.validator.validate(this.s, p);
+        CSDValidationResult<CSDFieldPattern> r = this.validator.validate(this.s, p);
         Assert.assertEquals(1, r.errorCount());
         Assert.assertEquals("CSDValidationError of type NO_AVAILABLE_LINE: No available line. (line 0)", r.iterator().next().toString());
         PowerMock.verifyAll();
@@ -73,7 +73,7 @@ public class CSDSchemaValidatorTest {
         EasyMock.expect(this.s.hasOptionalHeader()).andReturn(false);
 
         PowerMock.replayAll();
-        CSDValidationResult<CSDField> r = this.validator.validate(this.s, p);
+        CSDValidationResult<CSDFieldPattern> r = this.validator.validate(this.s, p);
         Assert.assertEquals(0, r.errorCount());
         PowerMock.verifyAll();
     }
@@ -87,7 +87,7 @@ public class CSDSchemaValidatorTest {
         EasyMock.expect(this.vh.validateRecord(EasyMock.isA(CSDValidationResult.class), EasyMock.eq(this.s), EasyMock.isA(CSVRecord.class), EasyMock.eq(2))).andReturn(0);
 
         PowerMock.replayAll();
-        CSDValidationResult<CSDField> r = this.validator.validate(this.s, p);
+        CSDValidationResult<CSDFieldPattern> r = this.validator.validate(this.s, p);
         Assert.assertEquals(0, r.errorCount());
         PowerMock.verifyAll();
     }
@@ -101,7 +101,7 @@ public class CSDSchemaValidatorTest {
         EasyMock.expect(this.vh.validateRecord(EasyMock.isA(CSDValidationResult.class), EasyMock.eq(this.s), EasyMock.isA(CSVRecord.class), EasyMock.eq(2))).andReturn(0);
 
         PowerMock.replayAll();
-        CSDValidationResult<CSDField> r = this.validator.validate(this.s, p);
+        CSDValidationResult<CSDFieldPattern> r = this.validator.validate(this.s, p);
         Assert.assertEquals(0, r.errorCount());
         Assert.assertTrue(r.isOk());
         PowerMock.verifyAll();

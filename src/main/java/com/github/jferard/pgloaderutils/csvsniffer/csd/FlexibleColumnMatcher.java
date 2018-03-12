@@ -25,25 +25,37 @@ package com.github.jferard.pgloaderutils.csvsniffer.csd;
 import java.util.logging.Logger;
 
 /**
- * Returns true iff the Levensthein distance is less or equal than 2.
+ * Returns true iff the Levensthein distance is less or equal than a given precision.
  */
-class FlexibleColumnMatcher implements ColumnMatcher {
+class FlexibleColumnMatcher<F extends CSDFieldPattern> implements ColumnMatcher<F> {
     private Logger logger;
     private CSDUtil util;
+    private int precision;
 
-    public FlexibleColumnMatcher(Logger logger, CSDUtil util) {
+    public FlexibleColumnMatcher(Logger logger, CSDUtil util, int precision) {
         this.logger = logger;
         this.util = util;
+        this.precision = precision;
     }
+
     @Override
-    public boolean match(String expected, String actual) {
-        if (expected.equals(actual))
+    public boolean match(F expected, String actual) {
+        if (expected.isWildCard())
             return true;
-        else if (this.util.levenshteinDistance(this.util.stripAccents(expected), this.util.stripAccents(actual)) <= 2) {
-            this.logger.fine("The column names are close but not equal. Expected : '"+expected+"'. Actual: '"+actual+"'.");
+
+        final String expectedColumnName = expected.getColumnName();
+        if (expectedColumnName.equals(actual)) {
             return true;
-        } else
-            this.logger.fine("The column names are different. Expected : '"+expected+"'. Actual: '"+actual+"'.");
-            return false;
+        } else if (this.util.levenshteinDistance(this.util.stripAccents(expectedColumnName),
+                this.util.stripAccents(actual)) <= this.precision) {
+            this.logger
+                    .fine("The column names are close but not equal. Expected : '" + expected + "'. Actual: '" +
+                            actual + "'.");
+            return true;
+        } else {
+            this.logger
+                    .fine("The column names are different. Expected : '" + expected + "'. Actual: '" + actual + "'.");
+        }
+        return false;
     }
 }

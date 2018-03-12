@@ -27,7 +27,7 @@ import java.util.logging.Logger;
 /**
  * Returns true iff the column matches exactly.
  */
-class ExactColumnMatcher implements ColumnMatcher {
+class ExactColumnMatcher<F extends CSDFieldPattern> implements ColumnMatcher<F> {
     private Logger logger;
 
     ExactColumnMatcher(Logger logger) {
@@ -35,11 +35,16 @@ class ExactColumnMatcher implements ColumnMatcher {
     }
 
     @Override
-    public boolean match(String expected, String actual) {
-        if (expected.equals(actual))
+    public boolean match(F expected, String actual) {
+        if (expected.isWildCard())
             return true;
+
+        final String expectedColumnName = expected.getColumnName();
+        if (expectedColumnName.equals(actual)) return true;
         else {
-            this.logger.fine("The column names are different. Expected : '"+expected+"'. Actual: '"+actual+"'.");
+            this.logger
+                    .fine("The column names are different. Expected : '" + expectedColumnName + "'. Actual: '" +
+                            actual + "'.");
             return false;
         }
     }

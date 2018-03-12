@@ -40,15 +40,15 @@ public class FlexibleColumnMatcherTest {
     public void setUp() {
         Logger logger = PowerMock.createNiceMock(Logger.class);
         util = new CSDUtil(logger);
-        matcher = new FlexibleColumnMatcher(logger, util);
+        matcher = new FlexibleColumnMatcher(logger, util, 2);
     }
 
     @Test
     public void match() throws Exception {
         PowerMock.replayAll();
-        Assert.assertTrue(matcher.match("abcde", "abcde"));
-        Assert.assertTrue(matcher.match("abcde", "abcdef"));
-        Assert.assertFalse(matcher.match("abcde", "abcdefghij"));
+        Assert.assertTrue(matcher.match(CSDTestHelper.namedField("abcde"), "abcde"));
+        Assert.assertTrue(matcher.match(CSDTestHelper.namedField("abcde"), "abcdef"));
+        Assert.assertFalse(matcher.match(CSDTestHelper.namedField("abcde"), "abcdefghij"));
         PowerMock.verifyAll();
     }
 

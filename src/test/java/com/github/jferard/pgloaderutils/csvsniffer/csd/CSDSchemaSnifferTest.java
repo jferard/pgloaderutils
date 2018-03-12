@@ -38,12 +38,12 @@ import java.util.logging.Logger;
  * Created by jferard on 07/04/17.
  */
 public class CSDSchemaSnifferTest {
-    private CSDSchemaSniffer<CSDField> sniffer;
+    private CSDSchemaSniffer<CSDFieldPattern> sniffer;
     private Logger logger;
-    private CSDFieldFactory<CSDField> fy;
-    private CSDValidatorHelper<CSDField> vh;
-    private CSDSchemaPattern<CSDField> sp;
-    private CSDSchema<CSDField> s;
+    private CSDFieldFactory<CSDFieldPattern> fy;
+    private CSDValidatorHelper<CSDFieldPattern> vh;
+    private CSDSchemaPattern<CSDFieldPattern> sp;
+    private CSDSchema<CSDFieldPattern> s;
 
     @Before
     public void setUp() {
@@ -53,7 +53,7 @@ public class CSDSchemaSnifferTest {
         this.sp = PowerMock.createMock(CSDSchemaPattern.class);
         this.s = PowerMock.createMock(CSDSchema.class);
 
-        this.sniffer = new CSDSchemaSniffer<CSDField>(this.logger, this.fy, this.vh);
+        this.sniffer = new CSDSchemaSniffer<CSDFieldPattern>(this.logger, this.fy, this.vh);
 
     }
 
@@ -62,7 +62,7 @@ public class CSDSchemaSnifferTest {
         CSVParser p = CSVFormat.RFC4180.parse(new StringReader(""));
 
         PowerMock.replayAll();
-        CSDSchema<CSDField> s = this.sniffer.sniff(this.sp, p, 10);
+        CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
         Assert.assertEquals(null, s);
         PowerMock.verifyAll();
     }
@@ -75,7 +75,7 @@ public class CSDSchemaSnifferTest {
         EasyMock.expect(this.sp.hasOptionalHeader()).andReturn(false);
 
         PowerMock.replayAll();
-        CSDSchema<CSDField> s = this.sniffer.sniff(this.sp, p, 10);
+        CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
         Assert.assertEquals(null, s);
         PowerMock.verifyAll();
     }
@@ -87,7 +87,7 @@ public class CSDSchemaSnifferTest {
         EasyMock.expect(this.vh.validateHeader(EasyMock.isA(CSDValidationResult.class), EasyMock.eq(this.sp), EasyMock.isA(CSVRecord.class))).andReturn(-1);
 
         PowerMock.replayAll();
-        CSDSchema<CSDField> s = this.sniffer.sniff(this.sp, p, 10);
+        CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
         Assert.assertEquals(null, s);
         PowerMock.verifyAll();
     }
@@ -102,7 +102,7 @@ public class CSDSchemaSnifferTest {
         EasyMock.expect(this.sp.newSchema(EasyMock.eq(this.fy), EasyMock.isA(CSVRecord.class))).andReturn(this.s);
 
         PowerMock.replayAll();
-        CSDSchema<CSDField> s2 = this.sniffer.sniff(this.sp, p, 10);
+        CSDSchema<CSDFieldPattern> s2 = this.sniffer.sniff(this.sp, p, 10);
         Assert.assertEquals(s, s2);
         PowerMock.verifyAll();
     }

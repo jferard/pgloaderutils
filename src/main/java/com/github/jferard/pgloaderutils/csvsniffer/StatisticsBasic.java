@@ -21,6 +21,9 @@
  */
 package com.github.jferard.pgloaderutils.csvsniffer;
 
+/**
+ * Compute mean and variance of an array of int values.
+ */
 class StatisticsBasic {
 	private int[] values;
 	private double mean;

@@ -44,8 +44,8 @@ public class ExactColumnMatcherTest {
     @Test
     public void match() throws Exception {
         PowerMock.replayAll();
-        Assert.assertTrue(matcher.match("abcde", "abcde"));
-        Assert.assertFalse(matcher.match("abcde", "abcdef"));
+        Assert.assertTrue(matcher.match(CSDTestHelper.namedField("abcde"), "abcde"));
+        Assert.assertFalse(matcher.match(CSDTestHelper.namedField("abcde"), "abcdef"));
         PowerMock.verifyAll();
     }
 

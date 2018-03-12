@@ -23,8 +23,13 @@
 package com.github.jferard.pgloaderutils.csvsniffer.csd;
 
 /**
- * Created by jferard on 03/04/17.
+ * A ColumnMatcher compares an expected field to a column name.
  */
-public interface ColumnMatcher {
-    boolean match(String expected, String actual);
+public interface ColumnMatcher<F extends CSDFieldPattern> {
+    /**
+     * @param expected the field
+     * @param actual the name of the column
+     * @return true if it matches.
+     */
+    boolean match(F expected, String actual);
 }

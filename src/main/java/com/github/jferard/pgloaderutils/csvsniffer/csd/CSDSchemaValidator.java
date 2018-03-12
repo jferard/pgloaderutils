@@ -29,14 +29,14 @@ import java.util.Iterator;
 import java.util.logging.Logger;
 
 /**
- * The CSDSchemaSniffer#validateHeader method returns the full result of a validation.
+ * A CSDSchemaValidator validate a CSVParser.
  */
-public class CSDSchemaValidator<F extends CSDField> {
+public class CSDSchemaValidator<F extends CSDFieldPattern> {
     private final Logger logger;
     private final CSDValidatorHelper<F> validatorHelper;
     private CSDValidationResult<F> result;
 
-    public static <G extends CSDField> CSDSchemaValidator<G> create(Logger logger) {
+    public static <G extends CSDFieldPattern> CSDSchemaValidator<G> create(Logger logger) {
         CSDValidatorHelper<G> hv = new CSDValidatorHelper<G>(logger, new ExactColumnMatcher(logger));
         return new CSDSchemaValidator<G>(logger, hv);
     }

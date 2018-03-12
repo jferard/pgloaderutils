@@ -30,59 +30,60 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
-/** Very unefficient method: test all available charsets. But the result should be ok */
+/**
+ * Very unefficient method: test all available charsets. But the result should be ok
+ */
 public class GeneralEncodingSniffer implements Sniffer {
-	private Set<Charset> charsets;
+    private Set<Charset> charsets;
 
-	public void sniff(String path, final int size) throws IOException {
-		InputStream stream = new FileInputStream(path);
-		try {
-			this.sniff(stream, size);
-		} finally {
-			stream.close();
-		}
-	}
+    public void sniff(String path, final int size) throws IOException {
+        InputStream stream = new FileInputStream(path);
+        try {
+            this.sniff(stream, size);
+        } finally {
+            stream.close();
+        }
+    }
 
-	/**
-	 * @param stream
-	 *            the input stream
-	 * @return
-	 * @return UTF-8, US-ASCII or null Charset. If null, the charset can be any
-	 *         of the existing "1 byte per char" charsets.
-	 * @throws IOException
-	 */
-	@Override
-	public void sniff(InputStream stream, final int size)
-			throws IOException {
-		if (!stream.markSupported())
-			stream = new BufferedInputStream(stream);
+    /**
+     * @param stream the input stream
+     * @return UTF-8, US-ASCII or null Charset. If null, the charset can be any
+     * of the existing "1 byte per char" charsets.
+     * @throws IOException
+     */
+    @Override
+    public void sniff(InputStream stream, final int size) throws IOException {
+        if (!stream.markSupported()) stream = new BufferedInputStream(stream);
 
-		stream.mark(size);
-		Map<String, Charset> charsetByName = Charset.availableCharsets();
-		this.charsets = new HashSet<Charset>(charsetByName.values());
+        stream.mark(size);
+        Map<String, Charset> charsetByName = Charset.availableCharsets();
+        this.charsets = new HashSet<Charset>(charsetByName.values());
 
-		Iterator<Charset> it = charsets.iterator();
-		byte[] bytes = new byte[size];
-		while (it.hasNext()) {
-			int count = stream.read(bytes);
-			if (count == -1) {
-				throw new IOException("Emtpy stream");
-			}
+        Iterator<Charset> it = charsets.iterator();
+        byte[] bytes = new byte[size];
+        while (it.hasNext()) {
+            int count = stream.read(bytes);
+            if (count == -1) {
+                throw new IOException("Emtpy stream");
+            }
 
-			Charset charset = it.next();
-			CharsetDecoder decoder = charset.newDecoder();
-			CharBuffer outputBuffer = CharBuffer.allocate(count);
-			CoderResult result = decoder.decode(ByteBuffer.wrap(bytes, 0, count), outputBuffer, false);
-			if (result.isError()) {
-				it.remove();
-			}
-			stream.reset();
-		}
-	}
+            Charset charset = it.next();
+            CharsetDecoder decoder = charset.newDecoder();
+            CharBuffer outputBuffer = CharBuffer.allocate(count);
+            CoderResult result = decoder.decode(ByteBuffer.wrap(bytes, 0, count), outputBuffer, false);
+            if (result.isError()) {
+                it.remove();
+            }
+            stream.reset();
+        }
+    }
 
-	public Set<Charset> getCharsets() {
-		return this.charsets;
-	}
+    public Set<Charset> getCharsets() {
+        return this.charsets;
+    }
 }
