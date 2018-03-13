@@ -25,6 +25,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -49,6 +50,7 @@ public class CSVFormatSniffer implements Sniffer {
             l.add(i);
         return l;
     }
+
     private final CSVConstraints csvParams;
     private byte finalDelimiter;
     private byte finalEscape;
@@ -87,16 +89,18 @@ public class CSVFormatSniffer implements Sniffer {
     }
 
     private List<Line> getLines(InputStream inputStream, int size) throws IOException {
-        final StreamParser streamParser = new StreamParser(CSVFormatSniffer.DEFAULT_LINE_SIZE);
-        int c = inputStream.read();
+        final StreamParser streamParser = new StreamParser(inputStream, CSVFormatSniffer.DEFAULT_LINE_SIZE);
+        List<Line> lines = new ArrayList<Line>();
         int i = 0;
-        while (c != -1 && i++ < size) {
-            if (c < CSVFormatSniffer.ASCII_BYTE_COUNT) streamParser.put((byte) c);
+        Line line = streamParser.getNextLine();
+        while (line != null) {
+            i += line.getSize();
+            if (i >= size) break;
 
-            c = inputStream.read();
+            lines.add(line);
+            line = streamParser.getNextLine();
         }
-
-        return streamParser.getLines();
+        return lines;
     }
 
     private byte computeEscape(final List<Line> lines, final byte[] allowedEscapes) {

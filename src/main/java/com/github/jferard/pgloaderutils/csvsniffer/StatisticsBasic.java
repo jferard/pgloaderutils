@@ -32,13 +32,19 @@ class StatisticsBasic {
 	private boolean hasVariance;
 	private boolean hasMean;
 
+	/**
+	 * @param values the values
+	 */
 	public StatisticsBasic(int[] values) {
 		this.values = values;
 		this.hasMean = false;
 		this.hasVariance = false;
 	}
 
-	double getMean() {
+	/**
+	 * @return the mean of the values
+	 */
+	public double getMean() {
 		if (!this.hasMean) {
 			double sum = 0.0;
 			int count = 0;
@@ -53,7 +59,10 @@ class StatisticsBasic {
 		return this.mean;
 	}
 
-	double getVariance() {
+	/**
+	 * @return the variance of the values
+	 */
+	public double getVariance() {
 		if (!this.hasVariance) {
 			double mean = this.getMean();
 			double sum = 0;

@@ -45,7 +45,6 @@ class Line {
 	}
 
 	public void append(byte c) {
-		assert c >= 0;
 		this.array[this.size++] = c;
 		this.checkArrayLength();
 	}

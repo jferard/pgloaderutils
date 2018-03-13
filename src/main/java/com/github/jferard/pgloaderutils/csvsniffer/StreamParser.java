@@ -21,8 +21,8 @@
  */
 package com.github.jferard.pgloaderutils.csvsniffer;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * The StreamParser class parses a stream in lines without the encoding information.
@@ -30,49 +30,50 @@ import java.util.List;
 class StreamParser {
     private static final int CR = 0x0D;
     private static final int LF = 0x0A;
+    private final InputStream is;
 
-    List<Line> lines;
     private int size;
-    private int lastChar;
+    private int lastEOLChar;
     private Line curLine;
 
-    StreamParser(int defaultSize) {
-        this.lastChar = 0;
+    StreamParser(final InputStream is, final int defaultSize) {
+        this.is = is;
         this.size = defaultSize;
-        this.lines = new LinkedList<Line>();
+        this.lastEOLChar = 0;
         this.curLine = new Line(this.size);
     }
 
-    /**
-     * Add a byte. If the byte is a newline char, then a new line is created.
-     * @param c
-     */
-    void put(byte c) {
-        if (this.lastChar == 0) {
-            this.putAux(c);
-        } else { // CR or LF
-            if (this.isNotSecondPartOfEOL(c)) {
-                this.putAux(c);
-            } // else forget it
-            this.lastChar = 0;
+    private boolean isNotSecondPartOfEOL(int c) {
+        return !(c == LF && this.lastEOLChar == CR);
+    }
+
+    public Line getNextLine() throws IOException {
+        Line curLine = new Line(this.size);
+        int c = this.is.read();
+
+        if (c == -1) return null;
+
+        while (c != -1) {
+            if (this.lastEOLChar == 0) {
+                if (c == CR || c == LF) { // a new line
+                    this.lastEOLChar = c;
+                    return curLine;
+                } else {
+                    curLine.append((byte) c);
+                }
+            } else { // lastEOLChar = CR or LF
+                if (this.isNotSecondPartOfEOL(c)) {
+                    if (c == CR || c == LF) { // a new line
+                        this.lastEOLChar = c;
+                        return curLine;
+                    } else {
+                        curLine.append((byte) c);
+                    }
+                } // else forget it
+                this.lastEOLChar = 0;
+            }
+            c = this.is.read();
         }
-    }
-
-    private void putAux(byte c) {
-        if (c == CR || c == LF) { // a new line
-            this.lines.add(this.curLine);
-            this.curLine = new Line(this.size);
-            this.lastChar = c;
-        } else {
-            this.curLine.append(c);
-        }
-    }
-
-    private boolean isNotSecondPartOfEOL(byte c) {
-        return !(c == LF && this.lastChar == CR);
-    }
-
-    public List<Line> getLines() {
-        return this.lines;
+        return curLine;
     }
 }
