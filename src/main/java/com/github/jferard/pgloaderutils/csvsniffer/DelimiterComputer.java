@@ -39,6 +39,7 @@ class DelimiterComputer {
     private final int[] roundedMeans;
     private final List<Byte> keptDelimiters;
     private byte[] allowedDelimiters;
+
     DelimiterComputer(final List<Line> lines, final byte[] allowedDelimiters, int minDelimiters) {
         this.lines = lines;
         this.allowedDelimiters = allowedDelimiters;
@@ -58,20 +59,29 @@ class DelimiterComputer {
             l++;
         }
 
-        return this.computeDelimiter();
+        this.sortCandidates();
+        if (this.keptDelimiters.size() > 1) this.tryToRemoveQuote();
+        return this.keptDelimiters.get(0);
     }
 
-    private byte computeDelimiter() throws ParseException {
-        this.computeStatsAndRemoveBadDelimiters();
-        switch (keptDelimiters.size()) {
-            case 0:
-                throw new ParseException("", 0);
-            case 1:
-                return keptDelimiters.get(0);
-            default:
-                break;
+    private void tryToRemoveQuote() {
+        final byte maybeQuote = this.keptDelimiters.get(0);
+        final byte maybeDelimiter = this.keptDelimiters.get(0);
+
+        for (final Line line : lines) {
+            final List<Part> parts = line.asParts(maybeDelimiter);
+            for (final Part part : parts) {
+                part.trim();
+                if (part.cannotHaveQuote(maybeQuote)) return; // maybeQuote is not a quote!
+            }
         }
-        return Collections.min(keptDelimiters, new StatsComparator());
+        this.keptDelimiters.remove(0);
+    }
+
+    private void sortCandidates() throws ParseException {
+        this.computeStatsAndRemoveBadDelimiters();
+        if (keptDelimiters.isEmpty()) throw new ParseException("", 0);
+        Collections.sort(keptDelimiters, new StatsComparator());
     }
 
     // compute roundedMean and variance for each delim

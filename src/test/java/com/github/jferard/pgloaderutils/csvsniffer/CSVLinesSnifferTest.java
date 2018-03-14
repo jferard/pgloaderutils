@@ -57,7 +57,7 @@ public class CSVLinesSnifferTest {
 				.getBytes(ASCII));
 
 		csvSniffer.sniff(stream, 1000);
-		Assert.assertEquals('-', (char) csvSniffer.getDelimiter());
+		Assert.assertEquals(',', (char) csvSniffer.getDelimiter());
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class CSVLinesSnifferTest {
 				.getBytes(ASCII));
 
 		csvSniffer.sniff(stream, 1000);
-		Assert.assertEquals('.', (char) csvSniffer.getDelimiter());
+		Assert.assertEquals(',', (char) csvSniffer.getDelimiter());
 	}
 	
 	@Test
@@ -132,6 +132,18 @@ public class CSVLinesSnifferTest {
 	public final void test3() throws IOException, ParseException {
 		CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
 				CSVConstraints.builder().allowedDelimiters(new byte[] { ',', ';', '\t', '|' }).build());
+		InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" +
+				".csv").openStream();
+		csvSniffer.sniff(stream, 100000);
+		Assert.assertEquals(';', (char) csvSniffer.getDelimiter());
+		Assert.assertEquals('"', (char) csvSniffer.getQuote());
+		Assert.assertEquals(0, (char) csvSniffer.getEscape());
+	}
+
+	@Test
+	public final void test3e() throws IOException, ParseException {
+		CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
+				CSVConstraints.builder().build());
 		InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" +
 				".csv").openStream();
 		csvSniffer.sniff(stream, 100000);
