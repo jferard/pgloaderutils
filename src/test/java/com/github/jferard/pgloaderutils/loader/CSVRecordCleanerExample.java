@@ -30,7 +30,7 @@ import java.util.Iterator;
 public class CSVRecordCleanerExample implements CSVRecordCleaner {
 
 	/* (non-Javadoc)
-	 * @see com.github.jferard.csvsniffer.CSVRecordCleaner#cleanRecord(org.apache.commons.csv.CSVRecord)
+	 * @see com.github.jferard.csv.CSVRecordCleaner#cleanRecord(org.apache.commons.csv.CSVRecord)
 	 */
 	@Override
 	public Iterable<String> cleanRecord(final CSVRecord record) {
