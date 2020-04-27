@@ -70,12 +70,25 @@ class Part {
 
     /**
      * Check if a char cannot be a quote char.
+     *
      * @param maybeQuote the quote char that is tested
      * @return true if the maybeQuote char is at one extremity of the part, but not at the other
      */
     public boolean cannotHaveQuote(byte maybeQuote) {
         return this.array[this.from] == maybeQuote && this.array[this.to - 1] != maybeQuote || this.array[this.from]
                 != maybeQuote && this.array[this.to - 1] == maybeQuote;
+    }
+
+    /**
+     * Check if a char can be a quote char.
+     *
+     * @param maybeQuote the quote char that is tested
+     * @return true if the maybeQuote char is at one extremity of the part and at the other, or
+     * not a any extremity
+     */
+    public boolean canHaveQuote(byte maybeQuote) {
+        return this.array[this.from] == maybeQuote && this.array[this.to - 1] == maybeQuote || this.array[this.from]
+                != maybeQuote && this.array[this.to - 1] != maybeQuote;
     }
 
     public byte getFirstChar() {
