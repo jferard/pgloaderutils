@@ -58,8 +58,9 @@ public class CSDSchemaValidator<F extends CSDFieldPattern> {
             CSVRecord firstRecord = it.next();
             this.validateHeaderOrFirstRecord(schema, firstRecord);
             int i=1;
-            while (it.hasNext())
+            while (it.hasNext()) {
                 this.validatorHelper.validateRecord(result, schema, it.next(), i++);
+            }
 
         } else {
             result.noLine();

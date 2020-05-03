@@ -139,8 +139,9 @@ public class CSVLoaderForPostgreSQL {
 		thread.join();
 
 		final IOException exception = reader.getException();
-		if (exception != null)
-			throw exception;
+		if (exception != null) {
+            throw exception;
+        }
 
 		statement = connection.createStatement();
 		statement.executeUpdate(this.analyzeQuery);

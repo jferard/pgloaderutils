@@ -57,8 +57,9 @@ public class CSVOptionalHeaderSniffer implements Sniffer {
 		CSVFormat csvFormat = CSVFormat.newFormat((char) delimiter)
 				.withQuote((char) quote).withQuoteMode(QuoteMode.MINIMAL)
 				.withAllowMissingColumnNames();
-		if (escape != quote)
-			csvFormat = csvFormat.withEscape((char) escape);
+		if (escape != quote) {
+            csvFormat = csvFormat.withEscape((char) escape);
+        }
 		return new CSVOptionalHeaderSniffer(csvFormat, charset);
 	}
 
@@ -107,12 +108,14 @@ public class CSVOptionalHeaderSniffer implements Sniffer {
 							firstRowSignature, remainingRowsSignature,
 							firstRowSize)) {
 						// copy firstRow in header
-						for (final String s : firstRowRecord)
-							this.header.add(s);
+						for (final String s : firstRowRecord) {
+                            this.header.add(s);
+                        }
 					}
 				}
-			} else 
-				this.header = null;
+			} else {
+                this.header = null;
+            }
 		} finally {
 			parser.close();
 		}
@@ -136,8 +139,9 @@ public class CSVOptionalHeaderSniffer implements Sniffer {
 	private boolean containsAtLeastOneOnlyDigitsValue(
 			final char[] firstRowSignature) {
 		for (final char c : firstRowSignature) {
-			if (c == 'D')
-				return true;
+			if (c == 'D') {
+                return true;
+            }
 		}
 		return false;
 	}

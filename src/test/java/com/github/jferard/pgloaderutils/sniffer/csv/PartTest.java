@@ -21,7 +21,6 @@
  */
 package com.github.jferard.pgloaderutils.sniffer.csv;
 
-import com.github.jferard.pgloaderutils.sniffer.csv.Part;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -44,7 +43,7 @@ public class PartTest {
 	public final void test2() throws UnsupportedEncodingException {
 		byte[] arr = "   abcde ".getBytes("ASCII");
 		Part part = new Part(arr, 0, arr.length);
-		part.trim();
+		part.trimSpaces();
 		Assert.assertEquals('a', part.getFirstChar());
 		Assert.assertEquals('e', part.getLastChar());
 		

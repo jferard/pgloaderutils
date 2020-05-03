@@ -57,8 +57,9 @@ public class ScriptParser {
 
         List<String> curQueryLines = new ArrayList<String>();
         for (String line = this.br.readLine(); line != null; line = this.br.readLine()) {
-            if (this.isCommentLine(line))
+            if (this.isCommentLine(line)) {
                 continue;
+            }
 
             if (this.isBlankLine(line) && curQueryLines.size() > 0) {
                 queries.add(this.newQuery(curQueryLines, valueByKey));
@@ -66,15 +67,17 @@ public class ScriptParser {
                 curQueryLines.add(line);
             }
         }
-        if (curQueryLines.size() > 0)
+        if (curQueryLines.size() > 0) {
             queries.add(this.newQuery(curQueryLines, valueByKey));
+        }
         return queries;
     }
 
     public String newQuery(List<String> curQueryLines, Map<String, String> valueByKey) {
         Iterator<String> it = curQueryLines.iterator();
-        if (!it.hasNext())
+        if (!it.hasNext()) {
             throw new IllegalArgumentException();
+        }
 
         StringBuilder sb = new StringBuilder(it.next());
         while (it.hasNext()) {

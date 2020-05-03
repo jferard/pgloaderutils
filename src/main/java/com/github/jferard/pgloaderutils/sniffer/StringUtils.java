@@ -40,8 +40,9 @@ public class StringUtils {
 	 * see https://github.com/richmilne/JaroWinkler/blob/master/jaro/strcmp95.c
 	 */
 	public static double strcmp95(final String first, final String second) {
-		if (first == null || second == null)
-			throw new IllegalArgumentException();
+		if (first == null || second == null) {
+            throw new IllegalArgumentException();
+        }
 		return StringUtils.strcmp95Normalized(StringUtils.normalize(first).toLowerCase(),
 				StringUtils.normalize(second).toLowerCase());
 	}

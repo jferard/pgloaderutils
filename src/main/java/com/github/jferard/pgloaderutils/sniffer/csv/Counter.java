@@ -38,8 +38,9 @@ public class Counter<T> {
 
 	public void put(T element) {
 		Integer count = this.countByElement.get(element);
-		if (count == null)
-			count = 0;
+		if (count == null) {
+            count = 0;
+        }
 
 		this.countByElement.put(element, count + 1);
 	}
@@ -59,10 +60,11 @@ public class Counter<T> {
 
 	public T maxElementOr(T defaultElement) {
 		List<T> l = this.sortedElements();
-		if (l.isEmpty())
-			return defaultElement;
-		else
-			return l.get(0);
+		if (l.isEmpty()) {
+            return defaultElement;
+        } else {
+            return l.get(0);
+        }
 	}
 
 }

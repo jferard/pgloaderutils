@@ -66,13 +66,18 @@ public class EncodingSniffer implements Sniffer {
         this.charset = Constants.US_ASCII;
 
         UTF8Decoder decoder = new UTF8Decoder(stream);
-        if (decoder.gobbleBOM()) this.charset = Constants.UTF_8;
+        if (decoder.gobbleBOM()) {
+            this.charset = Constants.UTF_8;
+        }
 
         try {
             for (int i = 0; i < size; i++) {
                 int c = decoder.readUnicodeValue();
-                if (c == -1) return;
-                else if (c >= Constants.B10000000) this.charset = Constants.UTF_8;
+                if (c == -1) {
+                    return;
+                } else if (c >= Constants.B10000000) {
+                    this.charset = Constants.UTF_8;
+                }
             }
         } catch (CharacterCodingException e) {
             this.charset = null;

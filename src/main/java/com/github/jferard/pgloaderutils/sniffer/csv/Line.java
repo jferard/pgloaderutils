@@ -60,8 +60,9 @@ class Line {
 	public int getCount(byte c) {
 		int count = 0;
 		for (int j = 0; j < this.size; j++) {
-			if (this.array[j] == c)
-				count++;
+			if (this.array[j] == c) {
+                count++;
+            }
 		}
 		return count;
 	}
@@ -71,13 +72,15 @@ class Line {
 		int from = 0;
 		for (int j = 0; j < this.size; j++) {
 			if (this.array[j] == delim) {
-				if (j  != from)
-					parts.add(new Part(this.array, from, j));
+				if (j  != from) {
+                    parts.add(new Part(this.array, from, j));
+                }
 				from = j + 1;
 			}
 		}
-		if (this.size > from)
-			parts.add(new Part(this.array, from, this.size));
+		if (this.size > from) {
+            parts.add(new Part(this.array, from, this.size));
+        }
 		return parts;
 	}
 

@@ -1,16 +1,16 @@
 /*
- * Some utilities for loading csv data into a PosgtreSQL database:
+ * Some utilities for loading csv data into a PosgtreSQL database: 
  * detect file encoding, CSV format and populate database
  *
  *     Copyright (C) 2016, 2018 J. Férard <https://github.com/jferard>
- *
+ *  
  * This file is part of pgLoader Utils.
- *
+ *  
  * pgLoader Utils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ *  
  * pgLoader Utils is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -22,22 +22,17 @@
 
 package com.github.jferard.pgloaderutils.sniffer.csv;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.List;
 
-/**
- * Created by jferard on 07/04/17.
- */
-public class CSVConstraintsTest {
-    @Test
-    public void test() {
-        CSVConstraintsBuilder b = BasicCSVConstraints.basicBuilder();
-        BasicCSVConstraints c = b.build();
-        Assert.assertTrue(c.isAllowedDelimiter(','));
-        Assert.assertFalse(c.isAllowedDelimiter('#'));
-        Assert.assertTrue(c.isAllowedQuote('"'));
-        Assert.assertFalse(c.isAllowedQuote('#'));
-        Assert.assertTrue(c.isAllowedEscape('"'));
-        Assert.assertFalse(c.isAllowedEscape('#'));
+public class BasicEscapeComputerFactory implements EscapeComputerFactory {
+    private final byte[] allowedEscapes;
+
+    public BasicEscapeComputerFactory(final byte[] allowedEscapes) {
+        this.allowedEscapes = allowedEscapes;
+    }
+
+    @Override
+    public ByteComputer create(List<Line> lines, byte finalDelimiter, byte finalQuote) {
+        return new BasicEscapeComputer(lines, finalDelimiter, finalQuote, allowedEscapes);
     }
 }

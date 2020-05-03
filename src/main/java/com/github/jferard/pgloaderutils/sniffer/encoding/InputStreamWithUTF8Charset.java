@@ -40,8 +40,9 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 	@Override
 	public int read(InputStreamUTF8OrByteCharsetReader parent, char[] cbuf,
 			int coffset, int clen) throws IOException {
-		if (clen <= 0)
-			return 0;
+		if (clen <= 0) {
+            return 0;
+        }
 
 		this.charCount = 0;
 		this.curOffset = coffset;
@@ -56,8 +57,9 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 		try {
 			while (this.charCount < clen) {
 				int unicodeValue = this.decoder.readUnicodeValue();
-				if (unicodeValue == -1)
-					return this.charCount;
+				if (unicodeValue == -1) {
+                    return this.charCount;
+                }
 
 				this.writeUTF16Bytes(cbuf, clen, unicodeValue);
 			}
@@ -107,9 +109,10 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 			char[] cbuf, int clen) throws IOException {
 		parent.fall();
 		int read = parent.read(cbuf, this.curOffset, clen - this.charCount);
-		if (read == -1)
-			return this.charCount;
-		else
-			return this.charCount + read;
+		if (read == -1) {
+            return this.charCount;
+        } else {
+            return this.charCount + read;
+        }
 	}
 }

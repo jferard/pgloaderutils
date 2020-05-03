@@ -26,7 +26,7 @@ package com.github.jferard.pgloaderutils.sniffer.csv;
  * a digit. More precisely, char allowed are [0, 2F] u [3A, 40] u (5B, 60] u
  * [7B, 7F]. Only ascii char are allowed.
  */
-public class CSVConstraints {
+public class BasicCSVConstraints {
 	private static final int ASCII_CHAR_COUNT = 128;
 	private static final int DELIMITER = 1;
 	private static final int QUOTE = 2;
@@ -48,34 +48,34 @@ public class CSVConstraints {
 				.allowedEscapes(new byte[] { '\\' }).minFields(2);
 	}
 
-	CSVConstraints(byte[] allowedDelimiters, byte[] allowedQuotes,
-			byte[] allowedEscapes, int minFields) {
+	BasicCSVConstraints(byte[] allowedDelimiters, byte[] allowedQuotes,
+						byte[] allowedEscapes, int minFields) {
 		this.allowedDelimiters = allowedDelimiters;
 		this.allowedQuotes = allowedQuotes;
 		this.allowedEscapes = allowedEscapes;
 		this.minFields = minFields;
 		this.tab = new byte[ASCII_CHAR_COUNT];
 		for (int d : this.allowedDelimiters) {
-			this.tab[d] |= CSVConstraints.DELIMITER;
+			this.tab[d] |= BasicCSVConstraints.DELIMITER;
 		}
 		for (int q : this.allowedQuotes) {
-			this.tab[q] |= CSVConstraints.QUOTE;
+			this.tab[q] |= BasicCSVConstraints.QUOTE;
 		}
 		for (int e : this.allowedQuotes) {
-			this.tab[e] |= CSVConstraints.ESCAPE;
+			this.tab[e] |= BasicCSVConstraints.ESCAPE;
 		}
 	}
 
 	public boolean isAllowedDelimiter(int c) {
-		return (this.tab[c] & CSVConstraints.DELIMITER) != 0;
+		return (this.tab[c] & BasicCSVConstraints.DELIMITER) != 0;
 	}
 
 	public boolean isAllowedQuote(int c) {
-		return (this.tab[c] & CSVConstraints.QUOTE) != 0;
+		return (this.tab[c] & BasicCSVConstraints.QUOTE) != 0;
 	}
 
 	public boolean isAllowedEscape(int c) {
-		return (this.tab[c] & CSVConstraints.ESCAPE) != 0;
+		return (this.tab[c] & BasicCSVConstraints.ESCAPE) != 0;
 	}
 
 	public byte[] getAllowedDelimiters() {

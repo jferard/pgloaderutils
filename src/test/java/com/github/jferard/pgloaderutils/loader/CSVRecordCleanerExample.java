@@ -49,7 +49,9 @@ public class CSVRecordCleanerExample implements CSVRecordCleaner {
 					public String next() {
 						String s = record.get(this.i);
 						if (this.i == 11 || this.i == 12 || this.i == 16) // numbers
-							s = s.replaceAll(",", "."); // from continental to US
+                        {
+                            s = s.replaceAll(",", "."); // from continental to US
+                        }
 
 						this.i++;
 						return s;

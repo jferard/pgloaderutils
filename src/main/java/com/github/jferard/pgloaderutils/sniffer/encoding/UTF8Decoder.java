@@ -51,10 +51,11 @@ public class UTF8Decoder {
 	private InputStream is;
 
 	UTF8Decoder(InputStream is) {
-		if (is.markSupported())
-			this.is = is;
-		else
-			this.is = new BufferedInputStream(is);
+		if (is.markSupported()) {
+            this.is = is;
+        } else {
+            this.is = new BufferedInputStream(is);
+        }
 	}
 
 	/**
@@ -81,8 +82,9 @@ public class UTF8Decoder {
 	public int readUnicodeValue() throws CharacterCodingException, IOException {
 		this.is.mark(3);
 		int firstByte = this.is.read();
-		if (firstByte == -1)
-			return -1;
+		if (firstByte == -1) {
+            return -1;
+        }
 
 		int unicodeValue = 0;
 		int expectedLen;

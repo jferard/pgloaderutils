@@ -32,8 +32,9 @@ class RowSignaturesAnalyzer {
 			if (col < record.size()) {
 				final String s = record.get(col);
 				signature[col] = this.getType(s);
-			} else
-				signature[col] = '?';
+			} else {
+                signature[col] = '?';
+            }
 		}
 		return signature;
 	}
@@ -53,17 +54,19 @@ class RowSignaturesAnalyzer {
 		int letters = 0;
 		for (int i = 0; i < s.length(); i++) {
 			final char c = s.charAt(i);
-			if (Character.isLetter(c))
-				letters++;
-			else if (Character.isDigit(c))
-				digits++;
+			if (Character.isLetter(c)) {
+                letters++;
+            } else if (Character.isDigit(c)) {
+                digits++;
+            }
 			// else ignore
 		}
 		if (digits > 0) {
-			if (letters == 0)
-				return 'D';
-			else if (digits >= 4 * letters)
-				return 'd';
+			if (letters == 0) {
+                return 'D';
+            } else if (digits >= 4 * letters) {
+                return 'd';
+            }
 		}
 
 		return '?';
@@ -89,17 +92,19 @@ class RowSignaturesAnalyzer {
 
 			final char[] rowSignature = this.getSignature(record, firstRowSize);
 			for (int col = 0; col < firstRowSize; col++) {
-				if (rowSignature[col] != '?')
-					digitsInColumn[col]++;
+				if (rowSignature[col] != '?') {
+                    digitsInColumn[col]++;
+                }
 			}
 		}
 
 		// 90 % of digit in a column => a digit column
 		for (int col = 0; col < firstRowSize; col++) {
-			if (digitsInColumn[col] > 0.9 * rows)
-				remainingRowsSignature[col] = 'd';
-			else
-				remainingRowsSignature[col] = '?';
+			if (digitsInColumn[col] > 0.9 * rows) {
+                remainingRowsSignature[col] = 'd';
+            } else {
+                remainingRowsSignature[col] = '?';
+            }
 		}
 		return remainingRowsSignature;
 	}

@@ -47,8 +47,9 @@ public class CSDSchemaPattern<F extends CSDFieldPattern> implements SizedIterabl
     public int size() {
         int schemaSize = 0;
         for (F field : fields) {
-            if (field.isWildCard())
+            if (field.isWildCard()) {
                 break;
+            }
 
             schemaSize++;
         }
@@ -84,8 +85,9 @@ public class CSDSchemaPattern<F extends CSDFieldPattern> implements SizedIterabl
     }
 
     private void addFields(CSDFieldFactory<F> factory, List<F> newFields, F field, CSVRecord firstRecord, int begin) {
-        if (firstRecord == null)
+        if (firstRecord == null) {
             return;
+        }
 
         for (int i=begin; i<firstRecord.size(); i++) {
             String name = firstRecord.get(i);

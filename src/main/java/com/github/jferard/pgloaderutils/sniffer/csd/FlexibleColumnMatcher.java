@@ -40,8 +40,9 @@ class FlexibleColumnMatcher<F extends CSDFieldPattern> implements ColumnMatcher<
 
     @Override
     public boolean match(F expected, String actual) {
-        if (expected.isWildCard())
+        if (expected.isWildCard()) {
             return true;
+        }
 
         final String expectedColumnName = expected.getColumnName();
         if (expectedColumnName.equals(actual)) {

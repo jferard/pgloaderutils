@@ -53,7 +53,9 @@ class StreamParser {
         Line curLine = new Line(this.size);
         int c = this.is.read();
 
-        if (c == -1) return null;
+        if (c == -1) {
+            return null;
+        }
 
         while (c != -1) {
             if (this.lastEOLChar == 0) {

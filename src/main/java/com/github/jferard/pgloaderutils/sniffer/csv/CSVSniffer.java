@@ -33,12 +33,12 @@ import java.util.List;
 
 public class CSVSniffer implements Sniffer {
 
-	private CSVConstraints csvConstraints;
+	private BasicCSVConstraints csvConstraints;
 	private CSVFormatSniffer csvSniffer;
 	private EncodingSniffer encodingSniffer;
 	private CSVOptionalHeaderSniffer headerSniffer;
 
-	CSVSniffer(CSVConstraints csvConstraints) {
+	CSVSniffer(BasicCSVConstraints csvConstraints) {
 		this.csvConstraints = csvConstraints;
 	}
 
@@ -53,7 +53,7 @@ public class CSVSniffer implements Sniffer {
 			c = inputStream.read();
 		}
 
-		this.csvSniffer = new CSVFormatSniffer(this.csvConstraints);
+		this.csvSniffer = CSVFormatSniffer.createBasic(this.csvConstraints);
 		this.encodingSniffer = new EncodingSniffer();
 		ParallelSniffer parallelSniffer = new ParallelSniffer(this.csvSniffer,
 				this.encodingSniffer);

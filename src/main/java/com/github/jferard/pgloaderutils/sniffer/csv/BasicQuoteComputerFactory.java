@@ -19,37 +19,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jferard.pgloaderutils.sniffer.encoding;
 
-import java.io.IOException;
-import java.io.InputStream;
+package com.github.jferard.pgloaderutils.sniffer.csv;
 
-class InputStreamWithByteCharset implements InputStreamWithCharset {
-	private char[] isoByteMap;
-	private InputStream is;
+import java.util.List;
 
-	InputStreamWithByteCharset(InputStream is, char[] isoByteMap) {
-		this.is = is;
-		this.isoByteMap = isoByteMap;
-	}
+public class BasicQuoteComputerFactory implements QuoteComputerFactory {
+    private final byte[] allowedQuotes;
 
-	@Override
-	public int read(InputStreamUTF8OrByteCharsetReader parent, char[] cbuf,
-			int coffset, int clen) throws IOException {
-		if (clen <= 0) {
-            return 0;
-        }
+    BasicQuoteComputerFactory(final byte[] allowedQuotes) {
+        this.allowedQuotes = allowedQuotes;
+    }
 
-		int charCount;
-		int curOffset = coffset;
-		for (charCount = 0; charCount < clen; charCount++) {
-			int firstByte = this.is.read();
-			if (firstByte == -1) {
-                return charCount;
-            }
-
-			cbuf[curOffset++] = this.isoByteMap[firstByte];
-		}
-		return charCount;
-	}
+    @Override
+    public ByteComputer create(final List<Line> lines, final byte delimiter) {
+        return new BasicQuoteComputer(lines, delimiter, allowedQuotes);
+    }
 }

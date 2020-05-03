@@ -43,14 +43,16 @@ public class QueryProvider {
         int i = template.indexOf('{');
         while (i >= 0) {
             int j = template.indexOf('}', i);
-            if (j == -1)
+            if (j == -1) {
                 throw new IllegalStateException(template);
+            }
             String before = template.substring(lastJ, i);
             String key = template.substring(i+1, j);
             queryBuilder.append(before);
             String value = valueByKey.get(key);
-            if (value == null)
+            if (value == null) {
                 throw new IllegalStateException(template+" % "+valueByKey+" missing "+key);
+            }
 
             queryBuilder.append(value);
 

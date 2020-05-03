@@ -57,8 +57,9 @@ public class CSDSchema<F extends CSDField> implements SizedIterable<F> {
         Iterator<F> it = fields.iterator();
         if (it.hasNext()) {
             sb.append(it.next());
-            while (it.hasNext())
+            while (it.hasNext()) {
                 sb.append(", ").append(it.next());
+            }
         }
         sb.append(")");
         return sb.toString();

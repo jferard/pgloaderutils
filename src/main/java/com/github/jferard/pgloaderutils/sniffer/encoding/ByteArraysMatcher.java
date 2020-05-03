@@ -42,11 +42,15 @@ public class ByteArraysMatcher {
     private byte[] byteArray;
 
     public ByteArraysMatcher(Set<byte[]> byteArrays, InputStream is) {
-        if (byteArrays.isEmpty()) throw new IllegalArgumentException();
+        if (byteArrays.isEmpty()) {
+            throw new IllegalArgumentException();
+        }
 
         this.remainingByteArrays = new HashSet<byte[]>(byteArrays); // we need a copy
         max = getRemainingByteArraysMaxLength();
-        if (max == 0) throw new IllegalArgumentException();
+        if (max == 0) {
+            throw new IllegalArgumentException();
+        }
 
         this.is = is;
 
@@ -55,7 +59,9 @@ public class ByteArraysMatcher {
     private int getRemainingByteArraysMaxLength() {
         int len = 0;
         for (byte[] byteArray : this.remainingByteArrays) {
-            if (byteArray.length > len) len = byteArray.length;
+            if (byteArray.length > len) {
+                len = byteArray.length;
+            }
         }
         return len;
     }
@@ -68,11 +74,15 @@ public class ByteArraysMatcher {
         this.byteArray = null;
         for (int i = 0; i < max; i++) {
             int c = is.read();
-            if (c == -1) break;
+            if (c == -1) {
+                break;
+            }
 
             this.filterByteArraysOnNthByte(i, (byte) c);
             this.checkByteArraysMatch(i);
-            if (this.noByteArrayOrByteArrayFound()) break;
+            if (this.noByteArrayOrByteArrayFound()) {
+                break;
+            }
         }
         return this.byteArray;
     }
@@ -85,11 +95,15 @@ public class ByteArraysMatcher {
         this.byteArray = null;
         for (int i = 0; i < max; i++) {
             int c = is.read();
-            if (c == -1) break;
+            if (c == -1) {
+                break;
+            }
 
             this.filterByteArraysOnNthByte(i, (byte) c);
             this.checkByteArraysMatch(i);
-            if (this.noByteArray()) break;
+            if (this.noByteArray()) {
+                break;
+            }
         }
         return this.byteArray;
     }
@@ -98,7 +112,9 @@ public class ByteArraysMatcher {
         Iterator<byte[]> it = remainingByteArrays.iterator();
         while (it.hasNext()) {
             byte[] bytes = it.next();
-            if (i >= bytes.length || bytes[i] != c) it.remove();
+            if (i >= bytes.length || bytes[i] != c) {
+                it.remove();
+            }
         }
     }
 

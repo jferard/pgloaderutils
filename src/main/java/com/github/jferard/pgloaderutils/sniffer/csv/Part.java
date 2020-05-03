@@ -24,47 +24,71 @@ package com.github.jferard.pgloaderutils.sniffer.csv;
 import java.nio.charset.Charset;
 
 class Part {
-    public static final int MULTIPLE = -2;
     public static final int NONE = -1;
+    public static final int MULTIPLE = -2;
+
+    public enum QuoteType {
+        NONE, LEFT, RIGHT, BOTH;
+    }
+
     private byte[] array;
     private int from;
     private int to;
 
     public Part(byte[] array, int from, int to) {
-        if (array.length == 0 || from >= array.length || to <= 0 || from >= to) throw new IllegalArgumentException();
+        if (array.length == 0 || from >= array.length || to <= 0 || from >= to) {
+            throw new IllegalArgumentException();
+        }
 
         this.array = array;
         this.from = from;
         this.to = to;
     }
 
-    public void trim() {
-        while (this.array[this.from] == ' ') this.from++;
+    public void trimSpaces() {
+        while (this.array[this.from] == ' ') {
+            this.from++;
+        }
 
 //		if (this.to == 0)
 //			return;
 
-        while (this.array[this.to - 1] == ' ') this.to--;
+        while (this.array[this.to - 1] == ' ') {
+            this.to--;
+        }
     }
 
-    public boolean trimOne(byte c) {
-        int result = this.quoteValue(c);
-        if (result > 1) {
+    public boolean trimIfPossibleQuote(byte c) {
+        QuoteType result = this.quoteType(c);
+        if (result == QuoteType.BOTH) {
             this.from++;
             this.to--;
         }
-        return result > 1;
+        return result == QuoteType.BOTH;
     }
 
-    public int quoteValue(byte quote) {
+    /**
+     * @param quote a quote char
+     * @return 0 if part matches [^q].*[^q], 1 if part matches [^q].*[q] or [q].*[^q], 5 if part
+     *          matches [q].*[q].
+     */
+    public QuoteType quoteType(byte quote) {
         if (this.from == this.to - 1) // one char
-            return 0;
+        {
+            return QuoteType.NONE;
+        }
         if (this.array[this.from] == quote) {
-            if (this.array[this.to - 1] == quote) return 5;
-            else return 1;
+            if (this.array[this.to - 1] == quote) {
+                return QuoteType.BOTH;
+            } else {
+                return QuoteType.LEFT;
+            }
         } else {
-            if (this.array[this.to - 1] == quote) return 1;
-            else return 0;
+            if (this.array[this.to - 1] == quote) {
+                return QuoteType.RIGHT;
+            } else {
+                return QuoteType.NONE;
+            }
         }
     }
 
@@ -105,8 +129,11 @@ class Part {
         while (j >= this.from + 1) {
             if (this.array[j] == quote) {
                 j--;
-                if (c == NONE) c = this.array[j];
-                else if (c != this.array[j]) return MULTIPLE;
+                if (c == NONE) {
+                    c = this.array[j];
+                } else if (c != this.array[j]) {
+                    return MULTIPLE;
+                }
             }
             j--;
         }

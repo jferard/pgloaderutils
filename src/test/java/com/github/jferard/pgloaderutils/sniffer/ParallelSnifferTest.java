@@ -21,7 +21,7 @@
  */
 package com.github.jferard.pgloaderutils.sniffer;
 
-import com.github.jferard.pgloaderutils.sniffer.csv.CSVConstraints;
+import com.github.jferard.pgloaderutils.sniffer.csv.BasicCSVConstraints;
 import com.github.jferard.pgloaderutils.sniffer.csv.CSVFormatSniffer;
 import com.github.jferard.pgloaderutils.sniffer.encoding.EncodingSniffer;
 import com.google.common.base.Joiner;
@@ -45,8 +45,8 @@ public class ParallelSnifferTest {
 
 	@Test
 	public final void test() throws IOException {
-		CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
-				CSVConstraints.builder().minFields(5).build());
+		CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
+				BasicCSVConstraints.builder().minFields(5).build());
 		EncodingSniffer encodingSniffer = new EncodingSniffer();
 		ParallelSniffer parallelSniffer = new ParallelSniffer(csvSniffer,
 				encodingSniffer);

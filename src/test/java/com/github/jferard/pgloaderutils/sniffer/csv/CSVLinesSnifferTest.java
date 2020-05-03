@@ -49,7 +49,7 @@ public class CSVLinesSnifferTest {
      */
     @Test
     public final void testWithOtherChar() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
         InputStream stream = new ByteArrayInputStream(this.joiner
                 .join("A,B,C", "1,abcd,A-A", "2,efgh,A-B", "3,\"ijk,l\",A-C", "4,mnop,A-D", "5,\"qrs,t\",A-E",
                         "6,\"uvw,x\",A-F").getBytes(ASCII));
@@ -60,7 +60,8 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void testWithOtherChar2() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().minFields(3).build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
+                BasicCSVConstraints.builder().minFields(3).build());
         InputStream stream = new ByteArrayInputStream(this.joiner
                 .join("A,B,C", "1,abcd,A-A", "2,efgh,A-B", "3,\"ijk,l\",A-C", "4,mnop,A-D", "5,\"qrs,t\",A-E",
                         "6,\"uvw,x\",A-F").getBytes(ASCII));
@@ -77,7 +78,7 @@ public class CSVLinesSnifferTest {
      */
     @Test
     public final void test() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
         InputStream stream = new ByteArrayInputStream(
                 this.joiner.join("Year,Make,Model", "1997,Ford,E350", "2000,Mercury,Cougar").getBytes(ASCII));
 
@@ -89,7 +90,7 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test2() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
         InputStream stream = new ByteArrayInputStream(this.joiner
                 .join("Year,Make,Model,Description,Price", "1997,Ford,E350,\"ac, abs, moon\",3000.00",
                         "1999,Chevy,\"Venture \"\"Extended Edition\"\"\",\"\",4900.00",
@@ -102,7 +103,8 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test2b() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().minFields(5).build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
+                BasicCSVConstraints.builder().minFields(5).build());
         InputStream stream = new ByteArrayInputStream(this.joiner
                 .join("Year,Make,Model,Description,Price", "1997,Ford,E350,\"ac, abs, moon\",3000.00",
                         "1999,Chevy,\"Venture \"\"Extended Edition\"\"\",\"\",4900.00",
@@ -117,8 +119,8 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test3() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
-                CSVConstraints.builder().allowedDelimiters(new byte[]{',', ';', '\t', '|'}).build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
+                BasicCSVConstraints.builder().allowedDelimiters(new byte[]{',', ';', '\t', '|'}).build());
         InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" + ".csv")
                 .openStream();
         csvSniffer.sniff(stream, 100000);
@@ -129,7 +131,7 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test3e() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
         InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" + ".csv")
                 .openStream();
         csvSniffer.sniff(stream, 100000);
@@ -140,8 +142,8 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test3b() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
-                CSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
+                BasicCSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
         InputStream stream = new ByteArrayInputStream(this.joiner
                 .join("Year	Make	Model	Description	Price", "1997	Ford	E350	moon	3000,00",
                         "1999	Chevy	Venture		4900,00", "1999	Chevy	Large		5000,00",
@@ -155,8 +157,8 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test3c() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
-                CSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
+                BasicCSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
         InputStream stream = new ByteArrayInputStream(this.joiner
                 .join("Year	Make	Model	Description	Price", "1997	Ford	E350	moon	3000,00",
                         "1999	Chevy	Venture		4900,00", "1999	Chevy	Large		5000,00",
@@ -170,8 +172,8 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test4() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(
-                CSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
+                BasicCSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
         InputStream stream = new ByteArrayInputStream(this.joiner
                 .join("Year|Make|Model|Description|Price", "1997|*|E350|moon|3000,00", "1999|*|Venture|d|4900,00",
                         "1999|*|Large|d|5000,00", "1996|*|Cherokee|air|4799,00").getBytes(UTF8));
@@ -184,7 +186,7 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void testDelimiterQuote() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
         InputStream stream = new ByteArrayInputStream(
                 this.joiner.join("\"a\";b;", "\"a\";b;", "\"a\";b;", "\"a\";b;", "\"a\";b;").getBytes(UTF8));
 
@@ -195,7 +197,7 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void testDelimiterQuote2() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
         InputStream stream = new ByteArrayInputStream(
                 this.joiner.join(";c;\"d\"", ";c;\"d\"", ";c;\"d\"", ";c;\"d\"", ";c;\"d\"").getBytes(UTF8));
 
@@ -207,7 +209,7 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void testDelimiterQuote3() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = new CSVFormatSniffer(CSVConstraints.builder().build());
+        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
         InputStream stream = new ByteArrayInputStream(
                 this.joiner.join(";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<").getBytes(UTF8));
 

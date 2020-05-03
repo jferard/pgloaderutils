@@ -52,12 +52,15 @@ public class HeaderRowAnalyzer {
     }
 
     public CSVFormat analyze(List<String> expectedHeaderStart, String firstReadLine) throws IOException {
-        if (expectedHeaderStart.size() < 2) throw new IllegalArgumentException();
+        if (expectedHeaderStart.size() < 2) {
+            throw new IllegalArgumentException();
+        }
 
         List<String> expectedFields = new ArrayList<String>(expectedHeaderStart.size());
 
-        for (String field : expectedHeaderStart)
+        for (String field : expectedHeaderStart) {
             expectedFields.add(StringUtils.normalize(field));
+        }
 
         String line = StringUtils.normalize(firstReadLine);
         int curFieldStartIndex = 0;
@@ -69,8 +72,9 @@ public class HeaderRowAnalyzer {
         char firstCharOfCurExpectedField = curExpectedField.charAt(0);
         int curFieldFirstLetterIndex = line.indexOf(firstCharOfCurExpectedField, curFieldStartIndex);
 
-        if (curFieldFirstLetterIndex == -1)
+        if (curFieldFirstLetterIndex == -1) {
             throw new IOException("Can't find first letter:" + curExpectedField + " (" + line + ")");
+        }
 
         while (iterator.hasNext()) {
             // get the index of the first char after cur field, ie the first
@@ -83,8 +87,9 @@ public class HeaderRowAnalyzer {
 
             // get the index of the first char of the next field
             int nextFieldFirstLetterIndex = line.indexOf(firstCharOfNextExpectedField, curFieldDelimiterBlockIndex);
-            if (nextFieldFirstLetterIndex == -1)
+            if (nextFieldFirstLetterIndex == -1) {
                 throw new IOException("Can't find first letter:" + nextExpectedField + " (" + line + ")");
+            }
             // get nextIndex
             curFieldStartIndex = this.advanceCurFieldStartIndex(curExpectedField, line, curFieldDelimiterBlockIndex,
                     nextFieldFirstLetterIndex);
@@ -107,21 +112,27 @@ public class HeaderRowAnalyzer {
         int nextFieldStartIndex;
         // just a delimiter
         if (nextFieldFirstLetterIndex == curFieldDelimiterBlockIndex + 1) {
-            if (Character.isLetterOrDigit(maybeDelimiter))
+            if (Character.isLetterOrDigit(maybeDelimiter)) {
                 throw new IOException("Bad delimiter after field of field:" + curExpectedField + " (" + line + ")");
+            }
 
             this.delimiter = maybeDelimiter;
             nextFieldStartIndex = nextFieldFirstLetterIndex;
         } else {
             // trim
             int i = curFieldDelimiterBlockIndex;
-            while (Character.isSpaceChar(line.charAt(i))) i++;
+            while (Character.isSpaceChar(line.charAt(i))) {
+                i++;
+            }
 
             int j = nextFieldFirstLetterIndex - 1;
-            while (Character.isSpaceChar(line.charAt(j))) j--;
+            while (Character.isSpaceChar(line.charAt(j))) {
+                j--;
+            }
             if (j > i) { // only space, tabs, ... chars
-                if (Character.isLetterOrDigit(maybeDelimiter))
+                if (Character.isLetterOrDigit(maybeDelimiter)) {
                     throw new IOException("Bad delimiter after field of field:" + curExpectedField + " (" + line + ")");
+                }
                 this.delimiterCounter.put(maybeDelimiter);
                 nextFieldStartIndex = nextFieldFirstLetterIndex;
             } else if (i < j) {
@@ -144,19 +155,22 @@ public class HeaderRowAnalyzer {
                     .getDelimiterBlockIndex(expectedField, line, expectedField.length(), firstLetterIndex);
         } else if (firstLetterIndex == firstIndex + 1) {
             char maybeQuote = line.charAt(firstIndex);
-            if (Character.isLetterOrDigit(maybeQuote))
+            if (Character.isLetterOrDigit(maybeQuote)) {
                 throw new IOException("Missing start of field:" + expectedField + " (" + line + ")");
+            }
 
             int len = this.getLen(expectedField, maybeQuote);
             delimiterBlockIndex = this.getDelimiterBlockIndex(expectedField, line, len, firstLetterIndex);
 
             for (int i = 0; i < len; i++) {
-                if (line.charAt(firstLetterIndex + i) == maybeQuote)
+                if (line.charAt(firstLetterIndex + i) == maybeQuote) {
                     this.escapeCounter.put(line.charAt(firstLetterIndex + i - 1));
+                }
             }
 
-            if (line.charAt(delimiterBlockIndex) != maybeQuote)
+            if (line.charAt(delimiterBlockIndex) != maybeQuote) {
                 throw new IOException("Missing quote:" + expectedField + " (" + line + ")");
+            }
             this.quoteCounter.put(maybeQuote);
             delimiterBlockIndex++;
         } else {
@@ -193,8 +207,10 @@ public class HeaderRowAnalyzer {
                 bestI = i;
             }
         }
-        if (bestDistance < 0.9f) throw new IOException("Field error. Expected: " + expectedField + ". Found: " + line
-                .substring(firstCharIndex, firstCharIndex + len + bestI));
+        if (bestDistance < 0.9f) {
+            throw new IOException("Field error. Expected: " + expectedField + ". Found: " + line
+                    .substring(firstCharIndex, firstCharIndex + len + bestI));
+        }
 
         return firstCharIndex + len + bestI;
     }

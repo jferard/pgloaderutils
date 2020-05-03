@@ -58,7 +58,9 @@ public class BOMSniffer {
      * @throws IOException
      */
     public static Charset getCharset(InputStream is) throws IOException {
-        if (!is.markSupported()) throw new IllegalArgumentException();
+        if (!is.markSupported()) {
+            throw new IllegalArgumentException();
+        }
 
         BOMSniffer sniffer = BOMSniffer.create();
         ByteArraysMatcher matcher = sniffer.createMatcher(is);

@@ -37,8 +37,9 @@ public class CSDUtil {
     }
 
     public boolean isEmpty(String value) {
-        if(value.length()>0&&(value.charAt(0)==' '||value.charAt(value.length()-1)==' '))
+        if(value.length()>0&&(value.charAt(0)==' '||value.charAt(value.length()-1)==' ')) {
             this.logger.fine("RECOMMANDATION : Les valeurs devraient n'avoir espace ni avant, ni après");
+        }
 
         return value.isEmpty() || value.trim().isEmpty();
     }
@@ -70,7 +71,9 @@ public class CSDUtil {
         int[] newcost = new int[len0];
 
         // initial cost of skipping prefix in String s0
-        for (int i = 0; i < len0; i++) cost[i] = i;
+        for (int i = 0; i < len0; i++) {
+            cost[i] = i;
+        }
 
         // dynamically computing the array of distances
 

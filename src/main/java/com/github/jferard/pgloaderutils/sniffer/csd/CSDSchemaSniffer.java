@@ -65,12 +65,18 @@ public class CSDSchemaSniffer<F extends CSDFieldPattern> {
         }
 
         CSVRecord firstRecord = it.next();
-        if (!this.validateHeaderOrFirstRecord(result, schemaPattern, firstRecord)) return null;
+        if (!this.validateHeaderOrFirstRecord(result, schemaPattern, firstRecord)) {
+            return null;
+        }
 
         int i = 1;
-        while (it.hasNext() && i < maxLine) this.validatorHelper.validateRecord(result, schemaPattern, it.next(), i++);
+        while (it.hasNext() && i < maxLine) {
+            this.validatorHelper.validateRecord(result, schemaPattern, it.next(), i++);
+        }
 
-        if (this.result.errorCount() > maxLine) return null;
+        if (this.result.errorCount() > maxLine) {
+            return null;
+        }
 
         return schemaPattern.newSchema(factory, firstRecord);
     }

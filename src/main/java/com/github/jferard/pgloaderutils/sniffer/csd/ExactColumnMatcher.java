@@ -36,12 +36,14 @@ class ExactColumnMatcher<F extends CSDFieldPattern> implements ColumnMatcher<F> 
 
     @Override
     public boolean match(F expected, String actual) {
-        if (expected.isWildCard())
+        if (expected.isWildCard()) {
             return true;
+        }
 
         final String expectedColumnName = expected.getColumnName();
-        if (expectedColumnName.equals(actual)) return true;
-        else {
+        if (expectedColumnName.equals(actual)) {
+            return true;
+        } else {
             this.logger
                     .fine("The column names are different. Expected : '" + expectedColumnName + "'. Actual: '" +
                             actual + "'.");

@@ -60,7 +60,9 @@ public class GeneralEncodingSniffer implements Sniffer {
      */
     @Override
     public void sniff(InputStream stream, final int size) throws IOException {
-        if (!stream.markSupported()) stream = new BufferedInputStream(stream);
+        if (!stream.markSupported()) {
+            stream = new BufferedInputStream(stream);
+        }
 
         stream.mark(size);
         Map<String, Charset> charsetByName = Charset.availableCharsets();
