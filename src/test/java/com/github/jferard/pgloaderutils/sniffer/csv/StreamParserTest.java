@@ -34,7 +34,7 @@ public class StreamParserTest {
 
     @Test
     public final void test() throws IOException {
-        StreamParser streamParser = new StreamParser(
+        final StreamParser streamParser = new StreamParser(
                 new ByteArrayInputStream("line1\nline2\r\nline3\n\rline4".getBytes("ASCII")), 1024);
 
         Assert.assertEquals("line1", streamParser.getNextLine().toString());
@@ -47,7 +47,7 @@ public class StreamParserTest {
 
     @Test
     public final void test3() throws IOException {
-        StreamParser streamParser = new StreamParser(
+        final StreamParser streamParser = new StreamParser(
                 Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" + ".csv").openStream(),
                 1024);
     }

@@ -35,7 +35,7 @@ class StatisticsBasic {
 	/**
 	 * @param values the values
 	 */
-	public StatisticsBasic(int[] values) {
+	public StatisticsBasic(final int[] values) {
 		this.values = values;
 		this.hasMean = false;
 		this.hasVariance = false;
@@ -48,7 +48,7 @@ class StatisticsBasic {
 		if (!this.hasMean) {
 			double sum = 0.0;
 			int count = 0;
-			for (int value : this.values) {
+			for (final int value : this.values) {
 				sum += value;
 				count++;
 			}
@@ -64,10 +64,10 @@ class StatisticsBasic {
 	 */
 	public double getVariance() {
 		if (!this.hasVariance) {
-			double mean = this.getMean();
+			final double mean = this.getMean();
 			double sum = 0;
-			for (int value : this.values) {
-				double delta = mean - value;
+			for (final int value : this.values) {
+				final double delta = mean - value;
 				sum += delta * delta;
 			}
 			this.variance = sum / this.size;

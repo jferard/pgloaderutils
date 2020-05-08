@@ -21,6 +21,10 @@
  */
 package com.github.jferard.pgloaderutils.sniffer.csv;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,17 +34,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
-import com.github.jferard.pgloaderutils.sniffer.Sniffer;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.csv.QuoteMode;
-
 /**
  * The CSVOptionalHeaderSniffer class is a Sniffer that checks if the provided
  * stream contains a header. Here are the steps :
- * 
+ *
  * <ol>
  * <li>if the first row contains at least on digits only value, then there is no
  * header in the stream</li>
@@ -49,100 +46,92 @@ import org.apache.commons.csv.QuoteMode;
  * </ol>
  *
  * @author Julien Férard (C) 2016
- *
  */
-public class CSVOptionalHeaderSniffer implements Sniffer {
-	public static CSVOptionalHeaderSniffer getSniffer(final byte delimiter,
-			final byte quote, final byte escape, final Charset charset) {
-		CSVFormat csvFormat = CSVFormat.newFormat((char) delimiter)
-				.withQuote((char) quote).withQuoteMode(QuoteMode.MINIMAL)
-				.withAllowMissingColumnNames();
-		if (escape != quote) {
-            csvFormat = csvFormat.withEscape((char) escape);
+public class CSVOptionalHeaderSniffer implements OptionalHeaderSniffer {
+    private final Charset charset;
+
+    private final CSVFormat csvFormat;
+    private final RowSignaturesAnalyzer rowSignaturesAnalyzer;
+    private List<String> header;
+
+    public CSVOptionalHeaderSniffer(final CSVFormat csvFormat,
+                                    final Charset charset) {
+        this.charset = charset;
+        this.csvFormat = csvFormat;
+        this.rowSignaturesAnalyzer = new RowSignaturesAnalyzer();
+    }
+
+    @Override
+    public List<String> getHeader() {
+        return this.header;
+    }
+
+    @Override
+    public void sniff(final InputStream inputStream, final int size)
+            throws IOException {
+        final Reader streamReader = new InputStreamReader(inputStream,
+                this.charset);
+
+        final CSVParser parser = new CSVParser(streamReader, this.csvFormat);
+        try {
+            this.sniff(parser);
+        } finally {
+            parser.close();
         }
-		return new CSVOptionalHeaderSniffer(csvFormat, charset);
-	}
+    }
 
-	private final Charset charset;
+    private void sniff(final CSVParser parser) {
+        final Iterator<CSVRecord> iterator = parser.iterator();
 
-	private final CSVFormat csvFormat;
+        if (!iterator.hasNext()) {
+            this.header = null;
+            return;
+        }
 
-	private List<String> header;
+        final CSVRecord firstRowRecord = iterator.next();
+        final int firstRowSize = firstRowRecord.size();
 
-	private RowSignaturesAnalyzer rowSignaturesAnalyzer;
+        final char[] firstRowSignature = this.rowSignaturesAnalyzer
+                .getSignature(firstRowRecord, firstRowSize);
 
-	public CSVOptionalHeaderSniffer(final CSVFormat csvFormat,
-			final Charset charset) {
-		this.charset = charset;
-		this.csvFormat = csvFormat;
-		this.rowSignaturesAnalyzer = new RowSignaturesAnalyzer();
-	}
-
-	public List<String> getHeader() {
-		return this.header;
-	}
-
-	@Override
-	public void sniff(final InputStream inputStream, final int size)
-			throws IOException {
-		final Reader streamReader = new InputStreamReader(inputStream,
-				this.charset);
-
-		final CSVParser parser = new CSVParser(streamReader, this.csvFormat);
-		try {
-			final Iterator<CSVRecord> iterator = parser.iterator();
-
-			if (iterator.hasNext()) {
-				final CSVRecord firstRowRecord = iterator.next();
-				final int firstRowSize = firstRowRecord.size();
-
-				final char[] firstRowSignature = this.rowSignaturesAnalyzer
-						.getSignature(firstRowRecord, firstRowSize);
-
-				if (this.containsAtLeastOneOnlyDigitsValue(firstRowSignature)) {
-					this.header = null;
-				} else {
-					final char[] remainingRowsSignature = this.rowSignaturesAnalyzer
-							.getRemainingRowsSignature(iterator, firstRowSize);
-					if (this.containsAtLeastOneColumnWithLetterHeaderAndDigitValues(
-							firstRowSignature, remainingRowsSignature,
-							firstRowSize)) {
-						// copy firstRow in header
-						for (final String s : firstRowRecord) {
-                            this.header.add(s);
-                        }
-					}
-				}
-			} else {
-                this.header = null;
+        if (this.containsAtLeastOneOnlyDigitsValue(firstRowSignature)) {
+            this.header = null;
+        } else {
+            final char[] remainingRowsSignature = this.rowSignaturesAnalyzer
+                    .getRemainingRowsSignature(iterator, firstRowSize);
+            if (this.containsAtLeastOneColumnWithLetterHeaderAndDigitValues(
+                    firstRowSignature, remainingRowsSignature,
+                    firstRowSize)) {
+                // copy firstRow in header
+                for (final String s : firstRowRecord) {
+                    this.header.add(s);
+                }
             }
-		} finally {
-			parser.close();
-		}
-	}
+        }
+    }
 
-	private boolean containsAtLeastOneColumnWithLetterHeaderAndDigitValues(
-			final char[] firstRowSignature, final char[] remainingRowsSignature,
-			final int firstRowSize) {
-		for (int col = 0; col < firstRowSize; col++) {
-			// at least one column with non digit first cell and digit next
-			// cells
-			if (firstRowSignature[col] == '?'
-					&& remainingRowsSignature[col] != '?') {
-				this.header = new ArrayList<String>(firstRowSize);
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean containsAtLeastOneOnlyDigitsValue(
-			final char[] firstRowSignature) {
-		for (final char c : firstRowSignature) {
-			if (c == 'D') {
+    private boolean containsAtLeastOneColumnWithLetterHeaderAndDigitValues(
+            final char[] firstRowSignature, final char[] remainingRowsSignature,
+            final int firstRowSize) {
+        for (int col = 0; col < firstRowSize; col++) {
+            // at least one column with non digit first cell and digit next
+            // cells
+            if (firstRowSignature[col] == '?'
+                    && remainingRowsSignature[col] != '?') {
+                this.header = new ArrayList<String>(firstRowSize);
                 return true;
             }
-		}
-		return false;
-	}
+        }
+        return false;
+    }
+
+    private boolean containsAtLeastOneOnlyDigitsValue(
+            final char[] firstRowSignature) {
+        for (final char c : firstRowSignature) {
+            if (c == 'D') {
+                return true;
+            }
+        }
+        return false;
+    }
 }

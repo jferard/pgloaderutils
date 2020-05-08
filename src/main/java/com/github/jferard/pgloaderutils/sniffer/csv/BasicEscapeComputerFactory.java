@@ -32,7 +32,7 @@ public class BasicEscapeComputerFactory implements EscapeComputerFactory {
     }
 
     @Override
-    public ByteComputer create(List<Line> lines, byte finalDelimiter, byte finalQuote) {
+    public ByteComputer create(final List<Line> lines, final byte finalDelimiter, final byte finalQuote) {
         return new BasicEscapeComputer(lines, finalDelimiter, finalQuote, allowedEscapes);
     }
 }

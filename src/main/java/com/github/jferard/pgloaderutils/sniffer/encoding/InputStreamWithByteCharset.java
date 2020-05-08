@@ -28,14 +28,14 @@ class InputStreamWithByteCharset implements InputStreamWithCharset {
 	private char[] isoByteMap;
 	private InputStream is;
 
-	InputStreamWithByteCharset(InputStream is, char[] isoByteMap) {
+	InputStreamWithByteCharset(final InputStream is, final char[] isoByteMap) {
 		this.is = is;
 		this.isoByteMap = isoByteMap;
 	}
 
 	@Override
-	public int read(InputStreamUTF8OrByteCharsetReader parent, char[] cbuf,
-			int coffset, int clen) throws IOException {
+	public int read(final InputStreamUTF8OrByteCharsetReader parent, final char[] cbuf,
+                    final int coffset, final int clen) throws IOException {
 		if (clen <= 0) {
             return 0;
         }
@@ -43,7 +43,7 @@ class InputStreamWithByteCharset implements InputStreamWithCharset {
 		int charCount;
 		int curOffset = coffset;
 		for (charCount = 0; charCount < clen; charCount++) {
-			int firstByte = this.is.read();
+			final int firstByte = this.is.read();
 			if (firstByte == -1) {
                 return charCount;
             }

@@ -52,7 +52,7 @@ public class CSDTestHelper {
             }
 
             @Override
-            public boolean validate(String value) {
+            public boolean validate(final String value) {
                 return false;
             }
         };
@@ -81,7 +81,7 @@ public class CSDTestHelper {
             }
 
             @Override
-            public boolean validate(String value) {
+            public boolean validate(final String value) {
                 return true;
             }
 
@@ -116,7 +116,7 @@ public class CSDTestHelper {
             }
 
             @Override
-            public boolean validate(String value) {
+            public boolean validate(final String value) {
                 return true;
             }
         };
@@ -145,7 +145,7 @@ public class CSDTestHelper {
             }
 
             @Override
-            public boolean validate(String value) {
+            public boolean validate(final String value) {
                 return true;
             }
         };

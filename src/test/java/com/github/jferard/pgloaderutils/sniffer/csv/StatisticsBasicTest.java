@@ -29,7 +29,7 @@ public class StatisticsBasicTest {
 
 	@Test
 	public final void test() {
-		StatisticsBasic statisticsBasic = new StatisticsBasic(new int[] {1,2,3});
+		final StatisticsBasic statisticsBasic = new StatisticsBasic(new int[] {1,2,3});
 		Assert.assertEquals(2.0, statisticsBasic.getMean(), 1e-10);
 		Assert.assertEquals(2.0/3.0, statisticsBasic.getVariance(), 1e-10);
 	}

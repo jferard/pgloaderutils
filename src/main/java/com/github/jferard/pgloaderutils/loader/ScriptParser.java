@@ -39,11 +39,11 @@ public class ScriptParser {
     private final BufferedReader br;
     private QueryProvider provider;
 
-    public ScriptParser(Reader reader) {
+    public ScriptParser(final Reader reader) {
         this(reader, new QueryProvider());
     }
 
-    public ScriptParser(Reader reader, QueryProvider provider) {
+    public ScriptParser(final Reader reader, final QueryProvider provider) {
         this.br = new BufferedReader(reader);
         this.provider = provider;
     }
@@ -52,10 +52,10 @@ public class ScriptParser {
         this.br.close();
     }
 
-    public List<String> read(Map<String, String> valueByKey) throws IOException {
-        List<String> queries = new ArrayList<String>();
+    public List<String> read(final Map<String, String> valueByKey) throws IOException {
+        final List<String> queries = new ArrayList<String>();
 
-        List<String> curQueryLines = new ArrayList<String>();
+        final List<String> curQueryLines = new ArrayList<String>();
         for (String line = this.br.readLine(); line != null; line = this.br.readLine()) {
             if (this.isCommentLine(line)) {
                 continue;
@@ -73,29 +73,29 @@ public class ScriptParser {
         return queries;
     }
 
-    public String newQuery(List<String> curQueryLines, Map<String, String> valueByKey) {
-        Iterator<String> it = curQueryLines.iterator();
+    public String newQuery(final List<String> curQueryLines, final Map<String, String> valueByKey) {
+        final Iterator<String> it = curQueryLines.iterator();
         if (!it.hasNext()) {
             throw new IllegalArgumentException();
         }
 
-        StringBuilder sb = new StringBuilder(it.next());
+        final StringBuilder sb = new StringBuilder(it.next());
         while (it.hasNext()) {
             sb.append('\n').append(it.next());
         }
 
-        String template = sb.toString();
+        final String template = sb.toString();
         curQueryLines.clear();
         return this.provider.newQuery(template, valueByKey);
     }
 
-    private boolean isBlankLine(String line) {
-        String trimmed = line.trim();
+    private boolean isBlankLine(final String line) {
+        final String trimmed = line.trim();
         return trimmed.isEmpty();
     }
 
-    private boolean isCommentLine(String line) {
-        String trimmed = line.trim();
+    private boolean isCommentLine(final String line) {
+        final String trimmed = line.trim();
         return trimmed.startsWith("--");
     }
 }

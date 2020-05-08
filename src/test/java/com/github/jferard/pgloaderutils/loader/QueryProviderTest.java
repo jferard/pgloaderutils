@@ -44,7 +44,7 @@ public class QueryProviderTest {
 
     @Test
     public void testNewQuery() throws IOException {
-        Map<String, String> m = ImmutableMap.of("a", "1", "b", "2", "c", "3");
+        final Map<String, String> m = ImmutableMap.of("a", "1", "b", "2", "c", "3");
         Assert.assertEquals("a2c", this.provider.newQuery("a{b}c", m));
     }
 }

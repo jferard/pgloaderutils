@@ -50,7 +50,7 @@ public class InputStreamWithUTF8ReaderTest {
 	public final void testWithZeroToSevenChars() throws IOException {
 		final String s = "&éè-_-ç";
 		for (int i = 0; i <= 7; i++) {
-			InputStreamWithUTF8Charset r = this.getReaderFromString(s,
+			final InputStreamWithUTF8Charset r = this.getReaderFromString(s,
 					this.utf8);
 			Assert.assertEquals(i, r.read(null, this.cbuf, 0, i));
 			Assert.assertEquals(new String(s.toCharArray()).substring(0, i),
@@ -61,7 +61,7 @@ public class InputStreamWithUTF8ReaderTest {
 	@Test
 	public final void testWithLongRead() throws IOException {
 		final String s = "&éè-_-ç";
-		InputStreamWithUTF8Charset r = this.getReaderFromString(s, this.utf8);
+		final InputStreamWithUTF8Charset r = this.getReaderFromString(s, this.utf8);
 		Assert.assertEquals(7, r.read(null, this.cbuf, 0, 100));
 		Assert.assertEquals(new String(s.toCharArray()),
 				new String(this.cbuf, 0, 7));
@@ -69,7 +69,7 @@ public class InputStreamWithUTF8ReaderTest {
 
 	@Test
 	public final void testIsoFalse3Bytes() throws IOException {
-		InputStreamUTF8OrByteCharsetReader p = PowerMock
+		final InputStreamUTF8OrByteCharsetReader p = PowerMock
 				.createMock(InputStreamUTF8OrByteCharsetReader.class);
 
 		// play
@@ -78,7 +78,7 @@ public class InputStreamWithUTF8ReaderTest {
 
 		PowerMock.replayAll();
 		final String s = "é";
-		InputStreamWithUTF8Charset r = this.getReaderFromString(s, this.iso);
+		final InputStreamWithUTF8Charset r = this.getReaderFromString(s, this.iso);
 		Assert.assertEquals(r.read(p, this.cbuf, 0, 7), 65);
 		PowerMock.verifyAll();
 	}
@@ -86,7 +86,7 @@ public class InputStreamWithUTF8ReaderTest {
 	@Test
 	public final void testIsoButProcessedAsUTF() throws IOException {
 		final String s = "Ã©";
-		InputStreamWithUTF8Charset r = this.getReaderFromString(s, this.iso);
+		final InputStreamWithUTF8Charset r = this.getReaderFromString(s, this.iso);
 		Assert.assertEquals(r.read(null, this.cbuf, 0, 7), 1);
 		Assert.assertEquals("é", new String(this.cbuf, 0, 1));
 	}

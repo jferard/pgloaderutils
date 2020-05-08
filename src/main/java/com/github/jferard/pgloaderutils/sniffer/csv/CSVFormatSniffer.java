@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,34 +42,35 @@ public class CSVFormatSniffer implements Sniffer {
     private static final int BONUS_FOR_IRREGULAR_LINES = 5;
     private static final int DEFAULT_LINE_SIZE = 1024;
 
+    public static CSVFormatSniffer createBasic(final BasicCSVConstraints csvParams) {
+        return new CSVFormatSniffer(
+                new BasicDelimiterComputerFactory(csvParams.getAllowedDelimiters(),
+                        csvParams.getMinFields() - 1),
+                new BasicQuoteComputerFactory(csvParams.getAllowedQuotes()),
+                new BasicEscapeComputerFactory(csvParams.getAllowedEscapes()));
+    }
+
+    public static CSVFormatSniffer createScore(final ScoreCSVConstraints csvParams) {
+        return new CSVFormatSniffer(
+                new ScoreDelimiterComputerFactory(csvParams.getDelimiterScores(),
+                        csvParams.getMinFields() - 1),
+                new ScoreQuoteComputerFactory(csvParams.getQuoteScores()),
+                new ScoreEscapeComputerFactory(csvParams.getEscapeScores()));
+    }
+
     private final DelimiterComputerFactory delimiterComputerFactory;
-    private QuoteComputerFactory quoteComputerFactory;
-    private EscapeComputerFactory escapeComputerFactory;
+    private final QuoteComputerFactory quoteComputerFactory;
+    private final EscapeComputerFactory escapeComputerFactory;
     private byte finalDelimiter;
     private byte finalEscape;
     private byte finalQuote;
 
-    public CSVFormatSniffer(DelimiterComputerFactory delimiterComputerFactory,
-                            QuoteComputerFactory quoteComputerFactory,
-                            EscapeComputerFactory escapeComputerFactory) {
+    public CSVFormatSniffer(final DelimiterComputerFactory delimiterComputerFactory,
+                            final QuoteComputerFactory quoteComputerFactory,
+                            final EscapeComputerFactory escapeComputerFactory) {
         this.delimiterComputerFactory = delimiterComputerFactory;
         this.quoteComputerFactory = quoteComputerFactory;
         this.escapeComputerFactory = escapeComputerFactory;
-    }
-
-    static List<Byte> asNewList(final byte[] array) {
-        final List<Byte> l = new LinkedList<Byte>();
-        for (final byte i : array) {
-            l.add(i);
-        }
-        return l;
-    }
-
-    public static CSVFormatSniffer createBasic(BasicCSVConstraints csvParams) {
-        return new CSVFormatSniffer(new BasicDelimiterComputerFactory(csvParams.getAllowedDelimiters(),
-                csvParams.getMinFields() - 1),
-                new BasicQuoteComputerFactory(csvParams.getAllowedQuotes()),
-                new BasicEscapeComputerFactory(csvParams.getAllowedEscapes()));
     }
 
     public byte getDelimiter() {
@@ -91,19 +91,19 @@ public class CSVFormatSniffer implements Sniffer {
 
         // n fields -> n-1 delimiters
         final List<Line> lines = this.getLines(inputStream, size);
-        ByteComputer delimiterComputer = delimiterComputerFactory.create(lines);
+        final ByteComputer delimiterComputer = this.delimiterComputerFactory.create(lines);
         this.finalDelimiter = delimiterComputer.compute();
-        ByteComputer quoteComputer = quoteComputerFactory.create(lines, this.finalDelimiter);
+        final ByteComputer quoteComputer = this.quoteComputerFactory.create(lines, this.finalDelimiter);
         this.finalQuote = quoteComputer.compute();
-        ByteComputer escapeComputer =
-                escapeComputerFactory.create(lines, this.finalDelimiter, this.finalQuote);
+        final ByteComputer escapeComputer =
+                this.escapeComputerFactory.create(lines, this.finalDelimiter, this.finalQuote);
         this.finalEscape = escapeComputer.compute();
     }
 
-    private List<Line> getLines(InputStream inputStream, int size) throws IOException {
+    private List<Line> getLines(final InputStream inputStream, final int size) throws IOException {
         final StreamParser streamParser =
                 new StreamParser(inputStream, CSVFormatSniffer.DEFAULT_LINE_SIZE);
-        List<Line> lines = new ArrayList<Line>();
+        final List<Line> lines = new ArrayList<Line>();
         int i = 0;
         Line line = streamParser.getNextLine();
         while (line != null) {

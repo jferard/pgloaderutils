@@ -32,60 +32,79 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 public class CSVSniffer implements Sniffer {
+    public static CSVSniffer createBasic(final BasicCSVConstraints csvConstraints) {
+        final CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(csvConstraints);
+        final EncodingSniffer encodingSniffer = new EncodingSniffer();
+        final CSVOptionalHeaderSnifferFactory factory = new CSVOptionalHeaderSnifferFactory();
+        return new CSVSniffer(csvSniffer, encodingSniffer, factory);
 
-	private BasicCSVConstraints csvConstraints;
-	private CSVFormatSniffer csvSniffer;
-	private EncodingSniffer encodingSniffer;
-	private CSVOptionalHeaderSniffer headerSniffer;
+    }
 
-	CSVSniffer(BasicCSVConstraints csvConstraints) {
-		this.csvConstraints = csvConstraints;
-	}
+    public static CSVSniffer createScore(final ScoreCSVConstraints csvConstraints) {
+        final CSVFormatSniffer csvSniffer = CSVFormatSniffer.createScore(csvConstraints);
+        final EncodingSniffer encodingSniffer = new EncodingSniffer();
+        final CSVOptionalHeaderSnifferFactory factory = new CSVOptionalHeaderSnifferFactory();
+        return new CSVSniffer(csvSniffer, encodingSniffer, factory);
 
-	@Override
-	public void sniff(InputStream inputStream, int size) throws IOException {
-		byte[] bytes = new byte[size];
+    }
 
-		int c = inputStream.read();
-		int i = 0;
-		while (c != -1 && i++ < size) {
-			bytes[i] = (byte) c;
-			c = inputStream.read();
-		}
+    private final CSVFormatSniffer csvSniffer;
+    private final EncodingSniffer encodingSniffer;
+    private final OptionalHeaderSnifferFactory headerSnifferFactory;
+    private OptionalHeaderSniffer headerSniffer;
 
-		this.csvSniffer = CSVFormatSniffer.createBasic(this.csvConstraints);
-		this.encodingSniffer = new EncodingSniffer();
-		ParallelSniffer parallelSniffer = new ParallelSniffer(this.csvSniffer,
-				this.encodingSniffer);
+    CSVSniffer(final CSVFormatSniffer csvSniffer,
+               final EncodingSniffer encodingSniffer,
+               final OptionalHeaderSnifferFactory factory) {
+        this.csvSniffer = csvSniffer;
+        this.encodingSniffer = encodingSniffer;
+        this.headerSnifferFactory = factory;
+    }
 
-		InputStream stream = new ByteArrayInputStream(bytes);
-		parallelSniffer.sniff(stream, size);
+    @Override
+    public void sniff(final InputStream inputStream, final int size) throws IOException {
+        final ParallelSniffer parallelSniffer = new ParallelSniffer(this.csvSniffer,
+                this.encodingSniffer);
+        final byte[] bytes = this.getBytes(inputStream, size);
+        InputStream stream = new ByteArrayInputStream(bytes);
+        parallelSniffer.sniff(stream, size);
+        this.headerSniffer = this.headerSnifferFactory.create(
+                this.csvSniffer.getDelimiter(), this.csvSniffer.getQuote(),
+                this.csvSniffer.getEscape(), this.encodingSniffer.getCharset());
 
-		this.headerSniffer = CSVOptionalHeaderSniffer.getSniffer(
-				this.csvSniffer.getDelimiter(), this.csvSniffer.getQuote(),
-				this.csvSniffer.getEscape(), this.encodingSniffer.getCharset());
+        stream = new ByteArrayInputStream(bytes);
+        this.headerSniffer.sniff(stream, size);
+    }
 
-		stream = new ByteArrayInputStream(bytes);
-		this.headerSniffer.sniff(stream, size);
-	}
+    private byte[] getBytes(final InputStream inputStream, final int size) throws IOException {
+        final byte[] bytes = new byte[size];
 
-	public byte getDelimiter() {
-		return this.csvSniffer.getDelimiter();
-	}
+        int c = inputStream.read();
+        int i = 0;
+        while (c != -1 && i++ < size) {
+            bytes[i] = (byte) c;
+            c = inputStream.read();
+        }
+        return bytes;
+    }
 
-	public byte getEscape() {
-		return this.csvSniffer.getEscape();
-	}
+    public byte getDelimiter() {
+        return this.csvSniffer.getDelimiter();
+    }
 
-	public byte getQuote() {
-		return this.csvSniffer.getQuote();
-	}
+    public byte getEscape() {
+        return this.csvSniffer.getEscape();
+    }
 
-	public Charset getCharset() {
-		return this.encodingSniffer.getCharset();
-	}
-	
-	public List<String> getHeader() {
-		return this.headerSniffer.getHeader();
-	}
+    public byte getQuote() {
+        return this.csvSniffer.getQuote();
+    }
+
+    public Charset getCharset() {
+        return this.encodingSniffer.getCharset();
+    }
+
+    public List<String> getHeader() {
+        return this.headerSniffer.getHeader();
+    }
 }

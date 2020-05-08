@@ -32,11 +32,11 @@ import java.util.logging.Logger;
 public class CSDUtil {
     Logger logger;
 
-    public CSDUtil(Logger logger) {
+    public CSDUtil(final Logger logger) {
         this.logger = logger;
     }
 
-    public boolean isEmpty(String value) {
+    public boolean isEmpty(final String value) {
         if(value.length()>0&&(value.charAt(0)==' '||value.charAt(value.length()-1)==' ')) {
             this.logger.fine("RECOMMANDATION : Les valeurs devraient n'avoir espace ni avant, ni après");
         }
@@ -62,9 +62,9 @@ public class CSDUtil {
      * @param rhs
      * @return
      */
-    public int levenshteinDistance(CharSequence lhs, CharSequence rhs) {
-        int len0 = lhs.length() + 1;
-        int len1 = rhs.length() + 1;
+    public int levenshteinDistance(final CharSequence lhs, final CharSequence rhs) {
+        final int len0 = lhs.length() + 1;
+        final int len1 = rhs.length() + 1;
 
         // the array of distances
         int[] cost = new int[len0];
@@ -85,19 +85,19 @@ public class CSDUtil {
             // transformation cost for each letter in s0
             for(int i = 1; i < len0; i++) {
                 // matching current letters in both strings
-                int match = (lhs.charAt(i - 1) == rhs.charAt(j - 1)) ? 0 : 1;
+                final int match = (lhs.charAt(i - 1) == rhs.charAt(j - 1)) ? 0 : 1;
 
                 // computing cost for each transformation
-                int cost_replace = cost[i - 1] + match;
-                int cost_insert  = cost[i] + 1;
-                int cost_delete  = newcost[i - 1] + 1;
+                final int cost_replace = cost[i - 1] + match;
+                final int cost_insert  = cost[i] + 1;
+                final int cost_delete  = newcost[i - 1] + 1;
 
                 // keep minimum cost
                 newcost[i] = Math.min(Math.min(cost_insert, cost_delete), cost_replace);
             }
 
             // swap cost/newcost arrays
-            int[] swap = cost; cost = newcost; newcost = swap;
+            final int[] swap = cost; cost = newcost; newcost = swap;
         }
 
         // the distance is the cost for transforming all letters in both strings

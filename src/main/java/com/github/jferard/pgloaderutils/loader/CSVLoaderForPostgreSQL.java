@@ -55,35 +55,35 @@ public class CSVLoaderForPostgreSQL {
 	 * @param copyQuery
 	 * @param analyzeQuery
 	 */
-	CSVLoaderForPostgreSQL(String truncateQuery, final String copyQuery,
-			String analyzeQuery) {
+	CSVLoaderForPostgreSQL(final String truncateQuery, final String copyQuery,
+                           final String analyzeQuery) {
 		this.truncateQuery = truncateQuery;
 		this.copyQuery = copyQuery;
 		this.analyzeQuery = analyzeQuery;
 	}
 
-	public static CSVLoaderForPostgreSQL toTable(String tableName) {
+	public static CSVLoaderForPostgreSQL toTable(final String tableName) {
 		return new CSVLoaderForPostgreSQL("TRUNCATE " + tableName,
 				"COPY " + tableName
 						+ " FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
 				"ANALYZE " + tableName);
 	}
 
-	public static CSVLoaderForPostgreSQL toTable(String tableName, String columns) {
+	public static CSVLoaderForPostgreSQL toTable(final String tableName, final String columns) {
 		return new CSVLoaderForPostgreSQL("TRUNCATE " + tableName,
 				"COPY " + tableName + " " + columns
 						+ " FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
 				"ANALYZE " + tableName);
 	}
 
-	public static CSVLoaderForPostgreSQL toTable(String tableName, char delimiter, char quote) {
+	public static CSVLoaderForPostgreSQL toTable(final String tableName, final char delimiter, final char quote) {
 		return new CSVLoaderForPostgreSQL("TRUNCATE " + tableName,
 				"COPY " + tableName
 						+ " FROM STDIN WITH (FORMAT csv, DELIMITER '"+delimiter+"', QUOTE '"+quote+"')",
 				"ANALYZE " + tableName);
 	}
 
-	public static CSVLoaderForPostgreSQL toTable(String tableName, String columns, char delimiter, char quote) {
+	public static CSVLoaderForPostgreSQL toTable(final String tableName, final String columns, final char delimiter, final char quote) {
 		return new CSVLoaderForPostgreSQL("TRUNCATE " + tableName,
 				"COPY " + tableName + " " + columns
 						+ " FROM STDIN WITH (FORMAT csv, DELIMITER '"+delimiter+"', QUOTE '"+quote+"')",
@@ -98,9 +98,9 @@ public class CSVLoaderForPostgreSQL {
 	 * @throws SQLException
 	 * @throws InterruptedException
 	 */
-	public void populate(Connection connection, final OpenableReader reader)
+	public void populate(final Connection connection, final OpenableReader reader)
 			throws IOException, SQLException, InterruptedException {
-		boolean storedAutoCommit = connection.getAutoCommit();
+		final boolean storedAutoCommit = connection.getAutoCommit();
 		connection.setAutoCommit(false);
 
 		Statement statement = connection.createStatement();
@@ -111,19 +111,19 @@ public class CSVLoaderForPostgreSQL {
 
 		final BaseConnection baseConnection = (BaseConnection) connection;
 		final CopyManager copyManager = new CopyManager(baseConnection);
-		Thread thread = new Thread() {
+		final Thread thread = new Thread() {
 			@Override
 			public void run() {
 				try {
 					copyManager.copyIn(copyQuery, reader);
-				} catch (SQLException e) {
+				} catch (final SQLException e) {
 					e.printStackTrace();
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					reader.setException(e);
 				} finally {
 					try {
 						reader.close();
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						reader.setException(e);
 					}
 				}

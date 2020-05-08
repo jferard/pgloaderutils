@@ -29,12 +29,12 @@ class Line {
 	private byte[] array;
 	private int size;
 
-	public Line(int maxSize) {
+	public Line(final int maxSize) {
 		this.array = new byte[maxSize];
 		this.size = 0;
 	}
 
-	public Line(byte[] bytes, int maxSize) {
+	public Line(final byte[] bytes, final int maxSize) {
 		this.array = new byte[maxSize];
 		System.arraycopy(bytes, 0, this.array, 0, bytes.length);
 		this.size = bytes.length;
@@ -44,20 +44,20 @@ class Line {
 		return this.size;
 	}
 
-	public void append(byte c) {
+	public void append(final byte c) {
 		this.array[this.size++] = c;
 		this.checkArrayLength();
 	}
 
 	protected void checkArrayLength() {
 		if (this.size >= this.array.length) {
-			byte[] newArray = new byte[this.array.length * 2];
+			final byte[] newArray = new byte[this.array.length * 2];
 			System.arraycopy(this.array, 0, newArray, 0, this.size);
 			this.array = newArray;
 		}
 	}
 
-	public int getCount(byte c) {
+	public int getCount(final byte c) {
 		int count = 0;
 		for (int j = 0; j < this.size; j++) {
 			if (this.array[j] == c) {
@@ -67,8 +67,8 @@ class Line {
 		return count;
 	}
 
-	public List<Part> asParts(byte delim) {
-		List<Part> parts = new LinkedList<Part>();
+	public List<Part> asParts(final byte delim) {
+		final List<Part> parts = new LinkedList<Part>();
 		int from = 0;
 		for (int j = 0; j < this.size; j++) {
 			if (this.array[j] == delim) {

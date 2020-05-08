@@ -51,9 +51,9 @@ public class CSVCleanerFileReader extends OpenableReader {
 	private CSVRecordCleaner recordCleaner;
 	private CSVParser parser;
 
-	public CSVCleanerFileReader(CSVParser parser, CSVRecordCleaner recordCleaner) throws IOException {
+	public CSVCleanerFileReader(final CSVParser parser, final CSVRecordCleaner recordCleaner) throws IOException {
 		this.recordCleaner = recordCleaner;
-		PipedWriter pipedWriter = new PipedWriter();
+		final PipedWriter pipedWriter = new PipedWriter();
 		this.modifiedStreamReader = new PipedReader(pipedWriter, BUFFER_SIZE);
 
 		this.parser = parser;
@@ -62,15 +62,15 @@ public class CSVCleanerFileReader extends OpenableReader {
 	}
 
 
-	public static CSVCleanerFileReader fromStream(InputStream stream, Charset charset, CSVFormat format,
-												  CSVRecordCleaner recordCleaner) throws IOException {
-		Reader streamReader = new InputStreamReader(stream, charset);
-		CSVParser parser = new CSVParser(streamReader, format);
+	public static CSVCleanerFileReader fromStream(final InputStream stream, final Charset charset, final CSVFormat format,
+                                                  final CSVRecordCleaner recordCleaner) throws IOException {
+		final Reader streamReader = new InputStreamReader(stream, charset);
+		final CSVParser parser = new CSVParser(streamReader, format);
 		return new CSVCleanerFileReader(parser, recordCleaner);
 	}
 
-	public static CSVCleanerFileReader fromReader(Reader reader, CSVFormat format, CSVRecordCleaner recordCleaner) throws IOException {
-		CSVParser parser = new CSVParser(reader, format);
+	public static CSVCleanerFileReader fromReader(final Reader reader, final CSVFormat format, final CSVRecordCleaner recordCleaner) throws IOException {
+		final CSVParser parser = new CSVParser(reader, format);
 		return new CSVCleanerFileReader(parser, recordCleaner);
 	}
 
@@ -82,14 +82,14 @@ public class CSVCleanerFileReader extends OpenableReader {
 		try {
 			while (this.iterator.hasNext()) {
 				record = this.iterator.next();
-				Iterable<String> l = this.recordCleaner.cleanRecord(record);
+				final Iterable<String> l = this.recordCleaner.cleanRecord(record);
 				this.printer.printRecord(l);
 				if (i % 100000 == 0) {
 					logger.info("Lines written:" + i);
 				}
 				i++;
 			}
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			this.logger
 					.log(Level.SEVERE, "Error at line " + this.parser.getRecordNumber() + ". Last record was " +
 							record, e);
@@ -104,7 +104,7 @@ public class CSVCleanerFileReader extends OpenableReader {
 	}
 
 	@Override
-	public int read(char[] cbuf, int off, int len) throws IOException {
+	public int read(final char[] cbuf, final int off, final int len) throws IOException {
 		return this.modifiedStreamReader.read(cbuf, off, len);
 	}
 }

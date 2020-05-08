@@ -45,8 +45,8 @@ public class EncodingSniffer implements Sniffer {
      * of the existing "1 byte per char" charsets.
      * @throws IOException
      */
-    public void sniff(File file, final int size) throws IOException {
-        InputStream stream = new FileInputStream(file);
+    public void sniff(final File file, final int size) throws IOException {
+        final InputStream stream = new FileInputStream(file);
         try {
             this.sniff(stream, size);
         } finally {
@@ -62,24 +62,24 @@ public class EncodingSniffer implements Sniffer {
      * @throws IOException
      */
     @Override
-    public void sniff(InputStream stream, final int size) throws IOException {
+    public void sniff(final InputStream stream, final int size) throws IOException {
         this.charset = Constants.US_ASCII;
 
-        UTF8Decoder decoder = new UTF8Decoder(stream);
+        final UTF8Decoder decoder = new UTF8Decoder(stream);
         if (decoder.gobbleBOM()) {
             this.charset = Constants.UTF_8;
         }
 
         try {
             for (int i = 0; i < size; i++) {
-                int c = decoder.readUnicodeValue();
+                final int c = decoder.readUnicodeValue();
                 if (c == -1) {
                     return;
                 } else if (c >= Constants.B10000000) {
                     this.charset = Constants.UTF_8;
                 }
             }
-        } catch (CharacterCodingException e) {
+        } catch (final CharacterCodingException e) {
             this.charset = null;
         }
     }

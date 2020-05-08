@@ -34,13 +34,13 @@ public class BasicEscapeComputer implements ByteComputer {
     private final List<Line> lines;
     private List<Byte> keptEscapes;
 
-    public BasicEscapeComputer(List<Line> lines, byte finalDelimiter, byte finalQuote,
-                               byte[] allowedEscapes) {
+    public BasicEscapeComputer(final List<Line> lines, final byte finalDelimiter, final byte finalQuote,
+                               final byte[] allowedEscapes) {
         this.finalDelimiter = finalDelimiter;
         this.finalQuote = finalQuote;
         this.allowedEscapes = allowedEscapes;
         this.lines = lines;
-        keptEscapes = CSVFormatSniffer.asNewList(allowedEscapes);
+        keptEscapes = ScoreUtil.asNewList(allowedEscapes);
         keptEscapes.add(this.finalQuote);
     }
 
@@ -59,8 +59,8 @@ public class BasicEscapeComputer implements ByteComputer {
         return parts;
     }
 
-    private List<Part> split(Line line) {
-        List<Part> parts = line.asParts(this.finalDelimiter);
+    private List<Part> split(final Line line) {
+        final List<Part> parts = line.asParts(this.finalDelimiter);
         for (final Part part : parts) {
             part.trimSpaces();
             part.trimIfPossibleQuote(this.finalQuote);
@@ -68,7 +68,7 @@ public class BasicEscapeComputer implements ByteComputer {
         return parts;
     }
 
-    private int[] getEscapeScore(List<Part> parts) {
+    private int[] getEscapeScore(final List<Part> parts) {
         final int[] escapeScore = new int[CSVFormatSniffer.ASCII_BYTE_COUNT];
         for (final Part part : parts) {
             final int c = part.findCharBefore(this.finalQuote);

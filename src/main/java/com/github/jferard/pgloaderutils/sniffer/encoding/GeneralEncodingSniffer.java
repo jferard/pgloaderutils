@@ -43,8 +43,8 @@ import java.util.Set;
 public class GeneralEncodingSniffer implements Sniffer {
     private Set<Charset> charsets;
 
-    public void sniff(String path, final int size) throws IOException {
-        InputStream stream = new FileInputStream(path);
+    public void sniff(final String path, final int size) throws IOException {
+        final InputStream stream = new FileInputStream(path);
         try {
             this.sniff(stream, size);
         } finally {
@@ -65,21 +65,21 @@ public class GeneralEncodingSniffer implements Sniffer {
         }
 
         stream.mark(size);
-        Map<String, Charset> charsetByName = Charset.availableCharsets();
+        final Map<String, Charset> charsetByName = Charset.availableCharsets();
         this.charsets = new HashSet<Charset>(charsetByName.values());
 
-        Iterator<Charset> it = charsets.iterator();
-        byte[] bytes = new byte[size];
+        final Iterator<Charset> it = charsets.iterator();
+        final byte[] bytes = new byte[size];
         while (it.hasNext()) {
-            int count = stream.read(bytes);
+            final int count = stream.read(bytes);
             if (count == -1) {
                 throw new IOException("Emtpy stream");
             }
 
-            Charset charset = it.next();
-            CharsetDecoder decoder = charset.newDecoder();
-            CharBuffer outputBuffer = CharBuffer.allocate(count);
-            CoderResult result = decoder.decode(ByteBuffer.wrap(bytes, 0, count), outputBuffer, false);
+            final Charset charset = it.next();
+            final CharsetDecoder decoder = charset.newDecoder();
+            final CharBuffer outputBuffer = CharBuffer.allocate(count);
+            final CoderResult result = decoder.decode(ByteBuffer.wrap(bytes, 0, count), outputBuffer, false);
             if (result.isError()) {
                 it.remove();
             }

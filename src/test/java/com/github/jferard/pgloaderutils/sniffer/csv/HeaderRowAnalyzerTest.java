@@ -50,7 +50,7 @@ public class HeaderRowAnalyzerTest {
 	
 	@Test
 	public final void test2() throws IOException {
-		CSVFormat format = this.h.analyze(Arrays.asList("a'b", "b"), "'a&'b';b;c");
+		final CSVFormat format = this.h.analyze(Arrays.asList("a'b", "b"), "'a&'b';b;c");
 		Assert.assertEquals(';', format.getDelimiter());
 		Assert.assertEquals('&', (char) format.getEscapeCharacter());
 		Assert.assertEquals('\'', (char) format.getQuoteCharacter());

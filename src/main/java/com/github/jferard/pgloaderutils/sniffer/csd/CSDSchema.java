@@ -32,7 +32,7 @@ public class CSDSchema<F extends CSDField> implements SizedIterable<F> {
     private Collection<F> fields;
     private boolean optionalHeader;
 
-    public CSDSchema(Collection<F> fields, boolean optionalHeader) {
+    public CSDSchema(final Collection<F> fields, final boolean optionalHeader) {
         this.fields = fields;
         this.optionalHeader = optionalHeader;
     }
@@ -53,8 +53,8 @@ public class CSDSchema<F extends CSDField> implements SizedIterable<F> {
     }
 
     public String getColumns() {
-        StringBuilder sb = new StringBuilder("(");
-        Iterator<F> it = fields.iterator();
+        final StringBuilder sb = new StringBuilder("(");
+        final Iterator<F> it = fields.iterator();
         if (it.hasNext()) {
             sb.append(it.next());
             while (it.hasNext()) {

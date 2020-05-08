@@ -31,15 +31,15 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 	private int charCount;
 	private UTF8Decoder decoder;
 
-	InputStreamWithUTF8Charset(InputStream is) throws IOException {
+	InputStreamWithUTF8Charset(final InputStream is) throws IOException {
 		this.decoder = new UTF8Decoder(is);
 		this.decoder.gobbleBOM();
 		this.remainingUTF16Char = -1;
 	}
 
 	@Override
-	public int read(InputStreamUTF8OrByteCharsetReader parent, char[] cbuf,
-			int coffset, int clen) throws IOException {
+	public int read(final InputStreamUTF8OrByteCharsetReader parent, final char[] cbuf,
+                    final int coffset, final int clen) throws IOException {
 		if (clen <= 0) {
             return 0;
         }
@@ -56,7 +56,7 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 
 		try {
 			while (this.charCount < clen) {
-				int unicodeValue = this.decoder.readUnicodeValue();
+				final int unicodeValue = this.decoder.readUnicodeValue();
 				if (unicodeValue == -1) {
                     return this.charCount;
                 }
@@ -64,7 +64,7 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 				this.writeUTF16Bytes(cbuf, clen, unicodeValue);
 			}
 			return this.charCount;
-		} catch (CharacterCodingException e) {
+		} catch (final CharacterCodingException e) {
 			return this.fallAndFinishRead(parent, cbuf, clen);
 		}
 	}
@@ -73,7 +73,7 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 	 * ENCODING IN UTF-16 https://www.ietf.org/rfc/rfc2781.txt, 2.1 Encoding
 	 * UTF-16
 	 */
-	private void writeUTF16Bytes(char[] cbuf, int clen, int unicodeValue) {
+	private void writeUTF16Bytes(final char[] cbuf, final int clen, final int unicodeValue) {
 		if (unicodeValue < 0x10000) {
 			cbuf[this.curOffset++] = (char) unicodeValue;
 			this.charCount++;
@@ -81,8 +81,8 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 			// U' = yyyyyyyyyyxxxxxxxxxx
 			// W1 = 110110yyyyyyyyyy
 			// W2 = 110111xxxxxxxxxx
-			int y = unicodeValue >> 10;
-			int x = unicodeValue - y;
+			final int y = unicodeValue >> 10;
+			final int x = unicodeValue - y;
 			cbuf[this.curOffset++] = (char) (Constants.B1101100000000000 + y);
 			this.charCount++;
 			if (this.charCount == clen) { // bad luck!
@@ -105,10 +105,10 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 	 * @return
 	 * @throws IOException
 	 */
-	private int fallAndFinishRead(InputStreamUTF8OrByteCharsetReader parent,
-			char[] cbuf, int clen) throws IOException {
+	private int fallAndFinishRead(final InputStreamUTF8OrByteCharsetReader parent,
+                                  final char[] cbuf, final int clen) throws IOException {
 		parent.fall();
-		int read = parent.read(cbuf, this.curOffset, clen - this.charCount);
+		final int read = parent.read(cbuf, this.curOffset, clen - this.charCount);
 		if (read == -1) {
             return this.charCount;
         } else {

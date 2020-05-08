@@ -38,7 +38,7 @@ public class FlexibleColumnMatcherTest {
 
     @Before
     public void setUp() {
-        Logger logger = PowerMock.createNiceMock(Logger.class);
+        final Logger logger = PowerMock.createNiceMock(Logger.class);
         util = new CSDUtil(logger);
         matcher = new FlexibleColumnMatcher(logger, util, 2);
     }

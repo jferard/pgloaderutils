@@ -29,8 +29,8 @@ public class StringUtils {
 	final static Pattern p = Pattern
 			.compile("\\p{InCombiningDiacriticalMarks}+");
 
-	public static String normalize(String s) {
-		String decomposed = java.text.Normalizer.normalize(s.trim(),
+	public static String normalize(final String s) {
+		final String decomposed = java.text.Normalizer.normalize(s.trim(),
 				Normalizer.Form.NFD);
 		return p.matcher(decomposed) // $NON-NLS-1$
 				.replaceAll("").trim();
@@ -48,7 +48,7 @@ public class StringUtils {
 	}
 
 	// TODO
-	public static double strcmp95Normalized(String first, String second) {
+	public static double strcmp95Normalized(final String first, final String second) {
 		return 0;
 	}
 }

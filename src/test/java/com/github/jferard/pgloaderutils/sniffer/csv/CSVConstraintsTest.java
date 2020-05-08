@@ -31,8 +31,8 @@ import org.junit.Test;
 public class CSVConstraintsTest {
     @Test
     public void test() {
-        CSVConstraintsBuilder b = BasicCSVConstraints.basicBuilder();
-        BasicCSVConstraints c = b.build();
+        final BasicCSVConstraintsBuilder b = BasicCSVConstraints.basicBuilder();
+        final BasicCSVConstraints c = b.build();
         Assert.assertTrue(c.isAllowedDelimiter(','));
         Assert.assertFalse(c.isAllowedDelimiter('#'));
         Assert.assertTrue(c.isAllowedQuote('"'));

@@ -42,11 +42,11 @@ public class CSVLoaderForPostgreSQLIT {
 		try {
 			Class.forName("org.postgresql.Driver");
 			try {
-				Connection connection = DriverManager.getConnection(
+				final Connection connection = DriverManager.getConnection(
 						"jdbc:postgresql://127.0.0.1:5432/testdb", "postgres",
 						"postgres");
 				try {
-					Statement statement = connection.createStatement();
+					final Statement statement = connection.createStatement();
 					statement.executeUpdate(
 							"DROP TABLE IF EXISTS testtable");
 					statement.executeUpdate(
@@ -54,7 +54,7 @@ public class CSVLoaderForPostgreSQLIT {
 									+ "col1 text," + "col2 decimal,"
 									+ "col3 text)");
 
-					CSVLoaderForPostgreSQL loader = CSVLoaderForPostgreSQL
+					final CSVLoaderForPostgreSQL loader = CSVLoaderForPostgreSQL
 							.toTable("testtable");
 					final StringReader stringReader = new StringReader("\"a\", 1.0, \"b,c\"\n"
 							+ "\"d\", 2.0, \"f,g\"\n");
@@ -65,10 +65,10 @@ public class CSVLoaderForPostgreSQLIT {
 				} finally {
 					connection.close();
 				}
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				e.printStackTrace();
 			}
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}
@@ -78,11 +78,11 @@ public class CSVLoaderForPostgreSQLIT {
 		try {
 			Class.forName("org.postgresql.Driver");
 			try {
-				Connection connection = DriverManager.getConnection(
+				final Connection connection = DriverManager.getConnection(
 						"jdbc:postgresql://127.0.0.1:5432/sirene", "postgres",
 						"postgres");
 				try {
-					Statement statement = connection.createStatement();
+					final Statement statement = connection.createStatement();
 					statement.executeUpdate(
 							"DROP TABLE IF EXISTS sirc");
 					statement.executeUpdate(
@@ -189,7 +189,7 @@ public class CSVLoaderForPostgreSQLIT {
 									"	datemaj text\n" +
 									")");
 
-					CSVLoaderForPostgreSQL loader = CSVLoaderForPostgreSQL
+					final CSVLoaderForPostgreSQL loader = CSVLoaderForPostgreSQL
 							.toTable("sirc", ';', '"');
 					final Reader reader = new InputStreamReader(Resources.getResource
 							("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv").openStream(),
@@ -201,10 +201,10 @@ public class CSVLoaderForPostgreSQLIT {
 				} finally {
 					connection.close();
 				}
-			} catch (SQLException e) {
+			} catch (final SQLException e) {
 				e.printStackTrace();
 			}
-		} catch (ClassNotFoundException e) {
+		} catch (final ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 	}

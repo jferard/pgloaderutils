@@ -37,7 +37,7 @@ public class ExactColumnMatcherTest {
 
     @Before
     public void setUp() {
-        Logger logger = PowerMock.createNiceMock(Logger.class);
+        final Logger logger = PowerMock.createNiceMock(Logger.class);
         matcher = new ExactColumnMatcher(logger);
     }
 

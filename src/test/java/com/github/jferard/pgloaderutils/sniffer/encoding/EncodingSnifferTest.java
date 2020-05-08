@@ -40,8 +40,8 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void testUTF_8() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer();
-		InputStream stream = new ByteArrayInputStream(
+		final EncodingSniffer encodingSniffer = new EncodingSniffer();
+		final InputStream stream = new ByteArrayInputStream(
 				STR.getBytes(UTF_8));
 		encodingSniffer.sniff(stream, 1000);
 		Assert.assertEquals(UTF_8, encodingSniffer.getCharset());
@@ -49,8 +49,8 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void testUTF_8b() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer();
-		InputStream stream = new ByteArrayInputStream(
+		final EncodingSniffer encodingSniffer = new EncodingSniffer();
+		final InputStream stream = new ByteArrayInputStream(
 				STR.getBytes(UTF_8));
 		encodingSniffer.sniff(stream, 10);
 		Assert.assertEquals(ASCII, encodingSniffer.getCharset());
@@ -58,8 +58,8 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void testISO() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer();
-		InputStream stream = new ByteArrayInputStream(
+		final EncodingSniffer encodingSniffer = new EncodingSniffer();
+		final InputStream stream = new ByteArrayInputStream(
 				STR.getBytes(ISO8859_15));
 		encodingSniffer.sniff(stream, 1000);
 		Assert.assertEquals(null, encodingSniffer.getCharset());
@@ -67,8 +67,8 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void testASCII() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer();
-		InputStream stream = new ByteArrayInputStream(
+		final EncodingSniffer encodingSniffer = new EncodingSniffer();
+		final InputStream stream = new ByteArrayInputStream(
 				STR.getBytes(ASCII));
 		encodingSniffer.sniff(stream, 1000);
 		Assert.assertEquals(ASCII, encodingSniffer.getCharset());
@@ -76,8 +76,8 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void test2() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer();
-		InputStream stream = new ByteArrayInputStream(Joiner.on("\n")
+		final EncodingSniffer encodingSniffer = new EncodingSniffer();
+		final InputStream stream = new ByteArrayInputStream(Joiner.on("\n")
 				.join("Year,Make,Model,Description,Price",
 						"1997,Ford,E350,\"ac, abs, moon\",3000.00",
 						"1999,Chevy,\"Venture \"\"Extended Edition\"\"\",\"\",4900.00",
@@ -90,8 +90,8 @@ public class EncodingSnifferTest {
 
 	@Test
 	public final void test3() throws IOException {
-		EncodingSniffer encodingSniffer = new EncodingSniffer();
-		InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" +
+		final EncodingSniffer encodingSniffer = new EncodingSniffer();
+		final InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" +
 				".csv").openStream();
 		encodingSniffer.sniff(stream, 100000);
 		Assert.assertEquals(null, encodingSniffer.getCharset()); // null means: byte / byte encoding

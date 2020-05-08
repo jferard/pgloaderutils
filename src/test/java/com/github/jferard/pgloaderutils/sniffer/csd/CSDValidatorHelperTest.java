@@ -60,7 +60,7 @@ public class CSDValidatorHelperTest {
         this.vr.schemaHasTooManyFieldsForHeader(this.r);
 
         PowerMock.replayAll();
-        SizedIterable<CSDFieldPattern> fields = CSDTestHelper.fromCollection(Arrays.asList(CSDTestHelper.getMandatoryField(), CSDTestHelper.getMandatoryField(), CSDTestHelper.getOptionalField()));
+        final SizedIterable<CSDFieldPattern> fields = CSDTestHelper.fromCollection(Arrays.asList(CSDTestHelper.getMandatoryField(), CSDTestHelper.getMandatoryField(), CSDTestHelper.getOptionalField()));
         Assert.assertEquals(-1, this.vh.validateHeader(this.vr, fields, this.r));
         PowerMock.verifyAll();
    }
@@ -73,7 +73,7 @@ public class CSDValidatorHelperTest {
         EasyMock.expect(this.r.get(2)).andReturn("name");
 
         PowerMock.replayAll();
-        SizedIterable<CSDFieldPattern> fields = CSDTestHelper.fromCollection(Arrays.asList(CSDTestHelper.getMandatoryField(), CSDTestHelper.getMandatoryField(), CSDTestHelper.getOptionalField()));
+        final SizedIterable<CSDFieldPattern> fields = CSDTestHelper.fromCollection(Arrays.asList(CSDTestHelper.getMandatoryField(), CSDTestHelper.getMandatoryField(), CSDTestHelper.getOptionalField()));
         Assert.assertEquals(3, fields.size());
         Assert.assertEquals(0, this.vh.validateHeader(this.vr, fields, this.r));
         PowerMock.verifyAll();
@@ -85,7 +85,7 @@ public class CSDValidatorHelperTest {
         this.vr.schemaHasTooManyFieldsForRecord(5, this.r);
 
         PowerMock.replayAll();
-        SizedIterable<CSDFieldPattern> fields = CSDTestHelper.fromCollection(Arrays.asList(CSDTestHelper.getMandatoryField(), CSDTestHelper.getMandatoryField(), CSDTestHelper.getOptionalField()));
+        final SizedIterable<CSDFieldPattern> fields = CSDTestHelper.fromCollection(Arrays.asList(CSDTestHelper.getMandatoryField(), CSDTestHelper.getMandatoryField(), CSDTestHelper.getOptionalField()));
         Assert.assertEquals(-1, this.vh.validateRecord(this.vr, fields, this.r, 5));
         PowerMock.verifyAll();
     }
@@ -98,7 +98,7 @@ public class CSDValidatorHelperTest {
         EasyMock.expect(this.r.get(2)).andReturn("name");
 
         PowerMock.replayAll();
-        SizedIterable<CSDFieldPattern> fields = CSDTestHelper.fromCollection(Arrays.asList(CSDTestHelper.getMandatoryField(), CSDTestHelper.getMandatoryField(), CSDTestHelper.getOptionalField()));
+        final SizedIterable<CSDFieldPattern> fields = CSDTestHelper.fromCollection(Arrays.asList(CSDTestHelper.getMandatoryField(), CSDTestHelper.getMandatoryField(), CSDTestHelper.getOptionalField()));
         Assert.assertEquals(3, fields.size());
         Assert.assertEquals(0, this.vh.validateRecord(this.vr, fields, this.r, 5));
         PowerMock.verifyAll();

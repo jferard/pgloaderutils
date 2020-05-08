@@ -41,7 +41,7 @@ public class HeaderRowAnalyzer {
         this(',', '\\', '"');
     }
 
-    public HeaderRowAnalyzer(char delimiter, char escape, char quote) {
+    public HeaderRowAnalyzer(final char delimiter, final char escape, final char quote) {
         this.delimiter = delimiter;
         this.escape = escape;
         this.quote = quote;
@@ -51,25 +51,25 @@ public class HeaderRowAnalyzer {
         this.quoteCounter = new Counter<Character>();
     }
 
-    public CSVFormat analyze(List<String> expectedHeaderStart, String firstReadLine) throws IOException {
+    public CSVFormat analyze(final List<String> expectedHeaderStart, final String firstReadLine) throws IOException {
         if (expectedHeaderStart.size() < 2) {
             throw new IllegalArgumentException();
         }
 
-        List<String> expectedFields = new ArrayList<String>(expectedHeaderStart.size());
+        final List<String> expectedFields = new ArrayList<String>(expectedHeaderStart.size());
 
-        for (String field : expectedHeaderStart) {
+        for (final String field : expectedHeaderStart) {
             expectedFields.add(StringUtils.normalize(field));
         }
 
-        String line = StringUtils.normalize(firstReadLine);
+        final String line = StringUtils.normalize(firstReadLine);
         int curFieldStartIndex = 0;
 
-        Iterator<String> iterator = expectedFields.iterator();
+        final Iterator<String> iterator = expectedFields.iterator();
         assert iterator.hasNext();
 
         String curExpectedField = iterator.next();
-        char firstCharOfCurExpectedField = curExpectedField.charAt(0);
+        final char firstCharOfCurExpectedField = curExpectedField.charAt(0);
         int curFieldFirstLetterIndex = line.indexOf(firstCharOfCurExpectedField, curFieldStartIndex);
 
         if (curFieldFirstLetterIndex == -1) {
@@ -79,14 +79,14 @@ public class HeaderRowAnalyzer {
         while (iterator.hasNext()) {
             // get the index of the first char after cur field, ie the first
             // char of the delimiter block
-            int curFieldDelimiterBlockIndex = this
+            final int curFieldDelimiterBlockIndex = this
                     .getFieldDelimiterIndex(curExpectedField, line, curFieldStartIndex, curFieldFirstLetterIndex);
 
-            String nextExpectedField = iterator.next();
-            char firstCharOfNextExpectedField = nextExpectedField.charAt(0);
+            final String nextExpectedField = iterator.next();
+            final char firstCharOfNextExpectedField = nextExpectedField.charAt(0);
 
             // get the index of the first char of the next field
-            int nextFieldFirstLetterIndex = line.indexOf(firstCharOfNextExpectedField, curFieldDelimiterBlockIndex);
+            final int nextFieldFirstLetterIndex = line.indexOf(firstCharOfNextExpectedField, curFieldDelimiterBlockIndex);
             if (nextFieldFirstLetterIndex == -1) {
                 throw new IOException("Can't find first letter:" + nextExpectedField + " (" + line + ")");
             }
@@ -106,10 +106,10 @@ public class HeaderRowAnalyzer {
 
     }
 
-    private int advanceCurFieldStartIndex(String curExpectedField, String line, int curFieldDelimiterBlockIndex,
-                                          int nextFieldFirstLetterIndex) throws IOException {
+    private int advanceCurFieldStartIndex(final String curExpectedField, final String line, final int curFieldDelimiterBlockIndex,
+                                          final int nextFieldFirstLetterIndex) throws IOException {
         final char maybeDelimiter = line.charAt(curFieldDelimiterBlockIndex);
-        int nextFieldStartIndex;
+        final int nextFieldStartIndex;
         // just a delimiter
         if (nextFieldFirstLetterIndex == curFieldDelimiterBlockIndex + 1) {
             if (Character.isLetterOrDigit(maybeDelimiter)) {
@@ -147,19 +147,19 @@ public class HeaderRowAnalyzer {
         return nextFieldStartIndex;
     }
 
-    private int getFieldDelimiterIndex(String expectedField, String line, int firstIndex,
-                                       int firstLetterIndex) throws IOException {
+    private int getFieldDelimiterIndex(final String expectedField, final String line, final int firstIndex,
+                                       final int firstLetterIndex) throws IOException {
         int delimiterBlockIndex;
         if (firstLetterIndex == firstIndex) {
             delimiterBlockIndex = this
                     .getDelimiterBlockIndex(expectedField, line, expectedField.length(), firstLetterIndex);
         } else if (firstLetterIndex == firstIndex + 1) {
-            char maybeQuote = line.charAt(firstIndex);
+            final char maybeQuote = line.charAt(firstIndex);
             if (Character.isLetterOrDigit(maybeQuote)) {
                 throw new IOException("Missing start of field:" + expectedField + " (" + line + ")");
             }
 
-            int len = this.getLen(expectedField, maybeQuote);
+            final int len = this.getLen(expectedField, maybeQuote);
             delimiterBlockIndex = this.getDelimiterBlockIndex(expectedField, line, len, firstLetterIndex);
 
             for (int i = 0; i < len; i++) {
@@ -184,7 +184,7 @@ public class HeaderRowAnalyzer {
      * @param quote
      * @return the lenght of the field, with two chars per quote
      */
-    private int getLen(String field, char quote) {
+    private int getLen(final String field, final char quote) {
         int len = field.length();
         for (int i = 0; i < field.length(); i++) {
             if (field.charAt(i) == quote) {
@@ -194,13 +194,13 @@ public class HeaderRowAnalyzer {
         return len;
     }
 
-    private int getDelimiterBlockIndex(String expectedField, String line, int len,
-                                       int firstCharIndex) throws IOException {
+    private int getDelimiterBlockIndex(final String expectedField, final String line, final int len,
+                                       final int firstCharIndex) throws IOException {
         float bestDistance = 0f;
         int bestI = 0;
         for (int i = -1; i <= 1; i++) {
             final String foundField = line.substring(firstCharIndex, firstCharIndex + len + i);
-            float distance = (float) org.apache.commons.lang3.StringUtils
+            final float distance = (float) org.apache.commons.lang3.StringUtils
                     .getJaroWinklerDistance(expectedField, foundField);
             if (distance > bestDistance) {
                 bestDistance = distance;
@@ -215,7 +215,7 @@ public class HeaderRowAnalyzer {
         return firstCharIndex + len + bestI;
     }
 
-    public CSVFormat analyze(List<String> expectedHeader, char[] acceptedDelimiters, String firstLine) {
+    public CSVFormat analyze(final List<String> expectedHeader, final char[] acceptedDelimiters, final String firstLine) {
         return null;
     }
 }

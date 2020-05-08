@@ -30,12 +30,12 @@ import java.util.logging.Logger;
 class ExactColumnMatcher<F extends CSDFieldPattern> implements ColumnMatcher<F> {
     private Logger logger;
 
-    ExactColumnMatcher(Logger logger) {
+    ExactColumnMatcher(final Logger logger) {
         this.logger = logger;
     }
 
     @Override
-    public boolean match(F expected, String actual) {
+    public boolean match(final F expected, final String actual) {
         if (expected.isWildCard()) {
             return true;
         }

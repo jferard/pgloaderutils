@@ -50,7 +50,7 @@ public class UTF8Decoder {
 	 */
 	private InputStream is;
 
-	UTF8Decoder(InputStream is) {
+	UTF8Decoder(final InputStream is) {
 		if (is.markSupported()) {
             this.is = is;
         } else {
@@ -81,13 +81,13 @@ public class UTF8Decoder {
 	 */
 	public int readUnicodeValue() throws CharacterCodingException, IOException {
 		this.is.mark(3);
-		int firstByte = this.is.read();
+		final int firstByte = this.is.read();
 		if (firstByte == -1) {
             return -1;
         }
 
 		int unicodeValue = 0;
-		int expectedLen;
+		final int expectedLen;
 		// 1) Lead byte analysis
 		if ((firstByte & Constants.B10000000) == Constants.B00000000) {
 			// b1 = 0b0xxxxxxx
@@ -112,13 +112,13 @@ public class UTF8Decoder {
 
 		// build unicode value
 		for (int i = 1; i < expectedLen; i++) {
-			int trailingByte = this.is.read();
+			final int trailingByte = this.is.read();
 			if (trailingByte == -1) { // abnormal end of trailing bytes
 				this.is.reset();
 				throw new CharacterCodingException();
 			}
 
-			int ci = trailingByte & Constants.B01111111;
+			final int ci = trailingByte & Constants.B01111111;
 			// 0b10xxxxxx & 0b01111111 == 0b00xxxxxx
 			if (ci <= Constants.B00111111) { // UTF-8 trailing byte : 0b10xxxxxx
 				unicodeValue = (unicodeValue << Constants.UNICODE_TRAILING_BYTE_X_BITS)

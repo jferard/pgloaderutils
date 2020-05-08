@@ -41,7 +41,7 @@ public class ByteArraysMatcher {
     private int max;
     private byte[] byteArray;
 
-    public ByteArraysMatcher(Set<byte[]> byteArrays, InputStream is) {
+    public ByteArraysMatcher(final Set<byte[]> byteArrays, final InputStream is) {
         if (byteArrays.isEmpty()) {
             throw new IllegalArgumentException();
         }
@@ -58,7 +58,7 @@ public class ByteArraysMatcher {
 
     private int getRemainingByteArraysMaxLength() {
         int len = 0;
-        for (byte[] byteArray : this.remainingByteArrays) {
+        for (final byte[] byteArray : this.remainingByteArrays) {
             if (byteArray.length > len) {
                 len = byteArray.length;
             }
@@ -73,7 +73,7 @@ public class ByteArraysMatcher {
     public byte[] shortestMatch() throws IOException {
         this.byteArray = null;
         for (int i = 0; i < max; i++) {
-            int c = is.read();
+            final int c = is.read();
             if (c == -1) {
                 break;
             }
@@ -94,7 +94,7 @@ public class ByteArraysMatcher {
     public byte[] longestMatch() throws IOException {
         this.byteArray = null;
         for (int i = 0; i < max; i++) {
-            int c = is.read();
+            final int c = is.read();
             if (c == -1) {
                 break;
             }
@@ -108,17 +108,17 @@ public class ByteArraysMatcher {
         return this.byteArray;
     }
 
-    private void filterByteArraysOnNthByte(int i, byte c) {
-        Iterator<byte[]> it = remainingByteArrays.iterator();
+    private void filterByteArraysOnNthByte(final int i, final byte c) {
+        final Iterator<byte[]> it = remainingByteArrays.iterator();
         while (it.hasNext()) {
-            byte[] bytes = it.next();
+            final byte[] bytes = it.next();
             if (i >= bytes.length || bytes[i] != c) {
                 it.remove();
             }
         }
     }
 
-    private void checkByteArraysMatch(int i) {
+    private void checkByteArraysMatch(final int i) {
         for (final byte[] byteArray : this.remainingByteArrays) {
             if (i == byteArray.length - 1) { // ok jusqu'au dernier byte du ByteArray
                 this.byteArray = byteArray;
@@ -134,7 +134,7 @@ public class ByteArraysMatcher {
         return remainingByteArrays.size() == 0;
     }
 
-    public void mark(InputStream is) {
+    public void mark(final InputStream is) {
         assert is.markSupported();
         is.mark(this.getRemainingByteArraysMaxLength());
     }

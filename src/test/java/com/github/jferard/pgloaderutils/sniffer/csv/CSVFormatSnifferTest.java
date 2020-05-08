@@ -19,6 +19,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.github.jferard.pgloaderutils.sniffer.csv;
 
 import com.google.common.base.Joiner;
@@ -32,8 +33,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
 
-public class CSVLinesSnifferTest {
+import static org.hamcrest.CoreMatchers.either;
+import static org.hamcrest.CoreMatchers.is;
+
+public abstract class CSVFormatSnifferTest {
     private static final Charset ASCII = Charset.forName("US-ASCII");
     private static final Charset UTF8 = Charset.forName("UTF-8");
     private Joiner joiner;
@@ -49,9 +55,10 @@ public class CSVLinesSnifferTest {
      */
     @Test
     public final void testWithOtherChar() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
-        InputStream stream = new ByteArrayInputStream(this.joiner
-                .join("A,B,C", "1,abcd,A-A", "2,efgh,A-B", "3,\"ijk,l\",A-C", "4,mnop,A-D", "5,\"qrs,t\",A-E",
+        final CSVFormatSniffer csvSniffer = this.getStandardSniffer();
+        final InputStream stream = new ByteArrayInputStream(this.joiner
+                .join("A,B,C", "1,abcd,A-A", "2,efgh,A-B", "3,\"ijk,l\",A-C", "4,mnop,A-D",
+                        "5,\"qrs,t\",A-E",
                         "6,\"uvw,x\",A-F").getBytes(ASCII));
 
         csvSniffer.sniff(stream, 1000);
@@ -60,10 +67,10 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void testWithOtherChar2() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
-                BasicCSVConstraints.builder().minFields(3).build());
-        InputStream stream = new ByteArrayInputStream(this.joiner
-                .join("A,B,C", "1,abcd,A-A", "2,efgh,A-B", "3,\"ijk,l\",A-C", "4,mnop,A-D", "5,\"qrs,t\",A-E",
+        final CSVFormatSniffer csvSniffer = this.getFieldsSniffer(3);
+        final InputStream stream = new ByteArrayInputStream(this.joiner
+                .join("A,B,C", "1,abcd,A-A", "2,efgh,A-B", "3,\"ijk,l\",A-C", "4,mnop,A-D",
+                        "5,\"qrs,t\",A-E",
                         "6,\"uvw,x\",A-F").getBytes(ASCII));
 
         csvSniffer.sniff(stream, 1000);
@@ -78,9 +85,10 @@ public class CSVLinesSnifferTest {
      */
     @Test
     public final void test() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
-        InputStream stream = new ByteArrayInputStream(
-                this.joiner.join("Year,Make,Model", "1997,Ford,E350", "2000,Mercury,Cougar").getBytes(ASCII));
+        final CSVFormatSniffer csvSniffer = this.getStandardSniffer();
+        final InputStream stream = new ByteArrayInputStream(
+                this.joiner.join("Year,Make,Model", "1997,Ford,E350", "2000,Mercury,Cougar")
+                        .getBytes(ASCII));
 
         csvSniffer.sniff(stream, 1000);
         Assert.assertEquals(',', (char) csvSniffer.getDelimiter());
@@ -90,12 +98,14 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test2() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
-        InputStream stream = new ByteArrayInputStream(this.joiner
-                .join("Year,Make,Model,Description,Price", "1997,Ford,E350,\"ac, abs, moon\",3000.00",
+        final CSVFormatSniffer csvSniffer = this.getStandardSniffer();
+        final InputStream stream = new ByteArrayInputStream(this.joiner
+                .join("Year,Make,Model,Description,Price",
+                        "1997,Ford,E350,\"ac, abs, moon\",3000.00",
                         "1999,Chevy,\"Venture \"\"Extended Edition\"\"\",\"\",4900.00",
                         "1999,Chevy,\"Venture \"\"Extended Edition, Very Large\"\"\",,5000.00",
-                        "1996,Jeep,Grand Cherokee,\"MUST SELL!\n air, moon roof, loaded\",4799.00").getBytes(ASCII));
+                        "1996,Jeep,Grand Cherokee,\"MUST SELL!\n air, moon roof, loaded\",4799.00")
+                .getBytes(ASCII));
 
         csvSniffer.sniff(stream, 1000);
         Assert.assertEquals(',', (char) csvSniffer.getDelimiter());
@@ -103,13 +113,14 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test2b() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
-                BasicCSVConstraints.builder().minFields(5).build());
-        InputStream stream = new ByteArrayInputStream(this.joiner
-                .join("Year,Make,Model,Description,Price", "1997,Ford,E350,\"ac, abs, moon\",3000.00",
+        final CSVFormatSniffer csvSniffer = this.getFieldsSniffer(5);
+        final InputStream stream = new ByteArrayInputStream(this.joiner
+                .join("Year,Make,Model,Description,Price",
+                        "1997,Ford,E350,\"ac, abs, moon\",3000.00",
                         "1999,Chevy,\"Venture \"\"Extended Edition\"\"\",\"\",4900.00",
                         "1999,Chevy,\"Venture \"\"Extended Edition, Very Large\"\"\",,5000.00",
-                        "1996,Jeep,Grand Cherokee,\"MUST SELL!\n air, moon roof, loaded\",4799.00").getBytes(ASCII));
+                        "1996,Jeep,Grand Cherokee,\"MUST SELL!\n air, moon roof, loaded\",4799.00")
+                .getBytes(ASCII));
 
         csvSniffer.sniff(stream, 1000);
         Assert.assertEquals(',', (char) csvSniffer.getDelimiter());
@@ -119,9 +130,9 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test3() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
-                BasicCSVConstraints.builder().allowedDelimiters(new byte[]{',', ';', '\t', '|'}).build());
-        InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" + ".csv")
+        final CSVFormatSniffer csvSniffer = this.getCommaSemiColonSniffer();
+        final InputStream stream = Resources
+                .getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" + ".csv")
                 .openStream();
         csvSniffer.sniff(stream, 100000);
         Assert.assertEquals(';', (char) csvSniffer.getDelimiter());
@@ -131,8 +142,9 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test3e() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
-        InputStream stream = Resources.getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" + ".csv")
+        final CSVFormatSniffer csvSniffer = this.getStandardSniffer();
+        final InputStream stream = Resources
+                .getResource("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part" + ".csv")
                 .openStream();
         csvSniffer.sniff(stream, 100000);
         Assert.assertEquals(';', (char) csvSniffer.getDelimiter());
@@ -142,11 +154,12 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test3b() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
-                BasicCSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
-        InputStream stream = new ByteArrayInputStream(this.joiner
-                .join("Year	Make	Model	Description	Price", "1997	Ford	E350	moon	3000,00",
-                        "1999	Chevy	Venture		4900,00", "1999	Chevy	Large		5000,00",
+        final CSVFormatSniffer csvSniffer = this.getTabPipeSniffer();
+        final InputStream stream = new ByteArrayInputStream(this.joiner
+                .join("Year	Make	Model	Description	Price",
+                        "1997	Ford	E350	moon	3000,00",
+                        "1999	Chevy	Venture		4900,00",
+                        "1999	Chevy	Large		5000,00",
                         "1996	Jeep	Cherokee	air	4799,00").getBytes(ASCII));
 
         csvSniffer.sniff(stream, 1000);
@@ -157,11 +170,12 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test3c() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
-                BasicCSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
-        InputStream stream = new ByteArrayInputStream(this.joiner
-                .join("Year	Make	Model	Description	Price", "1997	Ford	E350	moon	3000,00",
-                        "1999	Chevy	Venture		4900,00", "1999	Chevy	Large		5000,00",
+        final CSVFormatSniffer csvSniffer = this.getTabPipeSniffer();
+        final InputStream stream = new ByteArrayInputStream(this.joiner
+                .join("Year	Make	Model	Description	Price",
+                        "1997	Ford	E350	moon	3000,00",
+                        "1999	Chevy	Venture		4900,00",
+                        "1999	Chevy	Large		5000,00",
                         "1996	Jeep	Cherokee	air	4799,00").getBytes(UTF8));
 
         csvSniffer.sniff(stream, 1000);
@@ -172,10 +186,10 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void test4() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
-                BasicCSVConstraints.builder().allowedDelimiters(new byte[]{'\t', '|'}).minFields(5).build());
-        InputStream stream = new ByteArrayInputStream(this.joiner
-                .join("Year|Make|Model|Description|Price", "1997|*|E350|moon|3000,00", "1999|*|Venture|d|4900,00",
+        final CSVFormatSniffer csvSniffer = this.getTabPipeSniffer();
+        final InputStream stream = new ByteArrayInputStream(this.joiner
+                .join("Year|Make|Model|Description|Price", "1997|*|E350|moon|3000,00",
+                        "1999|*|Venture|d|4900,00",
                         "1999|*|Large|d|5000,00", "1996|*|Cherokee|air|4799,00").getBytes(UTF8));
 
         csvSniffer.sniff(stream, 1000);
@@ -186,36 +200,51 @@ public class CSVLinesSnifferTest {
 
     @Test
     public final void testDelimiterQuote() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
-        InputStream stream = new ByteArrayInputStream(
-                this.joiner.join("\"a\";b;", "\"a\";b;", "\"a\";b;", "\"a\";b;", "\"a\";b;").getBytes(UTF8));
+        final CSVFormatSniffer csvSniffer = this.getStandardSniffer();
+        final InputStream stream = new ByteArrayInputStream(
+                this.joiner.join("\"a\";b;", "\"a\";b;", "\"a\";b;", "\"a\";b;", "\"a\";b;")
+                        .getBytes(UTF8));
 
         csvSniffer.sniff(stream, 1000);
-        Assert.assertEquals(';', (char) csvSniffer.getDelimiter());
-        Assert.assertEquals('"', (char) csvSniffer.getQuote());
-    }
-
-    @Test
-    public final void testDelimiterQuote2() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
-        InputStream stream = new ByteArrayInputStream(
-                this.joiner.join(";c;\"d\"", ";c;\"d\"", ";c;\"d\"", ";c;\"d\"", ";c;\"d\"").getBytes(UTF8));
-
-        csvSniffer.sniff(stream, 1000);
-        // '"', ';' and '"' may be a quote
-        Assert.assertEquals(';', (char) csvSniffer.getDelimiter());
-        Assert.assertEquals('"', (char) csvSniffer.getQuote());
+        Assert.assertThat(this.delimQuote(csvSniffer),
+                either(is(Arrays.asList(';', '"'))).or(is(Arrays.asList('"', ';'))));
     }
 
     @Test
     public final void testDelimiterQuote3() throws IOException, ParseException {
-        CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(BasicCSVConstraints.builder().build());
-        InputStream stream = new ByteArrayInputStream(
-                this.joiner.join(";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<").getBytes(UTF8));
+        final CSVFormatSniffer csvSniffer = this.getStandardSniffer();
+        final InputStream stream = new ByteArrayInputStream(
+                this.joiner.join(";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<", ";c;<d<")
+                        .getBytes(UTF8));
 
         csvSniffer.sniff(stream, 1000);
         // ';', '<' and ';' may be a quote
-        Assert.assertEquals('<', (char) csvSniffer.getDelimiter());
-        Assert.assertEquals(';', (char) csvSniffer.getQuote());
+        Assert.assertThat(this.delimQuote(csvSniffer),
+                either(is(Arrays.asList(';', '<'))).or(is(Arrays.asList('<', ';'))));
+    }
+
+    @Test
+    public final void testDelimiterQuote2() throws IOException, ParseException {
+        final CSVFormatSniffer csvSniffer = this.getStandardSniffer();
+        final InputStream stream = new ByteArrayInputStream(
+                this.joiner.join(";c;\"d\"", ";c;\"d\"", ";c;\"d\"", ";c;\"d\"", ";c;\"d\"")
+                        .getBytes(UTF8));
+
+        csvSniffer.sniff(stream, 1000);
+        // '"', ';' and '"' may be a quote
+        Assert.assertThat(this.delimQuote(csvSniffer),
+                either(is(Arrays.asList(';', '"'))).or(is(Arrays.asList('"', ';'))));
+    }
+
+    protected abstract CSVFormatSniffer getFieldsSniffer(int i);
+
+    protected abstract CSVFormatSniffer getTabPipeSniffer();
+
+    protected abstract CSVFormatSniffer getCommaSemiColonSniffer();
+
+    protected abstract CSVFormatSniffer getStandardSniffer();
+
+    private List<Character> delimQuote(final CSVFormatSniffer csvSniffer) {
+        return Arrays.asList((char) csvSniffer.getDelimiter(), (char) csvSniffer.getQuote());
     }
 }

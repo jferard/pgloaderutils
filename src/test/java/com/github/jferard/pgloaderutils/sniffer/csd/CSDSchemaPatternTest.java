@@ -34,7 +34,7 @@ import java.util.Collections;
 public class CSDSchemaPatternTest {
     @Test
     public void testEmpty() {
-        CSDSchemaPattern<CSDFieldPattern> s = new CSDSchemaPattern<CSDFieldPattern>(
+        final CSDSchemaPattern<CSDFieldPattern> s = new CSDSchemaPattern<CSDFieldPattern>(
                 Collections.<CSDFieldPattern>emptyList(), false);
         Assert.assertFalse(s.hasOptionalHeader());
         Assert.assertFalse(s.iterator().hasNext());
@@ -44,8 +44,8 @@ public class CSDSchemaPatternTest {
 
     @Test
     public void testOneField() {
-        CSDFieldPattern f = CSDTestHelper.getMandatoryField();
-        CSDSchemaPattern<CSDFieldPattern> s = new CSDSchemaPattern<CSDFieldPattern>(Arrays.asList(f), true);
+        final CSDFieldPattern f = CSDTestHelper.getMandatoryField();
+        final CSDSchemaPattern<CSDFieldPattern> s = new CSDSchemaPattern<CSDFieldPattern>(Arrays.asList(f), true);
         Assert.assertTrue(s.hasOptionalHeader());
         Assert.assertTrue(s.iterator().hasNext());
         Assert.assertEquals(f, s.iterator().next());
@@ -54,8 +54,8 @@ public class CSDSchemaPatternTest {
 
     @Test
     public void testOneStarField() {
-        CSDFieldPattern f = CSDTestHelper.getStarField();
-        CSDSchemaPattern<CSDFieldPattern> s = new CSDSchemaPattern<CSDFieldPattern>(Arrays.asList(f), true);
+        final CSDFieldPattern f = CSDTestHelper.getStarField();
+        final CSDSchemaPattern<CSDFieldPattern> s = new CSDSchemaPattern<CSDFieldPattern>(Arrays.asList(f), true);
         Assert.assertTrue(s.hasOptionalHeader());
         Assert.assertTrue(s.iterator().hasNext());
         Assert.assertEquals(f, s.iterator().next());

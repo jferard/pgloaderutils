@@ -28,7 +28,7 @@ public class BasicDelimiterComputerFactory implements DelimiterComputerFactory {
     private byte[] allowedDelimiters;
     private final int minDelimiters;
 
-    BasicDelimiterComputerFactory(final byte[] allowedDelimiters, int minDelimiters) {
+    BasicDelimiterComputerFactory(final byte[] allowedDelimiters, final int minDelimiters) {
         this.allowedDelimiters = allowedDelimiters;
         this.minDelimiters = minDelimiters;
     }

@@ -36,7 +36,7 @@ public class Counter<T> {
 		this.countByElement = new HashMap<T, Integer>();
 	}
 
-	public void put(T element) {
+	public void put(final T element) {
 		Integer count = this.countByElement.get(element);
 		if (count == null) {
             count = 0;
@@ -46,11 +46,11 @@ public class Counter<T> {
 	}
 
 	public List<T> sortedElements() {
-		List<T> l = new ArrayList<T>(this.countByElement.keySet());
+		final List<T> l = new ArrayList<T>(this.countByElement.keySet());
 		final Map<T, Integer> closedCountByElements = this.countByElement;
 		Collections.sort(l, new Comparator<T>() {
 			@Override
-			public int compare(T o1, T o2) {
+			public int compare(final T o1, final T o2) {
 				return closedCountByElements.get(o1)
 						- closedCountByElements.get(o2);
 			}
@@ -58,8 +58,8 @@ public class Counter<T> {
 		return l;
 	}
 
-	public T maxElementOr(T defaultElement) {
-		List<T> l = this.sortedElements();
+	public T maxElementOr(final T defaultElement) {
+		final List<T> l = this.sortedElements();
 		if (l.isEmpty()) {
             return defaultElement;
         } else {

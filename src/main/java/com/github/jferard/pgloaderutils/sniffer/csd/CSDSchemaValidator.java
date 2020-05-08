@@ -36,12 +36,12 @@ public class CSDSchemaValidator<F extends CSDFieldPattern> {
     private final CSDValidatorHelper<F> validatorHelper;
     private CSDValidationResult<F> result;
 
-    public static <G extends CSDFieldPattern> CSDSchemaValidator<G> create(Logger logger) {
-        CSDValidatorHelper<G> hv = new CSDValidatorHelper<G>(logger, new ExactColumnMatcher(logger));
+    public static <G extends CSDFieldPattern> CSDSchemaValidator<G> create(final Logger logger) {
+        final CSDValidatorHelper<G> hv = new CSDValidatorHelper<G>(logger, new ExactColumnMatcher(logger));
         return new CSDSchemaValidator<G>(logger, hv);
     }
 
-    public CSDSchemaValidator(Logger logger, CSDValidatorHelper<F> validatorHelper) {
+    public CSDSchemaValidator(final Logger logger, final CSDValidatorHelper<F> validatorHelper) {
         this.logger = logger;
         this.validatorHelper = validatorHelper;
     }
@@ -51,11 +51,11 @@ public class CSDSchemaValidator<F extends CSDFieldPattern> {
      * @param parser the CSVCRecord provider
      * @return a validation result
      */
-    public CSDValidationResult<F> validate(CSDSchema<F> schema, CSVParser parser) {
+    public CSDValidationResult<F> validate(final CSDSchema<F> schema, final CSVParser parser) {
         this.result = new CSDValidationResult<F>(logger, schema);
-        Iterator<CSVRecord> it = parser.iterator();
+        final Iterator<CSVRecord> it = parser.iterator();
         if (it.hasNext()) {
-            CSVRecord firstRecord = it.next();
+            final CSVRecord firstRecord = it.next();
             this.validateHeaderOrFirstRecord(schema, firstRecord);
             int i=1;
             while (it.hasNext()) {
@@ -68,10 +68,10 @@ public class CSDSchemaValidator<F extends CSDFieldPattern> {
         return this.result;
     }
 
-    private void validateHeaderOrFirstRecord(CSDSchema<F> schema, CSVRecord firstRecord) {
-        int headerErrorCount = this.validatorHelper.validateHeader(this.result, schema, firstRecord);
+    private void validateHeaderOrFirstRecord(final CSDSchema<F> schema, final CSVRecord firstRecord) {
+        final int headerErrorCount = this.validatorHelper.validateHeader(this.result, schema, firstRecord);
         if (headerErrorCount > 1 && schema.hasOptionalHeader()) {
-            CSDValidationResult<F> tempResult = new CSDValidationResult<F>(this.logger, schema);
+            final CSDValidationResult<F> tempResult = new CSDValidationResult<F>(this.logger, schema);
             this.validatorHelper.validateRecord(tempResult, schema, firstRecord, 1);
             if (tempResult.isOk()) {
                 this.result = tempResult;

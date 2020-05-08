@@ -44,7 +44,7 @@ public class BytesArrayMatcherTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testEmptySet() throws IOException {
-		ByteArraysMatcher bam = new ByteArraysMatcher(
+		final ByteArraysMatcher bam = new ByteArraysMatcher(
 				Collections.<byte[]> emptySet(), this.getInputStream("",
 						BOMSniffer.UTF_8));
 		bam.shortestMatch();
@@ -52,70 +52,70 @@ public class BytesArrayMatcherTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testEmptyByteArray() throws IOException {
-		Set<byte[]> s = new HashSet<byte[]>();
+		final Set<byte[]> s = new HashSet<byte[]>();
 		s.add(new byte[] {});
-		ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
+		final ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
 				"", BOMSniffer.UTF_8));
 		Assert.assertEquals(null, bam.shortestMatch());
 	}
 
 	@Test
 	public void testEmptyString() throws IOException {
-		Set<byte[]> s = new HashSet<byte[]>();
+		final Set<byte[]> s = new HashSet<byte[]>();
 		s.add(new byte[] { 'a' });
-		ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
+		final ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
 				"", BOMSniffer.UTF_8));
 		Assert.assertEquals(null, bam.shortestMatch());
 	}
 
 	@Test
 	public void testMatchingString() throws IOException {
-		Set<byte[]> s = new HashSet<byte[]>();
-		byte[] bs = new byte[] { 'a' };
+		final Set<byte[]> s = new HashSet<byte[]>();
+		final byte[] bs = new byte[] { 'a' };
 		s.add(bs);
-		ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
+		final ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
 				"a", BOMSniffer.UTF_8));
 		Assert.assertArrayEquals(bs, bam.shortestMatch());
 	}
 
 	@Test
 	public void testMatchingString2() throws IOException {
-		Set<byte[]> s = new HashSet<byte[]>();
-		byte[] bs = new byte[] { 'a' };
-		byte[] bs2 = new byte[] { 'a', 'a' };
+		final Set<byte[]> s = new HashSet<byte[]>();
+		final byte[] bs = new byte[] { 'a' };
+		final byte[] bs2 = new byte[] { 'a', 'a' };
 		s.add(bs);
 		s.add(bs2);
-		ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
+		final ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
 				"aa", BOMSniffer.UTF_8));
 		Assert.assertArrayEquals(bs, bam.shortestMatch());
 	}
 	
 	@Test
 	public void testMatchingString3() throws IOException {
-		Set<byte[]> s = new HashSet<byte[]>();
-		byte[] bs = new byte[] { 'a' };
-		byte[] bs2 = new byte[] { 'a', 'a' };
+		final Set<byte[]> s = new HashSet<byte[]>();
+		final byte[] bs = new byte[] { 'a' };
+		final byte[] bs2 = new byte[] { 'a', 'a' };
 		s.add(bs);
 		s.add(bs2);
-		ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
+		final ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
 				"aaTEST", BOMSniffer.UTF_8));
 		Assert.assertArrayEquals(bs2, bam.longestMatch());
 	}
 
 	@Test
 	public void testNotMatchingString() throws IOException {
-		Set<byte[]> s = new HashSet<byte[]>();
-		byte[] bs = new byte[] { 'a' };
-		byte[] bs2 = new byte[] { 'a', 'a' };
+		final Set<byte[]> s = new HashSet<byte[]>();
+		final byte[] bs = new byte[] { 'a' };
+		final byte[] bs2 = new byte[] { 'a', 'a' };
 		s.add(bs);
 		s.add(bs2);
-		ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
+		final ByteArraysMatcher bam = new ByteArraysMatcher(s, this.getInputStream(
 				"b", BOMSniffer.UTF_8));
 		Assert.assertNull(bam.shortestMatch());
 	}
 
-	InputStream getInputStream(String s, Charset cs) {
-		byte[] bytes = s.getBytes(cs);
+	InputStream getInputStream(final String s, final Charset cs) {
+		final byte[] bytes = s.getBytes(cs);
 		return new ByteArrayInputStream(bytes);
 	}
 

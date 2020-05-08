@@ -59,42 +59,42 @@ public class CSDSchemaSnifferTest {
 
     @Test
     public void sniffNoLine() throws Exception {
-        CSVParser p = CSVFormat.RFC4180.parse(new StringReader(""));
+        final CSVParser p = CSVFormat.RFC4180.parse(new StringReader(""));
 
         PowerMock.replayAll();
-        CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
+        final CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
         Assert.assertEquals(null, s);
         PowerMock.verifyAll();
     }
 
     @Test
     public void sniffBadHeader1() throws Exception {
-        CSVParser p = CSVFormat.RFC4180.parse(new StringReader("a,b,c\n1,2,3\n4,5,6"));
+        final CSVParser p = CSVFormat.RFC4180.parse(new StringReader("a,b,c\n1,2,3\n4,5,6"));
 
         EasyMock.expect(this.vh.validateHeader(EasyMock.isA(CSDValidationResult.class), EasyMock.eq(this.sp), EasyMock.isA(CSVRecord.class))).andReturn(10);
         EasyMock.expect(this.sp.hasOptionalHeader()).andReturn(false);
 
         PowerMock.replayAll();
-        CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
+        final CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
         Assert.assertEquals(null, s);
         PowerMock.verifyAll();
     }
 
     @Test
     public void sniffBadHeader2() throws Exception {
-        CSVParser p = CSVFormat.RFC4180.parse(new StringReader("a,b,c\n1,2,3\n4,5,6"));
+        final CSVParser p = CSVFormat.RFC4180.parse(new StringReader("a,b,c\n1,2,3\n4,5,6"));
 
         EasyMock.expect(this.vh.validateHeader(EasyMock.isA(CSDValidationResult.class), EasyMock.eq(this.sp), EasyMock.isA(CSVRecord.class))).andReturn(-1);
 
         PowerMock.replayAll();
-        CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
+        final CSDSchema<CSDFieldPattern> s = this.sniffer.sniff(this.sp, p, 10);
         Assert.assertEquals(null, s);
         PowerMock.verifyAll();
     }
 
     @Test
     public void sniffGoodHeader() throws Exception {
-        CSVParser p = CSVFormat.RFC4180.parse(new StringReader("a,b,c\n1,2,3\n4,5,6"));
+        final CSVParser p = CSVFormat.RFC4180.parse(new StringReader("a,b,c\n1,2,3\n4,5,6"));
 
         EasyMock.expect(this.vh.validateHeader(EasyMock.isA(CSDValidationResult.class), EasyMock.eq(this.sp), EasyMock.isA(CSVRecord.class))).andReturn(0);
         EasyMock.expect(this.vh.validateRecord(EasyMock.isA(CSDValidationResult.class), EasyMock.eq(this.sp), EasyMock.isA(CSVRecord.class), EasyMock.eq(1))).andReturn(0);
@@ -102,7 +102,7 @@ public class CSDSchemaSnifferTest {
         EasyMock.expect(this.sp.newSchema(EasyMock.eq(this.fy), EasyMock.isA(CSVRecord.class))).andReturn(this.s);
 
         PowerMock.replayAll();
-        CSDSchema<CSDFieldPattern> s2 = this.sniffer.sniff(this.sp, p, 10);
+        final CSDSchema<CSDFieldPattern> s2 = this.sniffer.sniff(this.sp, p, 10);
         Assert.assertEquals(s, s2);
         PowerMock.verifyAll();
     }

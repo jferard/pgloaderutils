@@ -46,12 +46,12 @@ class BasicDelimiterComputer implements ByteComputer {
     private final List<Byte> keptDelimiters;
     private byte[] allowedDelimiters;
 
-    BasicDelimiterComputer(final List<Line> lines, final byte[] allowedDelimiters, int minDelimiters) {
+    BasicDelimiterComputer(final List<Line> lines, final byte[] allowedDelimiters, final int minDelimiters) {
         this.lines = lines;
         this.allowedDelimiters = allowedDelimiters;
         this.minDelimiters = minDelimiters;
 
-        this.keptDelimiters = CSVFormatSniffer.asNewList(allowedDelimiters);
+        this.keptDelimiters = ScoreUtil.asNewList(allowedDelimiters);
         this.delimCountByLine = new int[CSVFormatSniffer.ASCII_BYTE_COUNT][lines.size()];
         this.variances = new double[CSVFormatSniffer.ASCII_BYTE_COUNT];
         this.roundedMeans = new int[CSVFormatSniffer.ASCII_BYTE_COUNT];

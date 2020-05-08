@@ -45,12 +45,12 @@ class StreamParser {
         this.curLine = new Line(this.size);
     }
 
-    private boolean isNotSecondPartOfEOL(int c) {
+    private boolean isNotSecondPartOfEOL(final int c) {
         return !(c == LF && this.lastEOLChar == CR);
     }
 
     public Line getNextLine() throws IOException {
-        Line curLine = new Line(this.size);
+        final Line curLine = new Line(this.size);
         int c = this.is.read();
 
         if (c == -1) {

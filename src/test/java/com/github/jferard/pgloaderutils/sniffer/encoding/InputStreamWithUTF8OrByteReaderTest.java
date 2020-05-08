@@ -40,7 +40,7 @@ public class InputStreamWithUTF8OrByteReaderTest {
 
 	@Before
 	public void setUp() {
-		ByteMapProvider bmp = new ByteMapProvider();
+		final ByteMapProvider bmp = new ByteMapProvider();
 		this.iso = Charset.forName("ISO-8859-15");
 		this.cbuf = new char[100];
 		this.cs = bmp.get(this.iso);
@@ -49,7 +49,7 @@ public class InputStreamWithUTF8OrByteReaderTest {
 	@Test
 	public final void testIsoFalse3Bytes() throws IOException {
 		final String s = "é";
-		InputStreamUTF8OrByteCharsetReader r = this.getReaderFromString(s,
+		final InputStreamUTF8OrByteCharsetReader r = this.getReaderFromString(s,
 				this.iso);
 		Assert.assertEquals(1, r.read(this.cbuf, 0, 7));
 		Assert.assertEquals("é", new String(this.cbuf, 0, 1));

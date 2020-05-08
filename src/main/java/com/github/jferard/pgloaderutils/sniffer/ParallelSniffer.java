@@ -30,15 +30,15 @@ import java.text.ParseException;
 public class ParallelSniffer implements Sniffer {
 	private Sniffer[] sniffers;
 
-	public ParallelSniffer(Sniffer... sniffers) {
+	public ParallelSniffer(final Sniffer... sniffers) {
 		this.sniffers = sniffers;
 	}
 
 	@Override
-	public void sniff(InputStream inputStream, final int size) throws IOException {
+	public void sniff(final InputStream inputStream, final int size) throws IOException {
 		final int length = this.sniffers.length;
-		PipedOutputStream[] pipedOutputStreams = new PipedOutputStream[length];
-		Thread[] threads = new Thread[length];
+		final PipedOutputStream[] pipedOutputStreams = new PipedOutputStream[length];
+		final Thread[] threads = new Thread[length];
 
 		for (int i = 0; i < length; i++) {
 			final Sniffer sniffer = this.sniffers[i];
@@ -51,9 +51,9 @@ public class ParallelSniffer implements Sniffer {
 				public void run() {
 					try {
 						sniffer.sniff(pipedInputStream, size);
-					} catch (IOException e) {
+					} catch (final IOException e) {
 						e.printStackTrace();
-					} catch (ParseException e) {
+					} catch (final ParseException e) {
 						e.printStackTrace();
 					}
 				}
@@ -77,7 +77,7 @@ public class ParallelSniffer implements Sniffer {
 			for (int i = 0; i < length; i++) {
 				threads[i].join();
 			}
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

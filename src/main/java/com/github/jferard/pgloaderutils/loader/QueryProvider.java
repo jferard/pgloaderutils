@@ -36,20 +36,20 @@ public class QueryProvider {
      * @param valueByKey the map key->value
      * @return the query
      */
-    public String newQuery(String template, Map<String, String> valueByKey) {
-        StringBuilder queryBuilder = new StringBuilder();
+    public String newQuery(final String template, final Map<String, String> valueByKey) {
+        final StringBuilder queryBuilder = new StringBuilder();
 
         int lastJ = 0;
         int i = template.indexOf('{');
         while (i >= 0) {
-            int j = template.indexOf('}', i);
+            final int j = template.indexOf('}', i);
             if (j == -1) {
                 throw new IllegalStateException(template);
             }
-            String before = template.substring(lastJ, i);
-            String key = template.substring(i+1, j);
+            final String before = template.substring(lastJ, i);
+            final String key = template.substring(i+1, j);
             queryBuilder.append(before);
-            String value = valueByKey.get(key);
+            final String value = valueByKey.get(key);
             if (value == null) {
                 throw new IllegalStateException(template+" % "+valueByKey+" missing "+key);
             }

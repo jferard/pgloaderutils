@@ -28,8 +28,8 @@ import java.nio.charset.Charset;
 public class ByteMapProvider {
 	public ByteMapProvider() {}
 	
-	public char[] get(Charset charset) {
-		ByteBuffer byteBuffer = ByteBuffer.allocate(256);
+	public char[] get(final Charset charset) {
+		final ByteBuffer byteBuffer = ByteBuffer.allocate(256);
 		for (int c = 0; c<256; c++) {
 			byteBuffer.put((byte) c);
 		}

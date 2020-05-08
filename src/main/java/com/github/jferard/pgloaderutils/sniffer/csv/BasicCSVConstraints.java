@@ -37,44 +37,44 @@ public class BasicCSVConstraints {
 	private final byte[] allowedEscapes;
 	private final byte[] tab;
 
-	public static CSVConstraintsBuilder builder() {
-		return new CSVConstraintsBuilder();
+	public static BasicCSVConstraintsBuilder builder() {
+		return new BasicCSVConstraintsBuilder();
 	}
 
-	public static CSVConstraintsBuilder basicBuilder() {
-		return new CSVConstraintsBuilder()
+	public static BasicCSVConstraintsBuilder basicBuilder() {
+		return new BasicCSVConstraintsBuilder()
 				.allowedDelimiters(new byte[] { ',', ';', '\t', '|' })
 				.allowedQuotes(new byte[] { '"', '\'' })
 				.allowedEscapes(new byte[] { '\\' }).minFields(2);
 	}
 
-	BasicCSVConstraints(byte[] allowedDelimiters, byte[] allowedQuotes,
-						byte[] allowedEscapes, int minFields) {
+	BasicCSVConstraints(final byte[] allowedDelimiters, final byte[] allowedQuotes,
+						final byte[] allowedEscapes, final int minFields) {
 		this.allowedDelimiters = allowedDelimiters;
 		this.allowedQuotes = allowedQuotes;
 		this.allowedEscapes = allowedEscapes;
 		this.minFields = minFields;
 		this.tab = new byte[ASCII_CHAR_COUNT];
-		for (int d : this.allowedDelimiters) {
+		for (final int d : this.allowedDelimiters) {
 			this.tab[d] |= BasicCSVConstraints.DELIMITER;
 		}
-		for (int q : this.allowedQuotes) {
+		for (final int q : this.allowedQuotes) {
 			this.tab[q] |= BasicCSVConstraints.QUOTE;
 		}
-		for (int e : this.allowedQuotes) {
+		for (final int e : this.allowedQuotes) {
 			this.tab[e] |= BasicCSVConstraints.ESCAPE;
 		}
 	}
 
-	public boolean isAllowedDelimiter(int c) {
+	public boolean isAllowedDelimiter(final int c) {
 		return (this.tab[c] & BasicCSVConstraints.DELIMITER) != 0;
 	}
 
-	public boolean isAllowedQuote(int c) {
+	public boolean isAllowedQuote(final int c) {
 		return (this.tab[c] & BasicCSVConstraints.QUOTE) != 0;
 	}
 
-	public boolean isAllowedEscape(int c) {
+	public boolean isAllowedEscape(final int c) {
 		return (this.tab[c] & BasicCSVConstraints.ESCAPE) != 0;
 	}
 

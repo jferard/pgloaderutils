@@ -37,38 +37,38 @@ public class CSDValidationResult<F extends CSDFieldPattern> implements Iterable<
     private Logger logger;
     private SizedIterable<F> schemaPattern;
 
-    public CSDValidationResult(Logger logger, SizedIterable<F> schemaPattern) {
+    public CSDValidationResult(final Logger logger, final SizedIterable<F> schemaPattern) {
         this.logger = logger;
         this.schemaPattern = schemaPattern;
         this.errors = new ArrayList<CSDValidationError>(1000);
     }
 
     public void noLine() {
-        String msg = "No available line.";
+        final String msg = "No available line.";
         this.errors.add(new CSDValidationError(0, CSDValidationError.Type.NO_AVAILABLE_LINE, msg));
         this.logger.severe("Line 0: "+ msg);
     }
 
-    public void schemaHasTooManyFieldsForRecord(int line, CSVRecord record) {
-        String msg = "The schema pattern (" + this.schemaPattern + ") has too many fields for the record " + record + ".";
+    public void schemaHasTooManyFieldsForRecord(final int line, final CSVRecord record) {
+        final String msg = "The schema pattern (" + this.schemaPattern + ") has too many fields for the record " + record + ".";
         this.errors.add(new CSDValidationError(line, CSDValidationError.Type.TOO_MANY_LINES_FOR_RECORD, msg));
         this.logger.severe("Line "+line+": "+ msg);
     }
 
-    public void incorrectValue(int line, String value, F field) {
-        String msg = "The value '" + value + "' does not match with the field format '" + field + "'.";
+    public void incorrectValue(final int line, final String value, final F field) {
+        final String msg = "The value '" + value + "' does not match with the field format '" + field + "'.";
         this.errors.add(new CSDValidationError(line, CSDValidationError.Type.INCORRECT_VALUE, msg));
         this.logger.severe("Line "+line+": "+msg);
     }
 
-    public void schemaHasTooManyFieldsForHeader(CSVRecord firstRecord) {
-        String msg = "The schema pattern (" + this.schemaPattern + ") has too many fields for the first record " + firstRecord + ".";
+    public void schemaHasTooManyFieldsForHeader(final CSVRecord firstRecord) {
+        final String msg = "The schema pattern (" + this.schemaPattern + ") has too many fields for the first record " + firstRecord + ".";
         this.errors.add(new CSDValidationError(1, CSDValidationError.Type.TOO_MANY_LINES_FOR_FIRST_RECORD, msg));
         this.logger.severe("Line 1: "+ msg);
     }
 
-    public void incorrectColumnName(F field, String value) {
-        String msg = "The column name read '" + value + "' does not match the schema : '"+value + "'.";
+    public void incorrectColumnName(final F field, final String value) {
+        final String msg = "The column name read '" + value + "' does not match the schema : '"+value + "'.";
         this.errors.add(new CSDValidationError(1, CSDValidationError.Type.INCORRECT_COLUMN_NAME, msg));
         this.logger.severe("Line 1: "+ msg);
     }
@@ -78,13 +78,13 @@ public class CSDValidationResult<F extends CSDFieldPattern> implements Iterable<
     }
 
     public void missingHeader() {
-        String msg = "The first line values matches, but the header is missing.";
+        final String msg = "The first line values matches, but the header is missing.";
         this.errors.add(new CSDValidationError(1, CSDValidationError.Type.MISSING_HEADER, msg));
         this.logger.severe("Line 1: "+msg);
     }
 
     public void badHeader() {
-        String msg = "The header is not good.";
+        final String msg = "The header is not good.";
         this.errors.add(new CSDValidationError(1, CSDValidationError.Type.BAD_HEADER, msg));
         this.logger.severe("Line 1: "+msg);
     }

@@ -32,14 +32,14 @@ class FlexibleColumnMatcher<F extends CSDFieldPattern> implements ColumnMatcher<
     private CSDUtil util;
     private int precision;
 
-    public FlexibleColumnMatcher(Logger logger, CSDUtil util, int precision) {
+    public FlexibleColumnMatcher(final Logger logger, final CSDUtil util, final int precision) {
         this.logger = logger;
         this.util = util;
         this.precision = precision;
     }
 
     @Override
-    public boolean match(F expected, String actual) {
+    public boolean match(final F expected, final String actual) {
         if (expected.isWildCard()) {
             return true;
         }

@@ -46,7 +46,7 @@ public class CSDValidationResultTest {
     @Test
     public void testEmpty() {
         PowerMock.replayAll();
-        CSDValidationResult<CSDFieldPattern> vr = new CSDValidationResult<CSDFieldPattern>(logger, sp);
+        final CSDValidationResult<CSDFieldPattern> vr = new CSDValidationResult<CSDFieldPattern>(logger, sp);
 
 
         Assert.assertEquals(0, vr.errorCount());
@@ -59,7 +59,7 @@ public class CSDValidationResultTest {
     public void testBunchOfErrors() {
 
         PowerMock.replayAll();
-        CSDValidationResult<CSDFieldPattern> vr = new CSDValidationResult<CSDFieldPattern>(logger, sp);
+        final CSDValidationResult<CSDFieldPattern> vr = new CSDValidationResult<CSDFieldPattern>(logger, sp);
         vr.noLine();
         vr.badHeader();
         vr.incorrectColumnName(CSDTestHelper.namedField("a"), "b");
@@ -71,7 +71,7 @@ public class CSDValidationResultTest {
         Assert.assertEquals(7, vr.errorCount());
         Assert.assertFalse(vr.isOk());
 
-        Iterator<CSDValidationError> it = vr.iterator();
+        final Iterator<CSDValidationError> it = vr.iterator();
         for (int i = 0; i<vr.errorCount(); i++) {
             Assert.assertTrue(it.hasNext());
             Assert.assertNotNull(it.next());

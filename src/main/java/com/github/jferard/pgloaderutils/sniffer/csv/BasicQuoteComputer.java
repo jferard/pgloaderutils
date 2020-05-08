@@ -32,17 +32,17 @@ public class BasicQuoteComputer implements ByteComputer {
     private List<Line> lines;
     private final List<Byte> keptQuotes;
 
-    public BasicQuoteComputer(final List<Line> lines, byte delimiter, final byte[] allowedQuotes) {
+    public BasicQuoteComputer(final List<Line> lines, final byte delimiter, final byte[] allowedQuotes) {
         this.lines = lines;
         this.delimiter = delimiter;
-        keptQuotes = CSVFormatSniffer.asNewList(allowedQuotes);
+        keptQuotes = ScoreUtil.asNewList(allowedQuotes);
     }
 
     @Override
     public byte compute() {
         final List<Part> parts = getParts();
         final int[] quoteScore = getQuoteScore(parts);
-        byte max = getBestQuote(quoteScore);
+        final byte max = getBestQuote(quoteScore);
         // is the best quote enough?
         if (5 * quoteScore[max] >= parts.size()) {
             return max;
@@ -59,7 +59,7 @@ public class BasicQuoteComputer implements ByteComputer {
         return parts;
     }
 
-    private List<Part> split(Line line) {
+    private List<Part> split(final Line line) {
         final List<Part> parts = line.asParts(this.delimiter);
         for (final Part part : parts) {
             part.trimSpaces();
@@ -67,7 +67,7 @@ public class BasicQuoteComputer implements ByteComputer {
         return parts;
     }
 
-    private int[] getQuoteScore(List<Part> parts) {
+    private int[] getQuoteScore(final List<Part> parts) {
         final int[] quoteScore = new int[CSVFormatSniffer.ASCII_BYTE_COUNT];
         for (final byte q : keptQuotes) {
             quoteScore[q] = getQuoteScoreForByte(parts, q);
@@ -75,16 +75,16 @@ public class BasicQuoteComputer implements ByteComputer {
         return quoteScore;
     }
 
-    private int getQuoteScoreForByte(List<Part> parts, byte q) {
+    private int getQuoteScoreForByte(final List<Part> parts, final byte q) {
         int quoteScore = 0;
         for (final Part part : parts) {
-            Part.QuoteType quoteType = part.quoteType(q);
+            final Part.QuoteType quoteType = part.quoteType(q);
             quoteScore += getBonus(quoteType);
         }
         return quoteScore;
     }
 
-    private int getBonus(Part.QuoteType quoteType) {
+    private int getBonus(final Part.QuoteType quoteType) {
         final int bonus;
         switch (quoteType) {
             case LEFT:

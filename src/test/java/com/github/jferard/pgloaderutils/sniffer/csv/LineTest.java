@@ -37,12 +37,12 @@ public class LineTest {
 
 	@Test
 	public final void test() {
-		Line line = new Line(1);
-		for (byte b : "a|b|c".getBytes(CS)) {
+		final Line line = new Line(1);
+		for (final byte b : "a|b|c".getBytes(CS)) {
             line.append(b);
         }
 		Assert.assertEquals(2, line.getCount(PIPE));
-		List<Part> parts = line.asParts(PIPE);
+		final List<Part> parts = line.asParts(PIPE);
 		Assert.assertEquals(3, parts.size());
 		Assert.assertEquals('a', parts.get(0).getFirstChar());
 		Assert.assertEquals('a', parts.get(0).getLastChar());
@@ -54,12 +54,12 @@ public class LineTest {
 	
 	@Test
 	public final void test2() {
-		Line line = new Line(1);
-		for (byte b : "a|b|c".getBytes(CS)) {
+		final Line line = new Line(1);
+		for (final byte b : "a|b|c".getBytes(CS)) {
             line.append(b);
         }
 		Assert.assertEquals(0, line.getCount(COMMA));
-		List<Part> parts = line.asParts(COMMA);
+		final List<Part> parts = line.asParts(COMMA);
 		Assert.assertEquals(1, parts.size());
 		Assert.assertEquals('a', parts.get(0).getFirstChar());
 		Assert.assertEquals('c', parts.get(0).getLastChar());

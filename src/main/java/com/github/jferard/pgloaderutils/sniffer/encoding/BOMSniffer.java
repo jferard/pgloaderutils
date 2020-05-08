@@ -57,15 +57,15 @@ public class BOMSniffer {
      * @return the charset found from BOM, null if none
      * @throws IOException
      */
-    public static Charset getCharset(InputStream is) throws IOException {
+    public static Charset getCharset(final InputStream is) throws IOException {
         if (!is.markSupported()) {
             throw new IllegalArgumentException();
         }
 
-        BOMSniffer sniffer = BOMSniffer.create();
-        ByteArraysMatcher matcher = sniffer.createMatcher(is);
+        final BOMSniffer sniffer = BOMSniffer.create();
+        final ByteArraysMatcher matcher = sniffer.createMatcher(is);
         matcher.mark(is);
-        byte[] bom = matcher.longestMatch();
+        final byte[] bom = matcher.longestMatch();
         is.reset();
         if (bom != null) {
             is.skip(bom.length);
@@ -100,15 +100,15 @@ public class BOMSniffer {
 
     private final Map<byte[], Charset> charsetByBOM;
 
-    BOMSniffer(Map<byte[], Charset> charsetByBOM) {
+    BOMSniffer(final Map<byte[], Charset> charsetByBOM) {
         this.charsetByBOM = charsetByBOM;
     }
 
-    private ByteArraysMatcher createMatcher(InputStream is) {
+    private ByteArraysMatcher createMatcher(final InputStream is) {
         return new ByteArraysMatcher(charsetByBOM.keySet(), is);
     }
 
-    private Charset getCharset(byte[] bom) {
+    private Charset getCharset(final byte[] bom) {
         return this.charsetByBOM.get(bom);
     }
 }

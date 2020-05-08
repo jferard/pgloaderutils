@@ -48,7 +48,7 @@ public abstract class OpenableReader extends Reader {
      *
      * @param e
      */
-    public void setException(IOException e) {
+    public void setException(final IOException e) {
 		this.ioException = e;
 	}
 	

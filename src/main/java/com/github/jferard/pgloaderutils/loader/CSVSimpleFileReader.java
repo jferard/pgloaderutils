@@ -57,7 +57,7 @@ public class CSVSimpleFileReader extends OpenableReader {
      * @param mbStep the step for log entries
      * @throws IOException if an I/O error occurs
      */
-    public CSVSimpleFileReader(Reader reader, Logger logger, int mbStep) throws IOException {
+    public CSVSimpleFileReader(final Reader reader, final Logger logger, final int mbStep) throws IOException {
         this.reader = reader;
         this.logger = logger;
         this.mbStep = mbStep;
@@ -87,7 +87,7 @@ public class CSVSimpleFileReader extends OpenableReader {
     }
 
     @Override
-    public int read(char[] cbuf, int off, int len) throws IOException {
+    public int read(final char[] cbuf, final int off, final int len) throws IOException {
         return this.modifiedStreamReader.read(cbuf, off, len);
     }
 

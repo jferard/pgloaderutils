@@ -45,10 +45,10 @@ public class ParallelSnifferTest {
 
 	@Test
 	public final void test() throws IOException {
-		CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
+		final CSVFormatSniffer csvSniffer = CSVFormatSniffer.createBasic(
 				BasicCSVConstraints.builder().minFields(5).build());
-		EncodingSniffer encodingSniffer = new EncodingSniffer();
-		ParallelSniffer parallelSniffer = new ParallelSniffer(csvSniffer,
+		final EncodingSniffer encodingSniffer = new EncodingSniffer();
+		final ParallelSniffer parallelSniffer = new ParallelSniffer(csvSniffer,
 				encodingSniffer);
 
 		final byte[] bytes = this.joiner
@@ -58,7 +58,7 @@ public class ParallelSnifferTest {
 						"1999,Chevy,\"Venture \"\"Extended Edition, Very Large\"\"\",,5000.00",
 						"1996,Jeep,Grand Cherokee,\"MUST SELL!\n air, moon roof, loaded\",4799.00")
 				.getBytes(ASCII);
-		InputStream stream = new ByteArrayInputStream(bytes);
+		final InputStream stream = new ByteArrayInputStream(bytes);
 
 		parallelSniffer.sniff(stream, 1000);
 		Assert.assertEquals(',', (char) csvSniffer.getDelimiter());

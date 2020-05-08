@@ -54,8 +54,8 @@ public class BOMSnifferTest {
         this.test_aux(BOMSniffer.UTF_8, BOMSniffer.UTF_8_BOM);
     }
 
-    private void test_aux(Charset cs, byte[] bom) throws IOException {
-        InputStream is = this.getInputStream("test", cs, bom);
+    private void test_aux(final Charset cs, final byte[] bom) throws IOException {
+        final InputStream is = this.getInputStream("test", cs, bom);
         Assert.assertEquals(cs, BOMSniffer.getCharset(is));
         Assert.assertEquals("test", this.getString(is, cs));
     }
@@ -68,11 +68,11 @@ public class BOMSnifferTest {
      * @param bom a bom
      * @return the bytes: bom + encoded string in charset
      */
-    InputStream getInputStream(String s, Charset cs, byte[] bom) {
-        byte[] bytes = s.getBytes(cs);
-        int bomLen = bom.length;
-        int bytesLen = bytes.length;
-        byte[] newBytes = new byte[bomLen + bytesLen];
+    InputStream getInputStream(final String s, final Charset cs, final byte[] bom) {
+        final byte[] bytes = s.getBytes(cs);
+        final int bomLen = bom.length;
+        final int bytesLen = bytes.length;
+        final byte[] newBytes = new byte[bomLen + bytesLen];
         System.arraycopy(bom, 0, newBytes, 0, bomLen);
         System.arraycopy(bytes, 0, newBytes, bomLen, bytesLen);
         return new ByteArrayInputStream(newBytes);
@@ -85,12 +85,12 @@ public class BOMSnifferTest {
      * @return the string
      * @throws IOException if an I/O error occurs
      */
-    String getString(InputStream is, Charset cs) throws IOException {
-        Reader reader = new InputStreamReader(is, cs);
-        StringBuilder builder = new StringBuilder();
-        char[] chars = new char[100];
+    String getString(final InputStream is, final Charset cs) throws IOException {
+        final Reader reader = new InputStreamReader(is, cs);
+        final StringBuilder builder = new StringBuilder();
+        final char[] chars = new char[100];
         while (true) {
-            int charsRead = reader.read(chars, 0, chars.length);
+            final int charsRead = reader.read(chars, 0, chars.length);
             if (charsRead == -1) {
                 break;
             }

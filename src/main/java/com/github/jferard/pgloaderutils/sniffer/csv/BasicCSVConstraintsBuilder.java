@@ -25,7 +25,7 @@ package com.github.jferard.pgloaderutils.sniffer.csv;
  * The main constraints are : - delimiter, quote and escape can't be a letter or
  * a digit. - quote will be added to escape chars.
  */
-public class CSVConstraintsBuilder {
+public class BasicCSVConstraintsBuilder {
 	private static final int ASCII_CHAR_COUNT = 128;
 	private byte[] allowedDelimiters;
 	private byte[] allowedQuotes;
@@ -34,7 +34,7 @@ public class CSVConstraintsBuilder {
 
 	private static byte all[];
 
-	CSVConstraintsBuilder() {
+	BasicCSVConstraintsBuilder() {
 		this.allowedDelimiters = getAllChars();
 		this.allowedQuotes = getAllChars();
 		this.allowedEscapes = getAllChars();
@@ -42,7 +42,7 @@ public class CSVConstraintsBuilder {
 	}
 
 	private static byte[] getAllChars() {
-		if (CSVConstraintsBuilder.all == null) {
+		if (BasicCSVConstraintsBuilder.all == null) {
 			all = new byte[ASCII_CHAR_COUNT-10-26*2-2];
 			int i = 0;
 			// hack to avoid endless loop : b ALWAYS < 128
@@ -63,25 +63,25 @@ public class CSVConstraintsBuilder {
 				all[i++] = b;
 			}
 		}
-		return CSVConstraintsBuilder.all;
+		return BasicCSVConstraintsBuilder.all;
 	}
 
-	public CSVConstraintsBuilder allowedDelimiters(byte[] allowedDelimiters) {
+	public BasicCSVConstraintsBuilder allowedDelimiters(final byte[] allowedDelimiters) {
 		this.allowedDelimiters = allowedDelimiters;
 		return this;
 	}
 
-	public CSVConstraintsBuilder allowedQuotes(byte[] allowedQuotes) {
+	public BasicCSVConstraintsBuilder allowedQuotes(final byte[] allowedQuotes) {
 		this.allowedQuotes = allowedQuotes;
 		return this;
 	}
 
-	public CSVConstraintsBuilder allowedEscapes(byte[] allowedEscapes) {
+	public BasicCSVConstraintsBuilder allowedEscapes(final byte[] allowedEscapes) {
 		this.allowedEscapes = allowedEscapes;
 		return this;
 	}
 
-	public CSVConstraintsBuilder minFields(int minFields) {
+	public BasicCSVConstraintsBuilder minFields(final int minFields) {
 		this.minFields = minFields;
 		return this;
 	}
@@ -90,5 +90,4 @@ public class CSVConstraintsBuilder {
 		return new BasicCSVConstraints(this.allowedDelimiters, this.allowedQuotes,
 				this.allowedEscapes, this.minFields);
 	}
-
 }

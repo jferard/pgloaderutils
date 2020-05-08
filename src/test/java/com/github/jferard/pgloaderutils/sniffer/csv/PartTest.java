@@ -30,8 +30,8 @@ public class PartTest {
 
 	@Test
 	public final void test1() throws UnsupportedEncodingException {
-		byte[] arr = "abcde".getBytes("ASCII");
-		Part part = new Part(arr, 0, arr.length);
+		final byte[] arr = "abcde".getBytes("ASCII");
+		final Part part = new Part(arr, 0, arr.length);
 		Assert.assertEquals('a', part.getFirstChar());
 		Assert.assertEquals('e', part.getLastChar());
 		
@@ -41,8 +41,8 @@ public class PartTest {
 	
 	@Test
 	public final void test2() throws UnsupportedEncodingException {
-		byte[] arr = "   abcde ".getBytes("ASCII");
-		Part part = new Part(arr, 0, arr.length);
+		final byte[] arr = "   abcde ".getBytes("ASCII");
+		final Part part = new Part(arr, 0, arr.length);
 		part.trimSpaces();
 		Assert.assertEquals('a', part.getFirstChar());
 		Assert.assertEquals('e', part.getLastChar());
@@ -53,13 +53,13 @@ public class PartTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public final void testEmptyArray() throws UnsupportedEncodingException {
-		byte[] arr = "".getBytes("ASCII");
-		Part part = new Part(arr, 1, 2);
+		final byte[] arr = "".getBytes("ASCII");
+		final Part part = new Part(arr, 1, 2);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public final void testEmptyPart() throws UnsupportedEncodingException {
-		byte[] arr = "   abcde ".getBytes("ASCII");
-		Part part = new Part(arr, 0, 0);
+		final byte[] arr = "   abcde ".getBytes("ASCII");
+		final Part part = new Part(arr, 0, 0);
 	}
 }

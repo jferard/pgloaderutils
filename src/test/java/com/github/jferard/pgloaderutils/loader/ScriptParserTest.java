@@ -40,11 +40,11 @@ import java.util.Map;
 public class ScriptParserTest {
     @Test
     public void test() throws IOException {
-        Reader r = new StringReader("{a}\n\n{b}\n\n{c}");
-        ScriptParser sc = new ScriptParser(r);
+        final Reader r = new StringReader("{a}\n\n{b}\n\n{c}");
+        final ScriptParser sc = new ScriptParser(r);
         try {
-            Map<String, String> m = ImmutableMap.of("a", "1", "b", "2", "c", "3");
-            List<String> l = Lists.newArrayList("1", "2", "3");
+            final Map<String, String> m = ImmutableMap.of("a", "1", "b", "2", "c", "3");
+            final List<String> l = Lists.newArrayList("1", "2", "3");
             Assert.assertEquals(l, sc.read(m));
         } finally {
             sc.close();

@@ -31,7 +31,7 @@ import org.junit.Test;
 public class CSDValidationErrorTest {
     @Test
     public void toStringTest() throws Exception {
-        CSDValidationError ve = new CSDValidationError(10, CSDValidationError.Type.INCORRECT_COLUMN_NAME, "@");
+        final CSDValidationError ve = new CSDValidationError(10, CSDValidationError.Type.INCORRECT_COLUMN_NAME, "@");
         Assert.assertEquals("CSDValidationError of type INCORRECT_COLUMN_NAME: @ (line 10)", ve.toString());
     }
 

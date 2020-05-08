@@ -36,7 +36,7 @@ public class CSDSchemaPattern<F extends CSDFieldPattern> implements SizedIterabl
     private Collection<F> fields;
     private boolean optionalHeader;
 
-    public CSDSchemaPattern(Collection<F> fields, boolean optionalHeader) {
+    public CSDSchemaPattern(final Collection<F> fields, final boolean optionalHeader) {
         this.fields = fields;
         this.optionalHeader = optionalHeader;
     }
@@ -46,7 +46,7 @@ public class CSDSchemaPattern<F extends CSDFieldPattern> implements SizedIterabl
      */
     public int size() {
         int schemaSize = 0;
-        for (F field : fields) {
+        for (final F field : fields) {
             if (field.isWildCard()) {
                 break;
             }
@@ -70,10 +70,10 @@ public class CSDSchemaPattern<F extends CSDFieldPattern> implements SizedIterabl
         return this.optionalHeader;
     }
 
-    public CSDSchema<F> newSchema(CSDFieldFactory<F> factory, CSVRecord firstRecord) {
-        List<F> newFields = new ArrayList<F>(this.fields.size());
+    public CSDSchema<F> newSchema(final CSDFieldFactory<F> factory, final CSVRecord firstRecord) {
+        final List<F> newFields = new ArrayList<F>(this.fields.size());
 
-        for (F field : this.fields) {
+        for (final F field : this.fields) {
             if (field.isWildCard()) {
                 this.addFields(factory, newFields, field, firstRecord, this.fields.size());
                 break;
@@ -84,13 +84,13 @@ public class CSDSchemaPattern<F extends CSDFieldPattern> implements SizedIterabl
         return new CSDSchema<F>(newFields, this.optionalHeader);
     }
 
-    private void addFields(CSDFieldFactory<F> factory, List<F> newFields, F field, CSVRecord firstRecord, int begin) {
+    private void addFields(final CSDFieldFactory<F> factory, final List<F> newFields, final F field, final CSVRecord firstRecord, final int begin) {
         if (firstRecord == null) {
             return;
         }
 
         for (int i=begin; i<firstRecord.size(); i++) {
-            String name = firstRecord.get(i);
+            final String name = firstRecord.get(i);
             newFields.add(factory.create(field.getType(), name, name, true));
         }
     }

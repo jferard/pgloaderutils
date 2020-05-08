@@ -34,7 +34,7 @@ import java.util.Collections;
 public class CSDSchemaTest {
     @Test
     public void testEmpty() {
-        CSDSchema<CSDFieldPattern> s = new CSDSchema<CSDFieldPattern>(Collections.<CSDFieldPattern>emptyList(), false);
+        final CSDSchema<CSDFieldPattern> s = new CSDSchema<CSDFieldPattern>(Collections.<CSDFieldPattern>emptyList(), false);
         Assert.assertEquals("()", s.getColumns());
         Assert.assertFalse(s.hasOptionalHeader());
         Assert.assertFalse(s.iterator().hasNext());
@@ -44,8 +44,8 @@ public class CSDSchemaTest {
 
     @Test
     public void testOneField() {
-        CSDFieldPattern f = CSDTestHelper.getMandatoryField();
-        CSDSchema<CSDFieldPattern> s = new CSDSchema<CSDFieldPattern>(Arrays.asList(f), true);
+        final CSDFieldPattern f = CSDTestHelper.getMandatoryField();
+        final CSDSchema<CSDFieldPattern> s = new CSDSchema<CSDFieldPattern>(Arrays.asList(f), true);
         Assert.assertEquals("(CSDFieldPattern[type: name])", s.getColumns());
         Assert.assertTrue(s.hasOptionalHeader());
         Assert.assertTrue(s.iterator().hasNext());

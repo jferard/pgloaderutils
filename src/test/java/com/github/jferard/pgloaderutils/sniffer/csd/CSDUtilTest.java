@@ -37,7 +37,7 @@ public class CSDUtilTest {
 
     @Before
     public void setUp() {
-        Logger logger = PowerMock.createNiceMock(Logger.class);
+        final Logger logger = PowerMock.createNiceMock(Logger.class);
         util = new CSDUtil(logger);
     }
 

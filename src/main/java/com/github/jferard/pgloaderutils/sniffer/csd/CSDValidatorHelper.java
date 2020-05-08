@@ -33,7 +33,7 @@ class CSDValidatorHelper<F extends CSDFieldPattern> {
     private Logger logger;
     private ColumnMatcher matcher;
 
-    public CSDValidatorHelper(Logger logger, ColumnMatcher matcher) {
+    public CSDValidatorHelper(final Logger logger, final ColumnMatcher matcher) {
         this.logger = logger;
         this.matcher = matcher;
     }
@@ -44,7 +44,7 @@ class CSDValidatorHelper<F extends CSDFieldPattern> {
      * @param firstRecord the first record of the stream
      * @return the error count, -1 the schema has too many fields
      */
-    public int validateHeader(CSDValidationResult<F> result, SizedIterable<F> fields, CSVRecord firstRecord) {
+    public int validateHeader(final CSDValidationResult<F> result, final SizedIterable<F> fields, final CSVRecord firstRecord) {
         int headerErrorCount = 0;
         if (firstRecord.size() < fields.size()) {
             result.schemaHasTooManyFieldsForHeader(firstRecord);
@@ -52,8 +52,8 @@ class CSDValidatorHelper<F extends CSDFieldPattern> {
         }
 
         int j = 0;
-        for (F field : fields) {
-            String value = firstRecord.get(j++);
+        for (final F field : fields) {
+            final String value = firstRecord.get(j++);
             if (!matcher.match(field, value)) {
                 result.incorrectColumnName(field, value);
                 headerErrorCount++;
@@ -69,7 +69,7 @@ class CSDValidatorHelper<F extends CSDFieldPattern> {
      * @param line the current line number
      * @return the error count, -1 the schema has too many fields
      */
-    public int validateRecord(CSDValidationResult<F> result, SizedIterable<F> fields, CSVRecord record, int line) {
+    public int validateRecord(final CSDValidationResult<F> result, final SizedIterable<F> fields, final CSVRecord record, final int line) {
         if (record.size() < fields.size()) {
             result.schemaHasTooManyFieldsForRecord(line, record);
             return -1;
@@ -77,8 +77,8 @@ class CSDValidatorHelper<F extends CSDFieldPattern> {
 
         int errorCount = 0;
         int j = 0;
-        for (F field : fields) {
-            String value = record.get(j++);
+        for (final F field : fields) {
+            final String value = record.get(j++);
             if (!field.validate(value)) {
                 result.incorrectValue(line, value, field);
                 errorCount++;

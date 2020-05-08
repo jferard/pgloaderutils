@@ -24,8 +24,8 @@ package com.github.jferard.pgloaderutils.loader;
 import org.apache.commons.csv.CSVFormat;
 
 public class CSVLoaderHelper {
-    public CSVFormat getCSVFormat(char delimiter, char quote, char escape) {
-        CSVFormat format = CSVFormat.DEFAULT.withDelimiter(delimiter).withQuote(quote);
+    public CSVFormat getCSVFormat(final char delimiter, final char quote, final char escape) {
+        final CSVFormat format = CSVFormat.DEFAULT.withDelimiter(delimiter).withQuote(quote);
         if (escape != quote) {
             format.withEscape(escape);
         }
