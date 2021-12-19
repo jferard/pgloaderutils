@@ -45,11 +45,11 @@ import java.util.logging.Logger;
 public class CSVCleanerFileReader extends OpenableReader {
 	private static final int BUFFER_SIZE = 4096;
 	private final Logger logger;
-	private Reader modifiedStreamReader;
+	private final Reader modifiedStreamReader;
 	private Iterator<CSVRecord> iterator;
-	private CSVPrinter printer;
-	private CSVRecordCleaner recordCleaner;
-	private CSVParser parser;
+	private final CSVPrinter printer;
+	private final CSVRecordCleaner recordCleaner;
+	private final CSVParser parser;
 
 	public CSVCleanerFileReader(final CSVParser parser, final CSVRecordCleaner recordCleaner) throws IOException {
 		this.recordCleaner = recordCleaner;

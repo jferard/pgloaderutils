@@ -20,10 +20,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.jferard.pgloaderutils.loader;
+package com.github.jferard.pgloaderutils.it;
 
 import com.github.jferard.pgloaderutils.loader.CSVLoaderForPostgreSQL;
-import com.github.jferard.pgloaderutils.loader.CSVSimpleFileReader;
+import com.github.jferard.pgloaderutils.loader.SimpleFileReader;
 import com.google.common.io.Resources;
 import org.junit.Test;
 
@@ -58,7 +58,7 @@ public class CSVLoaderForPostgreSQLIT {
 							.toTable("testtable");
 					final StringReader stringReader = new StringReader("\"a\", 1.0, \"b,c\"\n"
 							+ "\"d\", 2.0, \"f,g\"\n");
-					final CSVSimpleFileReader csvReader = new CSVSimpleFileReader(
+					final SimpleFileReader csvReader = new SimpleFileReader(
 							stringReader, Logger.getLogger(""), 16);
 					loader.populate(connection,
 							csvReader);
@@ -194,7 +194,7 @@ public class CSVLoaderForPostgreSQLIT {
 					final Reader reader = new InputStreamReader(Resources.getResource
 							("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv").openStream(),
 							"ISO-8859-1");
-					final CSVSimpleFileReader csvReader = new CSVSimpleFileReader(
+					final SimpleFileReader csvReader = new SimpleFileReader(
 							reader, Logger.getLogger(""), 16);
 					loader.populate(connection,
 							csvReader);

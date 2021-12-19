@@ -32,7 +32,7 @@ import java.util.logging.Logger;
  *
  * @author Julien Férard
  */
-public class CSVSimpleFileReader extends OpenableReader {
+public class SimpleFileReader extends OpenableReader {
     private static final int ONE_KB;
     private static final int BUFFER_SIZE;
     private static final int ONE_MB;
@@ -57,7 +57,7 @@ public class CSVSimpleFileReader extends OpenableReader {
      * @param mbStep the step for log entries
      * @throws IOException if an I/O error occurs
      */
-    public CSVSimpleFileReader(final Reader reader, final Logger logger, final int mbStep) throws IOException {
+    public SimpleFileReader(final Reader reader, final Logger logger, final int mbStep) throws IOException {
         this.reader = reader;
         this.logger = logger;
         this.mbStep = mbStep;

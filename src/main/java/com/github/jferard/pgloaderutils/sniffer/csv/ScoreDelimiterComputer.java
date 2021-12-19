@@ -52,10 +52,6 @@ class ScoreDelimiterComputer implements ByteComputer {
 
     public byte compute() {
         final List<DelimiterCandidate> delimiterCandidates = this.computeAll();
-        System.out.println(this.delimiterQuote[34][59]);
-        System.out.println(
-                this.delimiterQuote[delimiterCandidates.get(0).getByte()][delimiterCandidates.get(1)
-                        .getByte()]);
         while (this.delimiterQuote[delimiterCandidates.get(0).getByte()][delimiterCandidates.get(1)
                 .getByte()] < 0) {
             delimiterCandidates.remove(0);
@@ -75,7 +71,6 @@ class ScoreDelimiterComputer implements ByteComputer {
         this.computeStatsAndScoreDelimiters();
         this.penalizeQuotes();
         final List<DelimiterCandidate> sorted = DelimiterCandidate.sorted(this.delimiterScores);
-        System.out.println(sorted);
         return sorted;
     }
 

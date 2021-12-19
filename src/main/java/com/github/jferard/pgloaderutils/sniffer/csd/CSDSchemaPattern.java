@@ -80,7 +80,6 @@ public class CSDSchemaPattern<F extends CSDFieldPattern> implements SizedIterabl
             }
             newFields.add(field);
         }
-        System.out.println(newFields);
         return new CSDSchema<F>(newFields, this.optionalHeader);
     }
 
