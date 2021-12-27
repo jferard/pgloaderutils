@@ -47,7 +47,13 @@ public class HeaderRowAnalyzerTest {
 		format = this.h.analyze(Arrays.asList("a", "b"), "a,b,c");
 		Assert.assertEquals(',', format.getDelimiter());
 	}
-	
+
+	@Test
+	public final void testLong() throws IOException {
+		final CSVFormat format = this.h.analyze(Arrays.asList("abcd", "efgh"), "abcd;efgh;ijkl");
+		Assert.assertEquals(';', format.getDelimiter());
+	}
+
 	@Test
 	public final void test2() throws IOException {
 		final CSVFormat format = this.h.analyze(Arrays.asList("a'b", "b"), "'a&'b';b;c");

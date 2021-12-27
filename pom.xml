@@ -64,24 +64,19 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jre>1.6</jre>
 <!--        <skipITs>true</skipITs> -->
-        <powermock.version>1.6.6</powermock.version>
+        <powermock.version>2.0.9</powermock.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4.1208.jre6</version>
+            <version>42.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.4</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
+            <version>1.8</version>
         </dependency>
         <dependency>
             <groupId>com.github.jferard</groupId>
@@ -91,13 +86,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
-            <version>3.4</version>
+            <version>4.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -116,8 +111,14 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>20.0</version>
+            <version>31.0.1-jre</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

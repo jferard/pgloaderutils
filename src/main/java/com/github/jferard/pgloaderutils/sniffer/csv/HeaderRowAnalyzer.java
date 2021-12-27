@@ -131,7 +131,7 @@ public class HeaderRowAnalyzer {
             }
             if (j > i) { // only space, tabs, ... chars
                 if (Character.isLetterOrDigit(maybeDelimiter)) {
-                    throw new IOException("Bad delimiter after field of field:" + curExpectedField + " (" + line + ")");
+                    throw new IOException("Bad delimiter after field of line:" + curExpectedField + " (" + line + ")");
                 }
                 this.delimiterCounter.put(maybeDelimiter);
                 nextFieldStartIndex = nextFieldFirstLetterIndex;
@@ -196,18 +196,18 @@ public class HeaderRowAnalyzer {
 
     private int getDelimiterBlockIndex(final String expectedField, final String line, final int len,
                                        final int firstCharIndex) throws IOException {
-        float bestDistance = 0f;
+        double bestDistance = 1.1;
         int bestI = 0;
         for (int i = -1; i <= 1; i++) {
             final String foundField = line.substring(firstCharIndex, firstCharIndex + len + i);
-            final float distance = (float) org.apache.commons.lang3.StringUtils
+            final double distance = StringUtils
                     .getJaroWinklerDistance(expectedField, foundField);
-            if (distance > bestDistance) {
+            if (distance < bestDistance) {
                 bestDistance = distance;
                 bestI = i;
             }
         }
-        if (bestDistance < 0.9f) {
+        if (bestDistance > 0.1f) {
             throw new IOException("Field error. Expected: " + expectedField + ". Found: " + line
                     .substring(firstCharIndex, firstCharIndex + len + bestI));
         }
