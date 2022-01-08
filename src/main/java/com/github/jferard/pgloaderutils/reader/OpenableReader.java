@@ -19,16 +19,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jferard.pgloaderutils.loader;
+package com.github.jferard.pgloaderutils.reader;
 
-import org.apache.commons.csv.CSVRecord;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
- * A CSVRecordCleaner that does nothing.
+ * An OpenableReader is a basic reader that must be opened.
+ * All read instructions are blocked until {@code open()} is called.
+ *
+ * This is useful to write a multi-threaded application:
+ * <pre>
+ *     thread.start(); // this thread reads data from reader, and closes it
+ *     reader.open();  // open the floodgates
+ *     thread.join();  // wait for the end of flood
+ * </pre>
  */
-public class VoidCSVRecordCleaner implements CSVRecordCleaner {
-	@Override
-	public Iterable<String> cleanRecord(final CSVRecord record) {
-		return record;
+public abstract class OpenableReader extends Reader {
+	private IOException ioException;
+
+    /**
+     * Unlock read
+     * @throws IOException
+     */
+    public abstract void open() throws IOException;
+
+    /**
+     *
+     * @param e
+     */
+    public void setException(final IOException e) {
+		this.ioException = e;
+	}
+	
+	public IOException getException() {
+		return this.ioException;
 	}
 }

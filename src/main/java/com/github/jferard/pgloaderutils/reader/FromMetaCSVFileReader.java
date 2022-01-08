@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.jferard.pgloaderutils.loader;
+package com.github.jferard.pgloaderutils.reader;
 
 import com.github.jferard.javamcsv.DataType;
 import com.github.jferard.javamcsv.MetaCSVMetaData;
@@ -58,7 +58,7 @@ public class FromMetaCSVFileReader
     }
 
     @Override
-    void open() throws IOException {
+    public void open() throws IOException {
         int i = 0;
         MetaCSVRecord record = null;
         try {

@@ -27,7 +27,7 @@ import com.github.jferard.javamcsv.MetaCSVParseException;
 import com.github.jferard.javamcsv.MetaCSVReadException;
 import com.github.jferard.javamcsv.MetaCSVReader;
 import com.github.jferard.pgloaderutils.loader.CSVBulkLoader;
-import com.github.jferard.pgloaderutils.loader.FromMetaCSVFileReader;
+import com.github.jferard.pgloaderutils.reader.FromMetaCSVFileReader;
 import org.junit.Assert;
 import org.junit.Test;
 

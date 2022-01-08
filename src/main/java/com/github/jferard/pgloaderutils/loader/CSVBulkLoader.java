@@ -21,6 +21,7 @@
  */
 package com.github.jferard.pgloaderutils.loader;
 
+import com.github.jferard.pgloaderutils.reader.OpenableReader;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
 

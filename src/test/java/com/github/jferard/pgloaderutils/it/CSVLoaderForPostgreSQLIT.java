@@ -23,7 +23,7 @@
 package com.github.jferard.pgloaderutils.it;
 
 import com.github.jferard.pgloaderutils.loader.CSVBulkLoader;
-import com.github.jferard.pgloaderutils.loader.SimpleFileReader;
+import com.github.jferard.pgloaderutils.reader.SimpleFileReader;
 import com.google.common.io.Resources;
 import org.junit.Test;
 

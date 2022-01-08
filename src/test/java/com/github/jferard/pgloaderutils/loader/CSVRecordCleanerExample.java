@@ -22,7 +22,7 @@
 
 package com.github.jferard.pgloaderutils.loader;
 
-import com.github.jferard.pgloaderutils.loader.CSVRecordCleaner;
+import com.github.jferard.pgloaderutils.reader.CSVRecordCleaner;
 import org.apache.commons.csv.CSVRecord;
 
 import java.util.Iterator;
