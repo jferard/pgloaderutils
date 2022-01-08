@@ -62,7 +62,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jre>1.6</jre>
+        <jre>1.8</jre>
 <!--        <skipITs>true</skipITs> -->
         <powermock.version>2.0.9</powermock.version>
     </properties>
