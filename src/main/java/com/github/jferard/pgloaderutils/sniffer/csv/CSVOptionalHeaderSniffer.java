@@ -45,7 +45,7 @@ import java.util.List;
  * header in the stream</li>
  * </ol>
  *
- * @author Julien Férard (C) 2016
+ * @author Julien Férard
  */
 public class CSVOptionalHeaderSniffer implements OptionalHeaderSniffer {
     private final Charset charset;

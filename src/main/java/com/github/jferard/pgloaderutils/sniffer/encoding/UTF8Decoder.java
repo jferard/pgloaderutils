@@ -39,7 +39,7 @@ import java.nio.charset.CharacterCodingException;
  * 
  * An optional BOM is consumed.
  * 
- * @author Julien Férard (C) 2016
+ * @author Julien Férard
  *
  */
 public class UTF8Decoder {
