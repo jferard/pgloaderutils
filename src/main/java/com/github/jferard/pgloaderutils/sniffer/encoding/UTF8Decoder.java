@@ -2,7 +2,7 @@
  * Some utilities for loading csv data into a PosgtreSQL database:
  * detect file encoding, CSV format and populate database
  *
- *     Copyright (C) 2016, 2018 J. Férard <https://github.com/jferard>
+ *     Copyright (C) 2016, 2018, 2020-2022 J. Férard <https://github.com/jferard>
  *
  * This file is part of pgLoader Utils.
  *
@@ -20,8 +20,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.github.jferard.pgloaderutils.sniffer.encoding;
-
-import com.github.jferard.pgloaderutils.sniffer.encoding.Constants;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -65,8 +63,8 @@ public class UTF8Decoder {
 	 */
 	public boolean gobbleBOM() throws IOException {
 		this.is.mark(3);
-		if (this.is.read() == Constants.BOM_1 && this.is.read() == Constants.BOM_2
-				&& this.is.read() == Constants.BOM_3) {
+		if (this.is.read() == SnifferConstants.BOM_1 && this.is.read() == SnifferConstants.BOM_2
+				&& this.is.read() == SnifferConstants.BOM_3) {
 			return true;
 		} 		else {
 			this.is.reset();
@@ -89,21 +87,21 @@ public class UTF8Decoder {
 		int unicodeValue = 0;
 		final int expectedLen;
 		// 1) Lead byte analysis
-		if ((firstByte & Constants.B10000000) == Constants.B00000000) {
+		if ((firstByte & SnifferConstants.B10000000) == SnifferConstants.B00000000) {
 			// b1 = 0b0xxxxxxx
 			unicodeValue = firstByte;
 			expectedLen = 1;
-		} else if ((firstByte & Constants.B11100000) == Constants.B11000000) {
+		} else if ((firstByte & SnifferConstants.B11100000) == SnifferConstants.B11000000) {
 			// b1 = 0b110xxxxx
-			unicodeValue = firstByte & Constants.B00011111;
+			unicodeValue = firstByte & SnifferConstants.B00011111;
 			expectedLen = 2;
-		} else if ((firstByte & Constants.B11110000) == Constants.B11100000) {
+		} else if ((firstByte & SnifferConstants.B11110000) == SnifferConstants.B11100000) {
 			// b1 = 0b1110xxxx
-			unicodeValue = firstByte & Constants.B00001111;
+			unicodeValue = firstByte & SnifferConstants.B00001111;
 			expectedLen = 3;
-		} else if ((firstByte & Constants.B11111000) == Constants.B11110000) {
+		} else if ((firstByte & SnifferConstants.B11111000) == SnifferConstants.B11110000) {
 			// b1 = 0b11110xxx
-			unicodeValue = firstByte & Constants.B00000111;
+			unicodeValue = firstByte & SnifferConstants.B00000111;
 			expectedLen = 4;
 		} else { // not a UTF-8 leading byte
 			this.is.reset();
@@ -118,10 +116,10 @@ public class UTF8Decoder {
 				throw new CharacterCodingException();
 			}
 
-			final int ci = trailingByte & Constants.B01111111;
+			final int ci = trailingByte & SnifferConstants.B01111111;
 			// 0b10xxxxxx & 0b01111111 == 0b00xxxxxx
-			if (ci <= Constants.B00111111) { // UTF-8 trailing byte : 0b10xxxxxx
-				unicodeValue = (unicodeValue << Constants.UNICODE_TRAILING_BYTE_X_BITS)
+			if (ci <= SnifferConstants.B00111111) { // UTF-8 trailing byte : 0b10xxxxxx
+				unicodeValue = (unicodeValue << SnifferConstants.UNICODE_TRAILING_BYTE_X_BITS)
 						+ ci;
 			} else { // abnormal trailing byte
 				this.is.reset();

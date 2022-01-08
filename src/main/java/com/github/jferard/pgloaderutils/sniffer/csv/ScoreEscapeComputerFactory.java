@@ -2,7 +2,7 @@
  * Some utilities for loading csv data into a PosgtreSQL database: 
  * detect file encoding, CSV format and populate database
  *
- *     Copyright (C) 2016, 2018 J. Férard <https://github.com/jferard>
+ *     Copyright (C) 2016, 2018, 2020-2022 J. Férard <https://github.com/jferard>
  *  
  * This file is part of pgLoader Utils.
  *  

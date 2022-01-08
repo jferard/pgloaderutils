@@ -2,7 +2,7 @@
  * Some utilities for loading csv data into a PosgtreSQL database:
  * detect file encoding, CSV format and populate database
  *
- *     Copyright (C) 2016, 2018 J. Férard <https://github.com/jferard>
+ *     Copyright (C) 2016, 2018, 2020-2022 J. Férard <https://github.com/jferard>
  *
  * This file is part of pgLoader Utils.
  *
@@ -30,9 +30,7 @@ import java.nio.charset.Charset;
  * @author Julien Férard (C) 2016
  *
  */
-class Constants {
-	public final static Charset UTF_8 = Charset.forName("UTF-8");
-	public final static Charset US_ASCII = Charset.forName("US-ASCII");
+class SnifferConstants {
 	static final int B00000000 = 0x00;
 	static final byte B00000111 = 0x07;
 	static final byte B00001111 = 0x0f;

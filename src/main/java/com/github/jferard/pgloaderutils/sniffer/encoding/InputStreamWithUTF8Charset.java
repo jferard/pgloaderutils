@@ -2,7 +2,7 @@
  * Some utilities for loading csv data into a PosgtreSQL database:
  * detect file encoding, CSV format and populate database
  *
- *     Copyright (C) 2016, 2018 J. Férard <https://github.com/jferard>
+ *     Copyright (C) 2016, 2018, 2020-2022 J. Férard <https://github.com/jferard>
  *
  * This file is part of pgLoader Utils.
  *
@@ -83,13 +83,13 @@ class InputStreamWithUTF8Charset implements InputStreamWithCharset {
 			// W2 = 110111xxxxxxxxxx
 			final int y = unicodeValue >> 10;
 			final int x = unicodeValue - y;
-			cbuf[this.curOffset++] = (char) (Constants.B1101100000000000 + y);
+			cbuf[this.curOffset++] = (char) (SnifferConstants.B1101100000000000 + y);
 			this.charCount++;
 			if (this.charCount == clen) { // bad luck!
-				this.remainingUTF16Char = (char) (Constants.B1101110000000000
+				this.remainingUTF16Char = (char) (SnifferConstants.B1101110000000000
 						+ x);
 			} else {
-				cbuf[this.curOffset++] = (char) (Constants.B1101110000000000
+				cbuf[this.curOffset++] = (char) (SnifferConstants.B1101110000000000
 						+ x);
 				this.charCount++;
 			}

@@ -1,16 +1,16 @@
 /*
- * Some utilities for loading csv data into a PosgtreSQL database: 
+ * Some utilities for loading csv data into a PosgtreSQL database:
  * detect file encoding, CSV format and populate database
  *
  *     Copyright (C) 2016, 2018, 2020-2022 J. Férard <https://github.com/jferard>
- *  
+ *
  * This file is part of pgLoader Utils.
- *  
+ *
  * pgLoader Utils is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *  
+ *
  * pgLoader Utils is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -20,19 +20,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.jferard.pgloaderutils.sniffer.csv;
+package com.github.jferard.pgloaderutils.sql;
 
-import java.util.List;
+import java.sql.Types;
 
-public class BasicEscapeComputerFactory implements EscapeComputerFactory {
-    private final byte[] allowedEscapes;
+/** fixed-length bit string */
+public class Bit implements DataType {
+    private final int n;
 
-    public BasicEscapeComputerFactory(final byte[] allowedEscapes) {
-        this.allowedEscapes = allowedEscapes;
+    public Bit(final int n) {
+        this.n = n;
     }
 
     @Override
-    public ByteComputer create(final List<Line> lines, final byte finalDelimiter, final byte finalQuote) {
-        return new BasicEscapeComputer(lines, finalDelimiter, finalQuote, allowedEscapes);
+    public int getSqlType() {
+        return Types.BIT;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("BIT(%d)", this.n);
     }
 }
