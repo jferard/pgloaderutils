@@ -20,7 +20,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.jferard.pgloaderutils.loader;
+package com.github.jferard.pgloaderutils.sql;
+
+import com.github.jferard.pgloaderutils.sql.QueryProvider;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -37,7 +39,7 @@ import java.util.Map;
  */
 public class ScriptParser {
     private final BufferedReader br;
-    private QueryProvider provider;
+    private final QueryProvider provider;
 
     public ScriptParser(final Reader reader) {
         this(reader, new QueryProvider());

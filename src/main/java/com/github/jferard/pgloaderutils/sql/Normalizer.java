@@ -20,31 +20,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.jferard.pgloaderutils.loader;
+package com.github.jferard.pgloaderutils.sql;
 
-import com.github.jferard.pgloaderutils.loader.QueryProvider;
-import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import java.text.ParseException;
 
-import java.io.IOException;
-import java.util.Map;
-
-/**
- * Created by jferard on 27/03/17.
- */
-public class QueryProviderTest {
-    private QueryProvider provider;
-
-    @Before
-    public void setUp() {
-        this.provider = new QueryProvider();
-    }
-
-    @Test
-    public void testNewQuery() throws IOException {
-        final Map<String, String> m = ImmutableMap.of("a", "1", "b", "2", "c", "3");
-        Assert.assertEquals("a2c", this.provider.newQuery("a{b}c", m));
-    }
+public interface Normalizer {
+    Object normalize(String value, DataType type) throws ParseException;
 }

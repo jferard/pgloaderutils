@@ -20,7 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.jferard.pgloaderutils.loader;
+package com.github.jferard.pgloaderutils.sql;
 
 import java.util.Map;
 
