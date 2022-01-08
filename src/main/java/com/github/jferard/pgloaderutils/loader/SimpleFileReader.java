@@ -43,11 +43,11 @@ public class SimpleFileReader extends OpenableReader {
         ONE_MB = ONE_KB * ONE_KB;
     }
 
-    private Reader modifiedStreamReader;
-    private Reader reader;
-    private Logger logger;
-    private int mbStep;
-    private PipedWriter pipedWriter;
+    private final Reader modifiedStreamReader;
+    private final Reader reader;
+    private final Logger logger;
+    private final int mbStep;
+    private final PipedWriter pipedWriter;
 
     /**
      * Create a new openable reader
@@ -73,7 +73,7 @@ public class SimpleFileReader extends OpenableReader {
             this.pipedWriter.write(c);
             c = this.reader.read();
             i++;
-            if (i % mbStep * ONE_MB == 0) {
+            if (i % this.mbStep * ONE_MB == 0) {
                 this.logger.fine("MBytes read: " + i / ONE_MB);
             }
         }
