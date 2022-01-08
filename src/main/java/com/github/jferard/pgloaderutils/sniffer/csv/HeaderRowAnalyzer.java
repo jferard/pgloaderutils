@@ -21,6 +21,7 @@
  */
 package com.github.jferard.pgloaderutils.sniffer.csv;
 
+import com.github.jferard.pgloaderutils.Util;
 import com.github.jferard.pgloaderutils.sniffer.StringUtils;
 import org.apache.commons.csv.CSVFormat;
 
@@ -59,10 +60,10 @@ public class HeaderRowAnalyzer {
         final List<String> expectedFields = new ArrayList<String>(expectedHeaderStart.size());
 
         for (final String field : expectedHeaderStart) {
-            expectedFields.add(StringUtils.normalize(field));
+            expectedFields.add(Util.normalize(field));
         }
 
-        final String line = StringUtils.normalize(firstReadLine);
+        final String line = Util.normalize(firstReadLine);
         int curFieldStartIndex = 0;
 
         final Iterator<String> iterator = expectedFields.iterator();

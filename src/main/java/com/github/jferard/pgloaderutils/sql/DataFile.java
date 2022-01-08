@@ -22,31 +22,5 @@
 
 package com.github.jferard.pgloaderutils.sql;
 
-/** A column in table */
-public class Column {
-    private final String name;
-    private final DataType type;
-
-    public Column(final String name, final DataType type) {
-        this.name = name;
-        this.type = type;
-    }
-
-    /**
-     * @return la définition de la colonne au format texte
-     */
-    public String getDefinition() {
-        return String.format("\"%s\" %s", this.name, this.type);
-    }
-
-    /**
-     * @return the data type of the column
-     */
-    public DataType getType() {
-        return this.type;
-    }
-
-    public String getName() {
-        return this.name;
-    }
+public class DataFile {
 }

@@ -21,7 +21,7 @@
  */
 package com.github.jferard.pgloaderutils.sniffer.encoding;
 
-import com.github.jferard.pgloaderutils.Constants;
+import com.github.jferard.pgloaderutils.Util;
 import com.github.jferard.pgloaderutils.sniffer.Sniffer;
 
 import java.io.File;
@@ -62,11 +62,11 @@ public class EncodingSniffer implements Sniffer {
      */
     @Override
     public void sniff(final InputStream stream, final int size) throws IOException {
-        this.charset = Constants.US_ASCII;
+        this.charset = Util.US_ASCII;
 
         final UTF8Decoder decoder = new UTF8Decoder(stream);
         if (decoder.gobbleBOM()) {
-            this.charset = Constants.UTF_8;
+            this.charset = Util.UTF_8;
         }
 
         try {
@@ -75,7 +75,7 @@ public class EncodingSniffer implements Sniffer {
                 if (c == -1) {
                     return;
                 } else if (c >= SnifferConstants.B10000000) {
-                    this.charset = Constants.UTF_8;
+                    this.charset = Util.UTF_8;
                 }
             }
         } catch (final CharacterCodingException e) {

@@ -22,19 +22,9 @@
 
 package com.github.jferard.pgloaderutils.sniffer;
 
-import java.text.Normalizer;
-import java.util.regex.Pattern;
+import com.github.jferard.pgloaderutils.Util;
 
 public class StringUtils {
-    final static Pattern p = Pattern
-            .compile("\\p{InCombiningDiacriticalMarks}+");
-
-    public static String normalize(final String s) {
-        final String decomposed = java.text.Normalizer.normalize(s.trim(),
-                Normalizer.Form.NFD);
-        return p.matcher(decomposed) // $NON-NLS-1$
-                .replaceAll("").trim();
-    }
 
     /**
      * see https://github.com/richmilne/JaroWinkler/blob/master/jaro/strcmp95.c
@@ -43,8 +33,8 @@ public class StringUtils {
         if (first == null || second == null) {
             throw new IllegalArgumentException();
         }
-        return StringUtils.strcmp95Normalized(StringUtils.normalize(first).toLowerCase(),
-                StringUtils.normalize(second).toLowerCase());
+        return StringUtils.strcmp95Normalized(Util.normalize(first).toLowerCase(),
+                Util.normalize(second).toLowerCase());
     }
 
     // TODO

@@ -20,11 +20,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.jferard.pgloaderutils;
+package com.github.jferard.pgloaderutils.sql;
 
-import java.nio.charset.Charset;
+public interface Index {
+    String createIndexQuery();
 
-public class Constants {
-    public final static Charset UTF_8 = Charset.forName("UTF-8");
-    public final static Charset US_ASCII = Charset.forName("US-ASCII");
+    String dropIndexQuery();
 }

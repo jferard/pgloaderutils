@@ -22,31 +22,35 @@
 
 package com.github.jferard.pgloaderutils.sql;
 
-/** A column in table */
-public class Column {
+import com.github.jferard.pgloaderutils.Util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class HashIndex implements Index {
     private final String name;
-    private final DataType type;
+    private final String tableName;
+    private final List<Column> columns;
 
-    public Column(final String name, final DataType type) {
+    public HashIndex(final String name, final String tableName,
+                     final List<Column> columns) {
         this.name = name;
-        this.type = type;
+        this.tableName = tableName;
+        this.columns = columns;
     }
 
-    /**
-     * @return la définition de la colonne au format texte
-     */
-    public String getDefinition() {
-        return String.format("\"%s\" %s", this.name, this.type);
+    @Override
+    public String createIndexQuery() {
+        final List<String> columnNames = new ArrayList<String>(this.columns.size());
+        for (final Column column : this.columns) {
+            columnNames.add(column.getName());
+        }
+        return String.format("CREATE INDEX \"%s\" ON \"%s\" (\"%s\") USING hash", this.name, this.tableName,
+                Util.join(columnNames, ", "));
     }
 
-    /**
-     * @return the data type of the column
-     */
-    public DataType getType() {
-        return this.type;
-    }
-
-    public String getName() {
-        return this.name;
+    @Override
+    public String dropIndexQuery() {
+        return String.format("DROP INDEX \"%s\"", this.name);
     }
 }
