@@ -22,33 +22,21 @@
 
 package com.github.jferard.pgloaderutils.it;
 
-import com.github.jferard.javamcsv.MetaCSVData;
 import com.github.jferard.javamcsv.MetaCSVDataException;
 import com.github.jferard.javamcsv.MetaCSVParseException;
-import com.github.jferard.javamcsv.MetaCSVParserBuilder;
 import com.github.jferard.javamcsv.MetaCSVReadException;
 import com.github.jferard.javamcsv.MetaCSVReader;
-import com.github.jferard.javamcsv.OnError;
-import com.github.jferard.javamcsv.Util;
-import com.github.jferard.javamcsv.processor.CSVRecordProcessor;
-import com.github.jferard.javamcsv.processor.ProcessorProvider;
-import com.github.jferard.javamcsv.processor.ReadProcessorProvider;
-import com.github.jferard.pgloaderutils.loader.CSVLoaderForPostgreSQL;
-import com.github.jferard.pgloaderutils.loader.CSVRecordCleaner;
+import com.github.jferard.pgloaderutils.loader.CSVBulkLoader;
 import com.github.jferard.pgloaderutils.loader.FromMetaCSVFileReader;
-import com.github.jferard.pgloaderutils.loader.OpenableReader;
-import org.apache.commons.csv.CSVRecord;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.TimeZone;
 
 public class MetaCSVIT {
     @Test
@@ -180,10 +168,9 @@ public class MetaCSVIT {
                             "    \"DATEMAJ\" TIMESTAMP\n" +
                             ")", sql);
                     statement.executeUpdate(sql);
-                    final CSVLoaderForPostgreSQL loader = CSVLoaderForPostgreSQL
+                    final CSVBulkLoader loader = CSVBulkLoader
                             .toTable(tableName);
-                    loader.populate(connection,
-                            fromMetaCSVFileReader);
+                    loader.populate(connection, fromMetaCSVFileReader, false);
                 } finally {
                     connection.close();
                 }

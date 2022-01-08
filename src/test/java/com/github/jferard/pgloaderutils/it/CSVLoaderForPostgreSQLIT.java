@@ -22,7 +22,7 @@
 
 package com.github.jferard.pgloaderutils.it;
 
-import com.github.jferard.pgloaderutils.loader.CSVLoaderForPostgreSQL;
+import com.github.jferard.pgloaderutils.loader.CSVBulkLoader;
 import com.github.jferard.pgloaderutils.loader.SimpleFileReader;
 import com.google.common.io.Resources;
 import org.junit.Test;
@@ -54,14 +54,13 @@ public class CSVLoaderForPostgreSQLIT {
 									+ "col1 text," + "col2 decimal,"
 									+ "col3 text)");
 
-					final CSVLoaderForPostgreSQL loader = CSVLoaderForPostgreSQL
+					final CSVBulkLoader loader = CSVBulkLoader
 							.toTable("testtable");
 					final StringReader stringReader = new StringReader("\"a\", 1.0, \"b,c\"\n"
 							+ "\"d\", 2.0, \"f,g\"\n");
 					final SimpleFileReader csvReader = new SimpleFileReader(
 							stringReader, Logger.getLogger(""), 16);
-					loader.populate(connection,
-							csvReader);
+					loader.populate(connection, csvReader, false);
 				} finally {
 					connection.close();
 				}
@@ -189,15 +188,14 @@ public class CSVLoaderForPostgreSQLIT {
 									"	datemaj text\n" +
 									")");
 
-					final CSVLoaderForPostgreSQL loader = CSVLoaderForPostgreSQL
+					final CSVBulkLoader loader = CSVBulkLoader
 							.toTable("sirc", ';', '"');
 					final Reader reader = new InputStreamReader(Resources.getResource
 							("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv").openStream(),
 							"ISO-8859-1");
 					final SimpleFileReader csvReader = new SimpleFileReader(
 							reader, Logger.getLogger(""), 16);
-					loader.populate(connection,
-							csvReader);
+					loader.populate(connection, csvReader, false);
 				} finally {
 					connection.close();
 				}

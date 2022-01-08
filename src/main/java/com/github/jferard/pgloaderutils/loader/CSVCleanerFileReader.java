@@ -85,7 +85,7 @@ public class CSVCleanerFileReader extends OpenableReader {
 				final Iterable<String> l = this.recordCleaner.cleanRecord(record);
 				this.printer.printRecord(l);
 				if (i % 100000 == 0) {
-					logger.info("Lines written:" + i);
+					this.logger.info("Lines written:" + i);
 				}
 				i++;
 			}
