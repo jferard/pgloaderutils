@@ -22,7 +22,9 @@
 
 package com.github.jferard.pgloaderutils.sql;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Table {
     private final String name;
@@ -36,13 +38,12 @@ public class Table {
 
     public String createTableQuery() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("CREATE TABLE \"").append(this.name).append("\"\n");
+        sb.append("CREATE TABLE \"").append(this.name).append("\"(\n");
         sb.append("    ").append(this.columns.get(0).getDefinition());
         for (int i = 1; i < this.columns.size(); i++) {
             sb.append(",\n    ");
             sb.append(this.columns.get(i).getDefinition());
         }
-        ;
         sb.append("\n)");
         return sb.toString();
     }
@@ -52,6 +53,9 @@ public class Table {
         return String.format("DROP TABLE \"%s\"", this.name);
     }
 
+    public String dropTableIfExistsQuery() {
+        return String.format("DROP TABLE IF EXISTS \"%s\"", this.name);
+    }
 
     public String insertValuesQuery() {
         final StringBuilder sb =
@@ -84,5 +88,9 @@ public class Table {
                 "    FROM pg_class\n" +
                 "    WHERE relname='%s'\n" +
                 ")", indIsReady, this.name);
+    }
+
+    public List<DataType> getTypes() {
+        return this.columns.stream().map(Column::getType).collect(Collectors.toList());
     }
 }

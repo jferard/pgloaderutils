@@ -22,8 +22,8 @@
 
 package com.github.jferard.pgloaderutils;
 
-import com.github.jferard.pgloaderutils.loader.CSVBulkLoader;
 import com.github.jferard.pgloaderutils.loader.CSVRegularLoader;
+import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
 import com.github.jferard.pgloaderutils.reader.CSVCleanerFileReader;
 import com.github.jferard.pgloaderutils.reader.CSVRecordCleaner;
 import com.github.jferard.pgloaderutils.sql.DataType;
@@ -45,11 +45,8 @@ public class CSVData {
     private final CSVParser parser;
 
     /**
-     * The table
+     * The normalizer
      */
-    private final Table destTable;
-
-    /** The normalizer */
     private final Normalizer normalizer;
 
     /**
@@ -62,24 +59,33 @@ public class CSVData {
      */
     private final int firstRow;
 
-    public CSVData(final CSVParser parser, final List<Object> commonValues, final int firstRow,
-                   final Table destTable, final Normalizer normalizer) {
+    public CSVData(final CSVParser parser, final List<Object> commonValues, final int firstRow, final Normalizer normalizer) {
         this.parser = parser;
         this.commonValues = commonValues;
         this.firstRow = firstRow;
-        this.destTable = destTable;
         this.normalizer = normalizer;
     }
 
-    public CSVRegularLoader toRegularLoader() {
-        return new CSVRegularLoader(this.parser, this.commonValues, this.firstRow, this.destTable, this.normalizer);
+    /**
+     * @param destTable The table
+     */
+    public CSVRegularLoader toRegularLoader(final Table destTable) {
+        return new CSVRegularLoader(this.rowsProvider(), destTable);
     }
 
-    public CSVCleanerFileReader asOpenableReader() throws IOException {
+    private CSVRowsProvider rowsProvider() {
+        this.skipFirstRows();
+        return new CSVRowsProvider(this.parser.iterator(), this.commonValues, this.normalizer);
+    }
+
+    /**
+     * @param destTable The table
+     */
+    public CSVCleanerFileReader asOpenableReader(final Table destTable) throws IOException {
         final List<Object> commonValues = this.commonValues;
-        final Table destTable = this.destTable;
         final Normalizer normalizer = this.normalizer;
         this.skipFirstRows();
+        final List<DataType> types = destTable.getTypes();
         return new CSVCleanerFileReader(this.parser, new CSVRecordCleaner() {
             @Override
             public Iterable<String> cleanRecord(final CSVRecord record) {
@@ -90,7 +96,7 @@ public class CSVData {
                 }
                 for (int i = 0; i < record.size(); i++) {
                     final int j = commonSize + i;
-                    final DataType type = destTable.getType(j);
+                    final DataType type = types.get(j);
                     try {
                         final Object value = normalizer.normalize(record.get(i), type);
                         ret.add(value.toString());

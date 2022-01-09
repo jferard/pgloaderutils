@@ -81,7 +81,7 @@ public enum GeneralDataType implements DataType {
     INT2(Types.SMALLINT),
 
     /** variable-length character string */
-    TEXT(Types.LONGNVARCHAR),
+    TEXT(Types.VARCHAR),
 
     /** time of day (no time zone) */
     TIME(Types.TIME),

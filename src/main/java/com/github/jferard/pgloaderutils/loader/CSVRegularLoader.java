@@ -22,11 +22,9 @@
 
 package com.github.jferard.pgloaderutils.loader;
 
+import com.github.jferard.pgloaderutils.provider.RowsProvider;
 import com.github.jferard.pgloaderutils.sql.DataType;
-import com.github.jferard.pgloaderutils.sql.Normalizer;
 import com.github.jferard.pgloaderutils.sql.Table;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -34,73 +32,34 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 public class CSVRegularLoader {
     private static final Logger logger = Logger.getLogger(CSVRegularLoader.class.getName());
 
-    /**
-     * the CSV file data
-     */
-    private final CSVParser parser;
-
+    private final RowsProvider rowsProvider;
     /**
      * The table
      */
     private final Table destTable;
 
-    /** The normalizer */
-    private final Normalizer normalizer;
-
-    /**
-     * Additional values: not in the file and common to all records, typically the souce name.
-     */
-    private final List<Object> commonValues;
-
-    /**
-     * Index of the first row of data. Typically 1 if the header has one line
-     */
-    private final int firstRow;
-
-    public CSVRegularLoader(final CSVParser parser, final List<Object> commonValues, final int firstRow,
-                            final Table destTable, final Normalizer normalizer) {
-        this.parser = parser;
-        this.commonValues = commonValues;
-        this.firstRow = firstRow;
+    public CSVRegularLoader(final RowsProvider rowsProvider, final Table destTable) {
+        this.rowsProvider = rowsProvider;
         this.destTable = destTable;
-        this.normalizer = normalizer;
     }
 
     public void load(final Connection connection, final int batchSize)
             throws IOException, SQLException, ParseException {
+        connection.setAutoCommit(false);
         final Statement statement = connection.createStatement();
         statement.execute(this.destTable.disableAllIndicesQuery());
         final PreparedStatement preparedStatement =
                 connection.prepareStatement(this.destTable.insertValuesQuery());
+        final List<DataType> types = this.destTable.getTypes();
         int count = 0;
-        final Iterator<CSVRecord> iterator = this.parser.iterator();
-        for (int i = 0; i < this.firstRow; i++) {
-            if (iterator.hasNext()) {
-                iterator.next();
-            } else {
-                return;
-            }
-        }
-        while (iterator.hasNext()) {
-            final CSVRecord record = iterator.next();
-            final int commonSize = this.commonValues.size();
-            for (int i = 0; i < commonSize; i++) {
-                preparedStatement.setObject(1 + i, this.commonValues.get(i),
-                        this.destTable.getType(i).getSqlType());
-            }
-            for (int i = 0; i < record.size(); i++) {
-                final int j = commonSize + i;
-                final DataType type = this.destTable.getType(j);
-                final Object value = this.normalizer.normalize(record.get(i), type);
-                preparedStatement.setObject(1 + j, value, type.getSqlType());
-            }
+        while (this.rowsProvider.hasNext()) {
+            this.rowsProvider.setStatementParameters(preparedStatement, types);
             preparedStatement.addBatch();
             count++;
             if (count != 0 && count % batchSize == 0) {
@@ -108,8 +67,12 @@ public class CSVRegularLoader {
                 preparedStatement.executeBatch();
                 connection.commit();
             }
-
         }
-        statement.execute(this.destTable.enableAllIndicesQuery());
+        CSVRegularLoader.logger.info(String.format("%s rows added", count));
+        preparedStatement.executeBatch();
+        connection.commit();
+        statement.execute(this.destTable.enableAllIndicesQuery()); // + REINDEX "name";
+        connection.setAutoCommit(true);
     }
+
 }
