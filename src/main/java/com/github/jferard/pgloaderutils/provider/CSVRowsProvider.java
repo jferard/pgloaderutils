@@ -33,7 +33,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class CSVRowsProvider implements RowsProvider {
-    /** The normalizer */
+    /**
+     * The normalizer
+     */
     private final Normalizer normalizer;
 
     /**
@@ -63,14 +65,32 @@ public class CSVRowsProvider implements RowsProvider {
         final int commonSize = this.commonValues.size();
         final CSVRecord record = this.iterator.next();
         for (int i = 0; i < commonSize; i++) {
-            preparedStatement.setObject(1 + i, this.commonValues.get(i),
-                    types.get(i).getSqlType());
+            final DataType dataType = types.get(i);
+            final Object value = this.commonValues.get(i);
+            preparedStatement.setObject(1 + i, value, dataType.getSqlType());
         }
-        for (int i = 0; i < record.size(); i++) {
-            final int j = commonSize + i;
-            final DataType type = types.get(j);
-            final Object value = this.normalizer.normalize(record.get(i), type);
-            preparedStatement.setObject(1 + j, value, type.getSqlType());
+        final int recordSize = record.size();
+        final int remainingColumnsCount = types.size() - commonSize;
+        if (recordSize < remainingColumnsCount) {
+            for (int i = commonSize; i < commonSize + recordSize; i++) {
+                final DataType type = types.get(i);
+                final int j = i - commonSize; // record index
+                final Object value = this.normalizer.normalize(record.get(j), type);
+                preparedStatement.setObject(1 + i, value, type.getSqlType());
+            }
+            // short record: set last cols to null
+            for (int i = commonSize + recordSize; i < commonSize + remainingColumnsCount; i++) {
+                final DataType type = types.get(i);
+                preparedStatement.setNull(1 + i, type.getSqlType());
+            }
+        } else {
+            // long record: ignore last values
+            for (int i = commonSize; i < commonSize + remainingColumnsCount; i++) {
+                final DataType type = types.get(i);
+                final int j = i - commonSize; // record index
+                final Object value = this.normalizer.normalize(record.get(j), type);
+                preparedStatement.setObject(1 + i, value, type.getSqlType());
+            }
         }
     }
 
