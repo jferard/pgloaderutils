@@ -2,7 +2,7 @@
 [![Code Coverage](https://img.shields.io/codecov/c/github/jferard/pgloaderutils/master.svg)](https://codecov.io/github/jferard/pgloaderutils?branch=master)
 
 # pgLoader Utils
-(C) J. Férard 2016-2018 & 2020-2021
+(C) J. Férard 2016-2018 & 2020-2022
 
 Some utilities for loading csv data into a PosgtreSQL database: detect file encoding, CSV format and populate database, under GPL v3.
 
