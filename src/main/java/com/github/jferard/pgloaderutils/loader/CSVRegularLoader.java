@@ -50,8 +50,11 @@ public class CSVRegularLoader {
     }
 
     public void load(final Connection connection, final int batchSize)
-            throws IOException, SQLException, ParseException {
-        connection.setAutoCommit(false);
+            throws SQLException, ParseException {
+        final boolean autoCommit = connection.getAutoCommit();
+        if (autoCommit) {
+            connection.setAutoCommit(false);
+        }
         final Statement statement = connection.createStatement();
         statement.execute(this.destTable.disableAllIndicesQuery());
         final PreparedStatement preparedStatement =
@@ -72,7 +75,9 @@ public class CSVRegularLoader {
         preparedStatement.executeBatch();
         connection.commit();
         statement.execute(this.destTable.enableAllIndicesQuery()); // + REINDEX "name";
-        connection.setAutoCommit(true);
+        if (autoCommit) {
+            connection.setAutoCommit(true);
+        }
     }
 
 }
