@@ -333,7 +333,7 @@ public class CSVLoaderForPostgreSQLIT {
                     new Column("datemaj", GeneralDataType.TEXT)
             ));
             final Statement statement = connection.createStatement();
-            statement.executeUpdate(table.dropTableIfExistsQuery());
+            statement.executeUpdate(table.dropTableQuery(true));
             statement.executeUpdate(table.createTableQuery(false));
 			final Reader reader = new InputStreamReader(Resources.getResource
 							("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv")

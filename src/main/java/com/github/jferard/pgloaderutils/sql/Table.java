@@ -53,12 +53,12 @@ public class Table {
     }
 
 
-    public String dropTableQuery() {
-        return String.format("DROP TABLE \"%s\"", this.name);
-    }
-
-    public String dropTableIfExistsQuery() {
-        return String.format("DROP TABLE IF EXISTS \"%s\"", this.name);
+    public String dropTableQuery(final boolean ifExists) {
+        if (ifExists) {
+            return String.format("DROP TABLE IF EXISTS \"%s\"", this.name);
+        } else {
+            return String.format("DROP TABLE \"%s\"", this.name);
+        }
     }
 
     public String insertValuesQuery() {
@@ -77,20 +77,20 @@ public class Table {
     }
 
     public String disableAllIndicesQuery() {
-        return this.indIsReadyQuery("false");
+        return this.indIsReadyQuery(false);
     }
 
     public String enableAllIndicesQuery() {
-        return this.indIsReadyQuery("true");
+        return this.indIsReadyQuery(true);
     }
 
-    private String indIsReadyQuery(final String indIsReady) {
+    private String indIsReadyQuery(final boolean indIsReady) {
         return String.format("UPDATE pg_index\n" +
-                "SET indisready=%s\n" +
+                "SET indisready=%s\n" + // print true or false
                 "WHERE indrelid = (\n" +
                 "    SELECT oid\n" +
                 "    FROM pg_class\n" +
-                "    WHERE relname='%s'\n" +
+                "    WHERE relname='%s'\n" + // single quote: the name. TODO: escape me
                 ")", indIsReady, this.name);
     }
 
