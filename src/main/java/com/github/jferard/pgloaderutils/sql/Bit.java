@@ -26,6 +26,15 @@ import java.sql.Types;
 
 /** fixed-length bit string */
 public class Bit implements DataType {
+    public static final Bit BIT1 = new Bit(1);
+    public static final Bit BIT2 = new Bit(2);
+    public static final Bit BIT3 = new Bit(3);
+    public static final Bit BIT4 = new Bit(4);
+    public static final Bit BIT5 = new Bit(5);
+    public static final Bit BIT6 = new Bit(6);
+    public static final Bit BIT7 = new Bit(7);
+    public static final Bit BIT8 = new Bit(8);
+
     private final int n;
 
     public Bit(final int n) {
@@ -40,5 +49,22 @@ public class Bit implements DataType {
     @Override
     public String toString() {
         return String.format("BIT(%d)", this.n);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Bit)) {
+            return false;
+        }
+        final Bit other = (Bit) o;
+        return this.n == other.n;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.n;
     }
 }

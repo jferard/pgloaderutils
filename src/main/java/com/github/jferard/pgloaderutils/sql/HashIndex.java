@@ -34,6 +34,7 @@ public class HashIndex implements Index {
 
     public HashIndex(final String name, final String tableName,
                      final List<Column> columns) {
+        assert !columns.isEmpty();
         this.name = name;
         this.tableName = tableName;
         this.columns = columns;
@@ -46,7 +47,7 @@ public class HashIndex implements Index {
             columnNames.add(column.getName());
         }
         return String.format("CREATE INDEX \"%s\" ON \"%s\" (\"%s\") USING hash", this.name, this.tableName,
-                Util.join(columnNames, ", "));
+                Util.join(columnNames, "\", \""));
     }
 
     @Override
