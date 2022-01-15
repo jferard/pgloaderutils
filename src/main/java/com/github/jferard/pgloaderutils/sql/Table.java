@@ -22,7 +22,6 @@
 
 package com.github.jferard.pgloaderutils.sql;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,9 +35,14 @@ public class Table {
         this.columns = columns;
     }
 
-    public String createTableQuery() {
+    public String createTableQuery(final boolean ifNotExists) {
         final StringBuilder sb = new StringBuilder();
-        sb.append("CREATE TABLE \"").append(this.name).append("\"(\n");
+        if (ifNotExists) {
+            sb.append("CREATE TABLE IF NOT EXISTS \"");
+        } else {
+            sb.append("CREATE TABLE \"");
+        }
+        sb.append(this.name).append("\" (\n");
         sb.append("    ").append(this.columns.get(0).getDefinition());
         for (int i = 1; i < this.columns.size(); i++) {
             sb.append(",\n    ");

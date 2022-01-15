@@ -34,7 +34,6 @@ import com.github.jferard.pgloaderutils.sql.Table;
 import com.google.common.io.Resources;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.Test;
 import org.postgresql.ds.PGSimpleDataSource;
 
@@ -335,8 +334,7 @@ public class CSVLoaderForPostgreSQLIT {
             ));
             final Statement statement = connection.createStatement();
             statement.executeUpdate(table.dropTableIfExistsQuery());
-			System.out.println(table.createTableQuery());
-            statement.executeUpdate(table.createTableQuery());
+            statement.executeUpdate(table.createTableQuery(false));
 			final Reader reader = new InputStreamReader(Resources.getResource
 							("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv")
 					.openStream(),
