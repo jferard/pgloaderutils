@@ -68,6 +68,7 @@ public class SimpleFileReader extends OpenableReader {
     @Override
     public void open() throws IOException {
         int i = 0;
+        // TODO: use a buffer
         int c = this.reader.read();
         while (c != -1) {
             this.pipedWriter.write(c);
