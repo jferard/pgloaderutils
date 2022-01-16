@@ -139,6 +139,7 @@ public class FromMetaCSVFileReader
             case DATETIME:
                 sqlType = "TIMESTAMP";
                 break;
+            case PERCENTAGE_FLOAT:
             case FLOAT:
                 sqlType = "FLOAT";
                 break;
