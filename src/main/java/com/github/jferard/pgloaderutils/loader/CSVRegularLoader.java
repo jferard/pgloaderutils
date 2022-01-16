@@ -26,7 +26,6 @@ import com.github.jferard.pgloaderutils.provider.RowsProvider;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Table;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
