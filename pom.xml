@@ -83,6 +83,7 @@
             <groupId>com.github.jferard</groupId>
             <artifactId>java-mcsv</artifactId>
             <version>0.0.4</version>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
