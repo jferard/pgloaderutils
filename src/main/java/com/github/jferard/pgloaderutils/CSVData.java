@@ -24,6 +24,7 @@ package com.github.jferard.pgloaderutils;
 
 import com.github.jferard.pgloaderutils.loader.CSVRegularLoader;
 import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
+import com.github.jferard.pgloaderutils.provider.CSVRowsSelectedColsProvider;
 import com.github.jferard.pgloaderutils.reader.CSVCleanerFileReader;
 import com.github.jferard.pgloaderutils.reader.CSVRecordCleaner;
 import com.github.jferard.pgloaderutils.sql.DataType;
@@ -37,6 +38,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class CSVData {
     /**
@@ -59,7 +61,8 @@ public class CSVData {
      */
     private final int firstRow;
 
-    public CSVData(final CSVParser parser, final List<Object> commonValues, final int firstRow, final Normalizer normalizer) {
+    public CSVData(final CSVParser parser, final List<Object> commonValues, final int firstRow,
+                   final Normalizer normalizer) {
         this.parser = parser;
         this.commonValues = commonValues;
         this.firstRow = firstRow;
@@ -68,14 +71,27 @@ public class CSVData {
 
     /**
      * @param destTable The table
+     * @return a loader
      */
     public CSVRegularLoader toRegularLoader(final Table destTable) {
-        return new CSVRegularLoader(this.rowsProvider(), destTable);
+        this.skipFirstRows();
+        return new CSVRegularLoader(
+                new CSVRowsProvider(this.parser.iterator(), this.commonValues, this.normalizer),
+                destTable);
     }
 
-    private CSVRowsProvider rowsProvider() {
-        this.skipFirstRows();
-        return new CSVRowsProvider(this.parser.iterator(), this.commonValues, this.normalizer);
+    /**
+     * @param destTable The table
+     * @param factory a factory to create the set of selected cols
+     * @return a loader
+     */
+    public CSVRegularLoader toRegularLoader(final Table destTable,
+                                            final SelectedColsFactory factory) {
+        final List<CSVRecord> firstRows = this.skipFirstRows();
+        final Set<Integer> selectedCols = factory.create(firstRows);
+        return new CSVRegularLoader(
+                new CSVRowsSelectedColsProvider(this.parser.iterator(), this.commonValues,
+                        this.normalizer, selectedCols), destTable);
     }
 
     /**
@@ -109,14 +125,19 @@ public class CSVData {
         });
     }
 
-    private void skipFirstRows() {
+    /**
+     * @return the header rows
+     */
+    private List<CSVRecord> skipFirstRows() {
+        final ArrayList<CSVRecord> ret = new ArrayList<>(this.firstRow);
         final Iterator<CSVRecord> iterator = this.parser.iterator();
         for (int i = 0; i < this.firstRow; i++) {
             if (iterator.hasNext()) {
-                iterator.next();
+                ret.add(iterator.next());
             } else {
-                return;
+                break;
             }
         }
+        return ret;
     }
 }
