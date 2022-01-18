@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CSVRegularLoader {
@@ -49,7 +50,7 @@ public class CSVRegularLoader {
     }
 
     public void load(final Connection connection, final int batchSize)
-            throws SQLException, ParseException {
+            throws SQLException {
         final boolean autoCommit = connection.getAutoCommit();
         if (autoCommit) {
             connection.setAutoCommit(false);
@@ -61,13 +62,18 @@ public class CSVRegularLoader {
         final List<DataType> types = this.destTable.getTypes();
         int count = 0;
         while (this.rowsProvider.hasNext()) {
-            this.rowsProvider.setStatementParameters(preparedStatement, types);
-            preparedStatement.addBatch();
-            count++;
-            if (count != 0 && count % batchSize == 0) {
-                CSVRegularLoader.logger.info(String.format("%s rows added", count));
-                preparedStatement.executeBatch();
-                connection.commit();
+            try {
+                this.rowsProvider.setStatementParameters(preparedStatement, types);
+                preparedStatement.addBatch();
+                count++;
+                if (count != 0 && count % batchSize == 0) {
+                    CSVRegularLoader.logger.info(String.format("%s rows added", count));
+                    preparedStatement.executeBatch();
+                    connection.commit();
+                }
+            } catch (final ParseException | SQLException e) {
+                CSVRegularLoader.logger.log(Level.SEVERE,
+                        "Error when adding record", e);
             }
         }
         CSVRegularLoader.logger.info(String.format("%s rows added", count));
