@@ -44,6 +44,7 @@ public class CSVRowsProvider implements RowsProvider {
     private final List<Object> commonValues;
 
     private final Iterator<CSVRecord> iterator;
+    private CSVRecord curRecord;
 
     public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
                            final Normalizer normalizer) {
@@ -51,6 +52,7 @@ public class CSVRowsProvider implements RowsProvider {
         this.iterator = iterator;
         this.commonValues = commonValues;
         this.normalizer = normalizer;
+        this.curRecord = null;
     }
 
     @Override
@@ -64,6 +66,7 @@ public class CSVRowsProvider implements RowsProvider {
             throws ParseException, SQLException {
         final int commonSize = this.commonValues.size();
         final CSVRecord record = this.iterator.next();
+        this.curRecord = record;
         for (int i = 0; i < commonSize; i++) {
             final DataType dataType = types.get(i);
             final Object value = this.commonValues.get(i);
@@ -94,4 +97,8 @@ public class CSVRowsProvider implements RowsProvider {
         }
     }
 
+    @Override
+    public CSVRecord getCurRecord() {
+        return this.curRecord;
+    }
 }

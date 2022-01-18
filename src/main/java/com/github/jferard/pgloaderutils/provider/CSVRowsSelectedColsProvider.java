@@ -47,6 +47,7 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
     private final List<Object> commonValues;
 
     private final Iterator<CSVRecord> iterator;
+    private CSVRecord curRecord;
 
     public CSVRowsSelectedColsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
                                        final Normalizer normalizer, final ColSelector selector) {
@@ -55,6 +56,7 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
         this.commonValues = commonValues;
         this.normalizer = normalizer;
         this.selector = selector;
+        this.curRecord = null;
     }
 
     @Override
@@ -68,6 +70,7 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
             throws ParseException, SQLException {
         final int commonSize = this.commonValues.size();
         final CSVRecord record = this.iterator.next();
+        this.curRecord = record;
         for (int i = 0; i < commonSize; i++) {
             final DataType dataType = types.get(i);
             final Object value = this.commonValues.get(i);
@@ -87,5 +90,10 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
             final DataType type = types.get(k);
             preparedStatement.setNull(1 + k, type.getSqlType());
         }
+    }
+
+    @Override
+    public CSVRecord getCurRecord() {
+        return this.curRecord;
     }
 }

@@ -25,12 +25,14 @@ package com.github.jferard.pgloaderutils.loader;
 import com.github.jferard.pgloaderutils.provider.RowsProvider;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Table;
+import org.apache.commons.csv.CSVRecord;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,7 +51,14 @@ public class CSVRegularLoader {
         this.destTable = destTable;
     }
 
-    public void load(final Connection connection, final int batchSize)
+    /**
+     * Load the data
+     * @param connection the connection
+     * @param batchSize the batch size
+     * @return the list of ignored records
+     * @throws SQLException if an SQL error occurs (!)
+     */
+    public List<CSVRecord> load(final Connection connection, final int batchSize)
             throws SQLException {
         final boolean autoCommit = connection.getAutoCommit();
         if (autoCommit) {
@@ -61,6 +70,7 @@ public class CSVRegularLoader {
                 connection.prepareStatement(this.destTable.insertValuesQuery());
         final List<DataType> types = this.destTable.getTypes();
         int count = 0;
+        final List<CSVRecord> ignoredRecords = new ArrayList<>();
         while (this.rowsProvider.hasNext()) {
             try {
                 this.rowsProvider.setStatementParameters(preparedStatement, types);
@@ -72,8 +82,10 @@ public class CSVRegularLoader {
                     connection.commit();
                 }
             } catch (final ParseException | SQLException e) {
+                final CSVRecord ignoredRecord = this.rowsProvider.getCurRecord();
                 CSVRegularLoader.logger.log(Level.SEVERE,
-                        "Error when adding record", e);
+                        String.format("Error when adding record %s", ignoredRecord), e);
+                ignoredRecords.add(ignoredRecord);
             }
         }
         CSVRegularLoader.logger.info(String.format("%s rows added", count));
@@ -83,6 +95,7 @@ public class CSVRegularLoader {
         if (autoCommit) {
             connection.setAutoCommit(true);
         }
+        return ignoredRecords;
     }
 
 }

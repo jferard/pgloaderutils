@@ -23,6 +23,7 @@
 package com.github.jferard.pgloaderutils.provider;
 
 import com.github.jferard.pgloaderutils.sql.DataType;
+import org.apache.commons.csv.CSVRecord;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -35,4 +36,6 @@ public interface RowsProvider {
     void setStatementParameters(PreparedStatement preparedStatement,
                                 List<DataType> types)
             throws ParseException, SQLException;
+
+    CSVRecord getCurRecord();
 }
