@@ -22,9 +22,7 @@
 
 package com.github.jferard.pgloaderutils.provider;
 
-import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
-import com.github.jferard.pgloaderutils.sql.Normalizer;
 import org.apache.commons.csv.CSVRecord;
 import org.easymock.EasyMock;
 import org.junit.Test;
@@ -55,15 +53,31 @@ public class CSVRowsProviderTest {
         PowerMock.replayAll();
         final CSVRowsProvider provider = new CSVRowsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                new Normalizer() {
-                    @Override
-                    public Object normalize(final String value, final DataType type)
-                            throws ParseException {
-                        return value;
-                    }
-                });
+                (value, type) -> value);
         provider.setStatementParameters(preparedStatement,
                 Collections.singletonList(GeneralDataType.INTEGER));
+        PowerMock.verifyAll();
+    }
+
+
+    @Test
+    public void testExpectedRecord() throws SQLException, ParseException {
+        final CSVRecord rec1 = PowerMock.createMock(CSVRecord.class);
+        final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
+
+        PowerMock.resetAll();
+        EasyMock.expect(rec1.size()).andReturn(2);
+        EasyMock.expect(rec1.get(0)).andReturn("foo");
+        EasyMock.expect(rec1.get(1)).andReturn("bar");
+        preparedStatement.setObject(1, "foo", 4);
+        preparedStatement.setObject(2, "bar", 12);
+
+        PowerMock.replayAll();
+        final CSVRowsProvider provider = new CSVRowsProvider(
+                Collections.singletonList(rec1).iterator(), Collections.emptyList(),
+                (value, type) -> value);
+        provider.setStatementParameters(preparedStatement,
+                Arrays.asList(GeneralDataType.INTEGER, GeneralDataType.TEXT));
         PowerMock.verifyAll();
     }
 
@@ -76,18 +90,12 @@ public class CSVRowsProviderTest {
         EasyMock.expect(rec1.size()).andReturn(1);
         EasyMock.expect(rec1.get(0)).andReturn("foo");
         preparedStatement.setObject(1, "foo", 4);
-        preparedStatement.setNull(2,  12);
+        preparedStatement.setNull(2, 12);
 
         PowerMock.replayAll();
         final CSVRowsProvider provider = new CSVRowsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                new Normalizer() {
-                    @Override
-                    public Object normalize(final String value, final DataType type)
-                            throws ParseException {
-                        return value;
-                    }
-                });
+                (value, type) -> value);
         provider.setStatementParameters(preparedStatement,
                 Arrays.asList(GeneralDataType.INTEGER, GeneralDataType.TEXT));
         PowerMock.verifyAll();
