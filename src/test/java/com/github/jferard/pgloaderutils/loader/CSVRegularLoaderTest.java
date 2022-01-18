@@ -28,9 +28,11 @@ import com.github.jferard.pgloaderutils.sql.Column;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
 import com.github.jferard.pgloaderutils.sql.Table;
+import com.google.common.collect.Lists;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.easymock.EasyMock;
+import org.junit.Assert;
 import org.junit.Test;
 import org.powermock.api.easymock.PowerMock;
 
@@ -42,8 +44,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 public class CSVRegularLoaderTest {
     @Test
@@ -95,7 +99,63 @@ public class CSVRegularLoaderTest {
                 ")")).andReturn(true);
 
         PowerMock.replayAll();
-        rl.load(connection, 10);
+        final List<CSVRecord> recs = rl.load(connection, 10);
+
+        PowerMock.verifyAll();
+        Assert.assertTrue(recs.isEmpty());
     }
 
+    @Test
+    public void testBadRow() throws IOException, SQLException, ParseException {
+        final Table t =
+                new Table("table",
+                        Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));
+        final Normalizer normalizer = (value, type) -> Integer.valueOf(value);
+        final Iterator<CSVRecord> iterator =
+                CSVFormat.DEFAULT.parse(new StringReader("foo\n1\nA")).iterator();
+        iterator.next();
+        final RowsProvider rp = new CSVRowsProvider(
+                iterator,
+                Collections.emptyList(),
+                normalizer);
+        final CSVRegularLoader rl = new CSVRegularLoader(rp, t);
+
+        final Connection connection = PowerMock.createMock(Connection.class);
+        final Statement statement = PowerMock.createMock(Statement.class);
+        final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
+
+        PowerMock.resetAll();
+        EasyMock.expect(connection.getAutoCommit()).andReturn(true);
+        connection.setAutoCommit(false);
+        EasyMock.expect(connection.createStatement()).andReturn(statement);
+        EasyMock.expect(statement.execute("UPDATE pg_index\n" +
+                "SET indisready=false\n" +
+                "WHERE indrelid = (\n" +
+                "    SELECT oid\n" +
+                "    FROM pg_class\n" +
+                "    WHERE relname='table'\n" +
+                ")")).andReturn(true);
+        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
+                "?\n" +
+                ")")).andReturn(preparedStatement);
+        preparedStatement.setObject(1, 1, Types.INTEGER);
+        preparedStatement.addBatch();
+        EasyMock.expect(preparedStatement.executeBatch()).andReturn(new int[] {1, 1});
+        connection.commit();
+        connection.setAutoCommit(true);
+        EasyMock.expect(statement.execute("UPDATE pg_index\n" +
+                "SET indisready=true\n" +
+                "WHERE indrelid = (\n" +
+                "    SELECT oid\n" +
+                "    FROM pg_class\n" +
+                "    WHERE relname='table'\n" +
+                ")")).andReturn(true);
+
+        PowerMock.replayAll();
+        final List<CSVRecord> recs = rl.load(connection, 10);
+
+        PowerMock.verifyAll();
+        Assert.assertEquals(1, recs.size());
+        Assert.assertEquals(Collections.singletonList("A"), Lists.newArrayList(recs.get(0)));
+    }
 }
