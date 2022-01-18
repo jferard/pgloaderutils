@@ -25,8 +25,10 @@ package com.github.jferard.pgloaderutils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -54,7 +56,14 @@ public class CSVFile {
 
     public CSVParser newCSVParser()
             throws IOException {
+        final BufferedReader reader = Files.newBufferedReader(this.path, this.charset);
+        if (this.charset.equals(StandardCharsets.UTF_8)) {
+            reader.mark(1);
+            if (reader.read() != '\uFEFF') { // the infamous BOM
+                reader.reset();
+            }
+        }
         return new CSVParser(
-                Files.newBufferedReader(this.path, this.charset), this.csvFormat);
+                reader, this.csvFormat);
     }
 }
