@@ -22,6 +22,7 @@
 package com.github.jferard.pgloaderutils.loader;
 
 import com.github.jferard.pgloaderutils.reader.OpenableReader;
+import com.github.jferard.pgloaderutils.sql.Column;
 import org.postgresql.copy.CopyManager;
 import org.postgresql.core.BaseConnection;
 
@@ -29,6 +30,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Format is (@see https://www.postgresql.org/docs/9.1/static/populate.html,
@@ -53,11 +56,11 @@ public class CSVBulkLoader {
                 String.format("ANALYZE \"%s\"", tableName));
     }
 
-    public static CSVBulkLoader toTable(final String tableName, final String columns) {
+    public static CSVBulkLoader toTable(final String tableName, final List<Column> columns) {
         return new CSVBulkLoader(String.format("TRUNCATE \"%s\"", tableName),
                 String.format(
                         "COPY \"%s\" %s FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
-                        tableName, columns),
+                        tableName, columnsToString(columns)),
                 String.format("ANALYZE \"%s\"", tableName));
     }
 
@@ -70,13 +73,18 @@ public class CSVBulkLoader {
                 String.format("ANALYZE \"%s\"", tableName));
     }
 
-    public static CSVBulkLoader toTable(final String tableName, final String columns,
+    public static CSVBulkLoader toTable(final String tableName, final List<Column> columns,
                                         final char delimiter, final char quote) {
         return new CSVBulkLoader(String.format("TRUNCATE \"%s\"", tableName),
                 String.format(
                         "COPY \"%s\" %s FROM STDIN WITH (FORMAT csv, DELIMITER '%s', QUOTE '%s')",
-                        tableName, columns, delimiter, quote),
+                        tableName, columnsToString(columns), delimiter, quote),
                 String.format("ANALYZE \"%s\"", tableName));
+    }
+
+    private static String columnsToString(final List<Column> columns) {
+        return "(\"" + columns.stream().map(Column::getName)
+                .collect(Collectors.joining("\", \"")) + "\")";
     }
 
     private final String truncateQuery;

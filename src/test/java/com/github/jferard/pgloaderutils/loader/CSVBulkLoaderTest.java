@@ -23,30 +23,59 @@
 package com.github.jferard.pgloaderutils.loader;
 
 import com.github.jferard.pgloaderutils.reader.SimpleFileReader;
+import com.github.jferard.pgloaderutils.sql.Column;
+import com.github.jferard.pgloaderutils.sql.GeneralDataType;
 import org.easymock.EasyMock;
 import org.junit.Test;
 import org.postgresql.copy.CopyIn;
-import org.postgresql.copy.CopyOperation;
 import org.postgresql.core.BaseConnection;
 import org.postgresql.core.Encoding;
 import org.postgresql.core.QueryExecutor;
-import org.postgresql.core.v3.CopyInImpl;
 import org.powermock.api.easymock.PowerMock;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class CSVBulkLoaderTest {
     @Test
-    public void test() throws IOException, SQLException, InterruptedException {
+    public void test1() throws IOException, SQLException, InterruptedException {
+        final CSVBulkLoader bl = CSVBulkLoader.toTable("table");
+        this.aTest(bl, "COPY \"table\" FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')");
+    }
+
+    @Test
+    public void test2() throws IOException, SQLException, InterruptedException {
+        final CSVBulkLoader bl = CSVBulkLoader.toTable("table", ';', '"');
+        this.aTest(bl, "COPY \"table\" FROM STDIN WITH (FORMAT csv, DELIMITER ';', QUOTE '\"')");
+    }
+
+    @Test
+    public void test3() throws IOException, SQLException, InterruptedException {
+        final List<Column> columns = Arrays.asList(new Column("foo",
+                GeneralDataType.TEXT), new Column("bar", GeneralDataType.INTEGER));
+        final CSVBulkLoader bl = CSVBulkLoader.toTable("table", columns);
+        this.aTest(bl, "COPY \"table\" (\"foo\", \"bar\") FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')");
+    }
+
+    @Test
+    public void test4() throws IOException, SQLException, InterruptedException {
+        final List<Column> columns = Arrays.asList(new Column("foo",
+                GeneralDataType.TEXT), new Column("bar", GeneralDataType.INTEGER));
+        final CSVBulkLoader bl = CSVBulkLoader.toTable("table", columns, ';', '"');
+        this.aTest(bl, "COPY \"table\" (\"foo\", \"bar\") FROM STDIN WITH (FORMAT csv, DELIMITER ';', QUOTE '\"')");
+    }
+
+    private void aTest(final CSVBulkLoader bl, final String copySQL)
+            throws SQLException, IOException, InterruptedException {
         final BaseConnection connection = PowerMock.createMock(BaseConnection.class);
         final Statement statement1 = PowerMock.createMock(Statement.class);
         final Statement statement2 = PowerMock.createMock(Statement.class);
         final QueryExecutor queryExecutor = PowerMock.createMock(QueryExecutor.class);
-        final CSVBulkLoader bl = CSVBulkLoader.toTable("table");
         final CopyIn copyOp = PowerMock.createMock(CopyIn.class);
 
         PowerMock.resetAll();
@@ -59,7 +88,7 @@ public class CSVBulkLoaderTest {
         EasyMock.expect(connection.getQueryExecutor()).andReturn(queryExecutor);
         EasyMock.expect(connection.getAutoCommit()).andReturn(false);
         EasyMock.expect(queryExecutor.startCopy(
-                        "COPY \"table\" FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')", false))
+                        copySQL, false))
                 .andReturn(copyOp);
         copyOp.writeToCopy(new byte[]{'a', ',', 'b', ',', 'c'}, 0, 5);
         EasyMock.expect(copyOp.endCopy()).andReturn(1l);
