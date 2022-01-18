@@ -22,6 +22,7 @@
 
 package com.github.jferard.pgloaderutils.provider;
 
+import com.github.jferard.pgloaderutils.ColSelector;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
 import org.apache.commons.csv.CSVRecord;
@@ -38,7 +39,7 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
      * The normalizer
      */
     private final Normalizer normalizer;
-    private final Set<Integer> selectedCols;
+    private final ColSelector selector;
 
     /**
      * Additional values: not in the file and common to all records, typically the souce name.
@@ -48,12 +49,12 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
     private final Iterator<CSVRecord> iterator;
 
     public CSVRowsSelectedColsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                                       final Normalizer normalizer, final Set<Integer> selectedCols) {
+                                       final Normalizer normalizer, final ColSelector selector) {
 
         this.iterator = iterator;
         this.commonValues = commonValues;
         this.normalizer = normalizer;
-        this.selectedCols = selectedCols;
+        this.selector = selector;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
             for (int i = commonSize; i < commonSize + recordSize; i++) {
                 final DataType type = types.get(i);
                 final int j = i - commonSize; // record index
-                if (this.selectedCols.contains(j)) {
+                if (this.selector.select(j)) {
                     final Object value = this.normalizer.normalize(record.get(j), type);
                     preparedStatement.setObject(1 + i, value, type.getSqlType());
                 }
@@ -93,7 +94,7 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
             for (int i = commonSize; i < commonSize + remainingColumnsCount; i++) {
                 final DataType type = types.get(i);
                 final int j = i - commonSize; // record index
-                if (this.selectedCols.contains(j)) {
+                if (this.selector.select(j)) {
                     final Object value = this.normalizer.normalize(record.get(j), type);
                     preparedStatement.setObject(1 + i, value, type.getSqlType());
                 }

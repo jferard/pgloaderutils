@@ -86,12 +86,12 @@ public class CSVData {
      * @return a loader
      */
     public CSVRegularLoader toRegularLoader(final Table destTable,
-                                            final SelectedColsFactory factory) {
+                                            final ColSelectorFactory factory) {
         final List<CSVRecord> firstRows = this.skipFirstRows();
-        final Set<Integer> selectedCols = factory.create(firstRows);
+        final ColSelector selector = factory.create(firstRows);
         return new CSVRegularLoader(
                 new CSVRowsSelectedColsProvider(this.parser.iterator(), this.commonValues,
-                        this.normalizer, selectedCols), destTable);
+                        this.normalizer, selector), destTable);
     }
 
     /**
