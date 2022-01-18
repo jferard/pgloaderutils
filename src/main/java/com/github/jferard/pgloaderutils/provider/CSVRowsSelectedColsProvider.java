@@ -74,32 +74,18 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
             preparedStatement.setObject(1 + i, value, dataType.getSqlType());
         }
         final int recordSize = record.size();
-        final int remainingColumnsCount = types.size() - commonSize;
-        if (recordSize < remainingColumnsCount) {
-            for (int i = commonSize; i < commonSize + recordSize; i++) {
-                final DataType type = types.get(i);
-                final int j = i - commonSize; // record index
-                if (this.selector.select(j)) {
-                    final Object value = this.normalizer.normalize(record.get(j), type);
-                    preparedStatement.setObject(1 + i, value, type.getSqlType());
-                }
-            }
-            // short record: set last cols to null
-            for (int i = commonSize + recordSize; i < commonSize + remainingColumnsCount; i++) {
-                final DataType type = types.get(i);
-                preparedStatement.setNull(1 + i, type.getSqlType());
-            }
-        } else {
-            // long record: ignore last values
-            for (int i = commonSize; i < commonSize + remainingColumnsCount; i++) {
-                final DataType type = types.get(i);
-                final int j = i - commonSize; // record index
-                if (this.selector.select(j)) {
-                    final Object value = this.normalizer.normalize(record.get(j), type);
-                    preparedStatement.setObject(1 + i, value, type.getSqlType());
-                }
+        int i = commonSize; // column index
+        for (int j = commonSize; j < commonSize + recordSize; j++) { // record index
+            final DataType type = types.get(i);
+            if (this.selector.select(j)) {
+                final Object value = this.normalizer.normalize(record.get(j), type);
+                preparedStatement.setObject(1 + i, value, type.getSqlType());
+                i++;
             }
         }
+        for (int k = i; k < types.size(); k++) { // short record
+            final DataType type = types.get(k);
+            preparedStatement.setNull(1 + k, type.getSqlType());
+        }
     }
-
 }
