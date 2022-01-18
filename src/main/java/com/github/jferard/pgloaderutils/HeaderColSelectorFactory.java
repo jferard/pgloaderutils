@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class HeaderColSelectorFactory implements ColSelectorFactory {
     private final Set<String> colNames;
 
-    HeaderColSelectorFactory(final List<String> colNames) {
+    public HeaderColSelectorFactory(final List<String> colNames) {
         this.colNames = colNames.stream().map(String::trim).collect(Collectors.toSet());
     }
 
