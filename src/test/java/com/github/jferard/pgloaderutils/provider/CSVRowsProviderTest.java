@@ -59,7 +59,6 @@ public class CSVRowsProviderTest {
         PowerMock.verifyAll();
     }
 
-
     @Test
     public void testExpectedRecord() throws SQLException, ParseException {
         final CSVRecord rec1 = PowerMock.createMock(CSVRecord.class);
