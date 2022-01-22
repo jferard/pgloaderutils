@@ -26,6 +26,7 @@ import com.github.jferard.pgloaderutils.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HashIndex implements Index {
     private final String name;
@@ -46,12 +47,14 @@ public class HashIndex implements Index {
         for (final Column column : this.columns) {
             columnNames.add(column.getName());
         }
-        return String.format("CREATE INDEX \"%s\" ON \"%s\" (\"%s\") USING hash", this.name, this.tableName,
-                Util.join(columnNames, "\", \""));
+        return String.format("CREATE INDEX %s ON %s (%s) USING hash",
+                Util.pgEscapeIdentifier(this.name), Util.pgEscapeIdentifier(this.tableName),
+                Util.join(columnNames.stream().map(Util::pgEscapeIdentifier)
+                        .collect(Collectors.toList()), ", "));
     }
 
     @Override
     public String dropIndexQuery() {
-        return String.format("DROP INDEX \"%s\"", this.name);
+        return String.format("DROP INDEX %s", Util.pgEscapeIdentifier(this.name));
     }
 }

@@ -41,10 +41,10 @@ public class HashIndexTest {
     }
 
     @Test
-    public void testOneCol() {
+    public void testCreateOneCol() {
         final HashIndex index = new HashIndex("index", "table",
                 Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));
-        Assert.assertEquals("CREATE INDEX \"index\" ON \"table\" (\"foo\") USING hash",
+        Assert.assertEquals("CREATE INDEX index ON table (foo) USING hash",
                 index.createIndexQuery());
     }
 
@@ -52,8 +52,17 @@ public class HashIndexTest {
     public void testTwoCols() {
         final HashIndex index = new HashIndex("index", "table",
                 Arrays.asList(new Column("foo", GeneralDataType.INTEGER),
-                        new Column("bar", GeneralDataType.BOOLEAN)));
-        Assert.assertEquals("CREATE INDEX \"index\" ON \"table\" (\"foo\", \"bar\") USING hash",
+                        new Column("2bar", GeneralDataType.BOOLEAN)));
+        Assert.assertEquals("CREATE INDEX index ON table (foo, \"2bar\") USING hash",
                 index.createIndexQuery());
     }
+
+    @Test
+    public void testDrop() {
+        final HashIndex index = new HashIndex("index", "table",
+                Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));
+        Assert.assertEquals("DROP INDEX index",
+                index.dropIndexQuery());
+    }
+
 }
