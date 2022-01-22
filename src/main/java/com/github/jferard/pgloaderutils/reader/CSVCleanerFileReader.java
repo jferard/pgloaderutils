@@ -34,7 +34,9 @@ import java.io.PipedWriter;
 import java.io.Reader;
 import java.nio.charset.Charset;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,6 +70,7 @@ public class CSVCleanerFileReader extends OpenableReader {
     private final CSVRecordCleaner recordCleaner;
     private final CSVParser parser;
     private Iterator<CSVRecord> iterator;
+    private final List<CSVRecord> ignoredRecords;
 
     public CSVCleanerFileReader(final CSVParser parser, final CSVRecordCleaner recordCleaner)
             throws IOException {
@@ -78,6 +81,7 @@ public class CSVCleanerFileReader extends OpenableReader {
         this.parser = parser;
         this.printer = new CSVPrinter(pipedWriter, CSVFormat.RFC4180);
         this.logger = Logger.getLogger("Cleaner");
+        this.ignoredRecords = new ArrayList<>();
     }
 
     @Override
@@ -88,14 +92,20 @@ public class CSVCleanerFileReader extends OpenableReader {
         try {
             while (this.iterator.hasNext()) {
                 record = this.iterator.next();
-                final Iterable<String> l = this.recordCleaner.cleanRecord(record);
-                this.printer.printRecord(l);
+                try {
+                    final Iterable<String> l = this.recordCleaner.cleanRecord(record);
+                    this.printer.printRecord(l);
+                } catch (ParseException | RuntimeException e) {
+                    this.logger.log(Level.SEVERE, String.format("Error at line %s. Last record was %s",
+                            this.parser.getRecordNumber(), record), e);
+                    this.ignoredRecords.add(record);
+                }
                 if (i % 100000 == 0) {
                     this.logger.info("Lines written:" + i);
                 }
                 i++;
             }
-        } catch (final IOException | ParseException e) {
+        } catch (final IOException e) {
             this.logger.log(Level.SEVERE, String.format("Error at line %s. Last record was %s",
                     this.parser.getRecordNumber(), record), e);
         }
@@ -111,5 +121,9 @@ public class CSVCleanerFileReader extends OpenableReader {
     @Override
     public int read(final char[] cbuf, final int off, final int len) throws IOException {
         return this.modifiedStreamReader.read(cbuf, off, len);
+    }
+
+    public List<CSVRecord> getIgnoredRecords() {
+        return this.ignoredRecords;
     }
 }

@@ -28,6 +28,7 @@ import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
 import com.github.jferard.pgloaderutils.sql.Table;
+import com.google.common.collect.Lists;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.junit.Assert;
@@ -59,5 +60,23 @@ public class CSVDataTest {
         reader.open();
         Assert.assertEquals("foo,1*,2*,3*\r\n", TestHelper.readAll(reader));
         reader.close();
+    }
+
+    @Test
+    public void testErr() throws IOException {
+        final CSVParser parser = new CSVParser(new StringReader("a,b,c\n1,2,3\n4,5,C\n7,8,9"), CSVFormat.DEFAULT);
+        final CSVData csvData = new CSVData(parser, Collections.emptyList(), 1,
+                (value, type) -> Integer.parseInt(value));
+        final CSVCleanerFileReader reader =
+                csvData.asOpenableReader(new Table("table", Arrays.asList(
+                        new Column("a", GeneralDataType.INTEGER),
+                        new Column("b", GeneralDataType.INTEGER),
+                        new Column("c", GeneralDataType.INTEGER)
+                )));
+        reader.open();
+        Assert.assertEquals("1,2,3\r\n7,8,9\r\n", TestHelper.readAll(reader));
+        reader.close();
+        Assert.assertEquals(1, reader.getIgnoredRecords().size());
+        Assert.assertEquals(Arrays.asList("4", "5", "C"), Lists.newArrayList(reader.getIgnoredRecords().get(0)));
     }
 }
