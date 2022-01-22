@@ -72,29 +72,21 @@ public class Table {
         return sb.toString();
     }
 
-    public DataType getType(final int i) {
-        return this.columns.get(i).getType();
-    }
-
-    public String disableAllIndicesQuery() {
-        return this.indIsReadyQuery(false);
-    }
-
-    public String enableAllIndicesQuery() {
-        return this.indIsReadyQuery(true);
-    }
-
-    private String indIsReadyQuery(final boolean indIsReady) {
-        return String.format("UPDATE pg_index\n" +
-                "SET indisready=%s\n" + // print true or false
+    public static String indIsReadyQuery() {
+        return "UPDATE pg_index\n" +
+                "SET indisready=?\n" +
                 "WHERE indrelid = (\n" +
                 "    SELECT oid\n" +
                 "    FROM pg_class\n" +
-                "    WHERE relname='%s'\n" + // single quote: the name. TODO: escape me
-                ")", indIsReady, this.name);
+                "    WHERE relname=?\n" +
+                ")";
     }
 
     public List<DataType> getTypes() {
         return this.columns.stream().map(Column::getType).collect(Collectors.toList());
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

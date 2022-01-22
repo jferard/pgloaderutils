@@ -51,29 +51,14 @@ public class TableTest {
     }
 
     @Test
-    public void testDisable() {
-        final Table table = new Table("table", Arrays.asList(new Column("foo", GeneralDataType.INTEGER),
-                new Column("bar", GeneralDataType.BOOLEAN)));
+    public void testIndex() {
         Assert.assertEquals("UPDATE pg_index\n" +
-                "SET indisready=false\n" +
+                "SET indisready=?\n" +
                 "WHERE indrelid = (\n" +
                 "    SELECT oid\n" +
                 "    FROM pg_class\n" +
-                "    WHERE relname='table'\n" +
-                ")", table.disableAllIndicesQuery());
-    }
-
-    @Test
-    public void testEnable() {
-        final Table table = new Table("table", Arrays.asList(new Column("foo", GeneralDataType.INTEGER),
-                new Column("bar", GeneralDataType.BOOLEAN)));
-        Assert.assertEquals("UPDATE pg_index\n" +
-                "SET indisready=true\n" +
-                "WHERE indrelid = (\n" +
-                "    SELECT oid\n" +
-                "    FROM pg_class\n" +
-                "    WHERE relname='table'\n" +
-                ")", table.enableAllIndicesQuery());
+                "    WHERE relname=?\n" +
+                ")", Table.indIsReadyQuery());
     }
 
     @Test

@@ -22,6 +22,7 @@
 
 package com.github.jferard.pgloaderutils.loader;
 
+import com.github.jferard.pgloaderutils.Util;
 import com.github.jferard.pgloaderutils.provider.RowsProvider;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Table;
@@ -64,21 +65,22 @@ public class CSVRegularLoader {
         if (autoCommit) {
             connection.setAutoCommit(false);
         }
-        final Statement statement = connection.createStatement();
-        statement.execute(this.destTable.disableAllIndicesQuery());
-        final PreparedStatement preparedStatement =
+        final PreparedStatement indexStatement = connection.prepareStatement(Table.indIsReadyQuery());
+        this.setIndIsReady(indexStatement, false);
+
+        final PreparedStatement insertStatement =
                 connection.prepareStatement(this.destTable.insertValuesQuery());
         final List<DataType> types = this.destTable.getTypes();
         int count = 0;
         final List<CSVRecord> ignoredRecords = new ArrayList<>();
         while (this.rowsProvider.hasNext()) {
             try {
-                this.rowsProvider.setStatementParameters(preparedStatement, types);
-                preparedStatement.addBatch();
+                this.rowsProvider.setStatementParameters(insertStatement, types);
+                insertStatement.addBatch();
                 count++;
                 if (count != 0 && count % batchSize == 0) {
                     CSVRegularLoader.logger.info(String.format("%s rows added", count));
-                    preparedStatement.executeBatch();
+                    insertStatement.executeBatch();
                     connection.commit();
                 }
             } catch (final ParseException | RuntimeException | SQLException e) {
@@ -89,13 +91,23 @@ public class CSVRegularLoader {
             }
         }
         CSVRegularLoader.logger.info(String.format("%s rows added", count));
-        preparedStatement.executeBatch();
+        insertStatement.executeBatch();
         connection.commit();
-        statement.execute(this.destTable.enableAllIndicesQuery()); // + REINDEX "name";
+        this.setIndIsReady(indexStatement, true);
+        final Statement statement = connection.createStatement();
+        statement.execute("REINDEX TABLE "+ Util.pgEscapeIdentifier(this.destTable.getName()));
+        connection.commit();
         if (autoCommit) {
             connection.setAutoCommit(true);
         }
         return ignoredRecords;
+    }
+
+    private void setIndIsReady(final PreparedStatement indexStatement, final boolean indIsReady)
+            throws SQLException {
+        indexStatement.setBoolean(1, indIsReady);
+        indexStatement.setString(2, this.destTable.getName());
+        indexStatement.execute();
     }
 
 }
