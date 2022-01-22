@@ -37,12 +37,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Collections;
 
 public class CSVDataTest {
     @Test
-    public void test() throws IOException {
+    public void testAsOpenableReader() throws IOException {
         final CSVParser parser = new CSVParser(new StringReader("a,b,c\n1,2,3"), CSVFormat.DEFAULT);
-        final CSVData csvData = new CSVData(parser, Arrays.asList("foo"), 1, new Normalizer() {
+        final CSVData csvData = new CSVData(parser, Collections.singletonList("foo"), 1, new Normalizer() {
             @Override
             public Object normalize(final String value, final DataType type) throws ParseException {
                 return value + "*";
@@ -59,5 +60,4 @@ public class CSVDataTest {
         Assert.assertEquals("foo,1*,2*,3*\r\n", TestHelper.readAll(reader));
         reader.close();
     }
-
 }

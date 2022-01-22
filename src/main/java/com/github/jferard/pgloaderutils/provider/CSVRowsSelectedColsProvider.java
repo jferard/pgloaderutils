@@ -77,22 +77,24 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
             preparedStatement.setObject(1 + i, value, dataType.getSqlType());
         }
         final int recordSize = record.size();
-        int i = commonSize; // column index
+        int k = commonSize; // column index
         final int colsCount = types.size();
-        for (int j = commonSize; j < commonSize + recordSize; j++) { // record index
-            final DataType type = types.get(i);
+        for (int i = commonSize; i < commonSize + recordSize; i++) { // record index
+            final DataType type = types.get(k);
+            final int j = i - commonSize; // record index
             if (this.selector.select(j)) {
                 final Object value = this.normalizer.normalize(record.get(j), type);
-                preparedStatement.setObject(1 + i, value, type.getSqlType());
-                i++;
-                if (i >= colsCount) {
+                preparedStatement.setObject(1 + k, value, type.getSqlType());
+                k++;
+                if (k >= colsCount) {
                     return;
                 }
             }
         }
-        for (int k = i; k < colsCount; k++) { // short record
+        while (k < colsCount) { // short record
             final DataType type = types.get(k);
             preparedStatement.setNull(1 + k, type.getSqlType());
+            k++;
         }
     }
 
