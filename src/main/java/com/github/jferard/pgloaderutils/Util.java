@@ -79,4 +79,7 @@ public class Util {
                 break;
         }
     }
+
+    // TODO: pgEscapeIdentifier(name)
+    // TODO: pgEscapeString(s)
 }
