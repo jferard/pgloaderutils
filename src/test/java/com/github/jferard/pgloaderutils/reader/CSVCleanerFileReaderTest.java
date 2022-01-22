@@ -28,8 +28,10 @@ import org.apache.commons.csv.CSVRecord;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,4 +56,21 @@ public class CSVCleanerFileReaderTest {
         r.close();
     }
 
+    @Test
+    public void testFromStream() throws IOException {
+        final CSVCleanerFileReader r =
+                CSVCleanerFileReader.fromStream(new ByteArrayInputStream("a;b;c\n1,0;2;3".getBytes(
+                                StandardCharsets.UTF_8)), StandardCharsets.UTF_8,
+                        CSVFormat.RFC4180.withDelimiter(';'), record -> {
+                            final List<String> ret = new ArrayList<>(record.size());
+                            ret.add(0, record.get(0).replace(',', '.'));
+                            ret.add(1, record.get(1));
+                            ret.add(2, record.get(2));
+                            return ret;
+                        });
+        r.open();
+        Assert.assertEquals("a,b,c\r\n" +
+                "1.0,2,3\r\n", TestHelper.readAll(r));
+        r.close();
+    }
 }
