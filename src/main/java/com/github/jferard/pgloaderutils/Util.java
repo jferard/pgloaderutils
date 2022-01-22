@@ -27,6 +27,7 @@ import java.nio.charset.Charset;
 import java.text.Normalizer;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class Util {
@@ -80,6 +81,21 @@ public class Util {
         }
     }
 
-    // TODO: pgEscapeIdentifier(name)
-    // TODO: pgEscapeString(s)
+    // https://www.postgresql.org/docs/current/sql-syntax-lexical.html
+    public static String pgEscapeIdentifier(final String identifier) {
+        if (Character.isJavaIdentifierStart(identifier.charAt(0))
+                && identifier.chars().skip(1).allMatch(Character::isJavaIdentifierPart)) {
+            return identifier.toLowerCase(Locale.ROOT);
+        } else {
+            return String.format("\"%s\"", identifier.replaceAll("\"", "\"\""));
+        }
+    }
+
+    public static String pgEscapeString(final String str) {
+        if (str.contains("'")) {
+            return String.format("E'%s'", str.replaceAll("'", "''"));
+        } else {
+            return String.format("'%s'", str);
+        }
+    }
 }

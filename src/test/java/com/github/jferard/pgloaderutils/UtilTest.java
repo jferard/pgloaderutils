@@ -62,4 +62,22 @@ public class UtilTest {
         Util.joinInto(sb, Arrays.asList("a", "b", "c"), ",");
         Assert.assertEquals("a,b,c", sb.toString());
     }
+
+    @Test
+    public void testEscapeId() {
+        Assert.assertEquals("table", Util.pgEscapeIdentifier("table"));
+        Assert.assertEquals("\"1table\"", Util.pgEscapeIdentifier("1table"));
+        Assert.assertEquals("\"a table\"", Util.pgEscapeIdentifier("a table"));
+        Assert.assertEquals("\"a \"\"table\"\"\"", Util.pgEscapeIdentifier("a \"table\""));
+        Assert.assertEquals("\"a \"\"\"\"table\"\"\"\"\"", Util.pgEscapeIdentifier("a \"\"table\"\""));
+    }
+
+    @Test
+    public void testEscapeStr() {
+        Assert.assertEquals("'table'", Util.pgEscapeString("table"));
+        Assert.assertEquals("'1table'", Util.pgEscapeString("1table"));
+        Assert.assertEquals("'a table'", Util.pgEscapeString("a table"));
+        Assert.assertEquals("E'a ''table'''", Util.pgEscapeString("a 'table'"));
+        Assert.assertEquals("E'a ''''table'''''", Util.pgEscapeString("a ''table''"));
+    }
 }
