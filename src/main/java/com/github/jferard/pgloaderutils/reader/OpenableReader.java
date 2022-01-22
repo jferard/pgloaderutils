@@ -23,11 +23,12 @@ package com.github.jferard.pgloaderutils.reader;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.sql.SQLException;
 
 /**
  * An OpenableReader is a basic reader that must be opened.
  * All read instructions are blocked until {@code open()} is called.
- *
+ * <p>
  * This is useful to write a multi-threaded application:
  * <pre>
  *     thread.start(); // this thread reads data from reader, and closes it
@@ -36,23 +37,35 @@ import java.io.Reader;
  * </pre>
  */
 public abstract class OpenableReader extends Reader {
-	private IOException ioException;
+    private IOException ioException;
+    private SQLException sqlException;
 
     /**
      * Unlock read
+     *
      * @throws IOException
      */
     public abstract void open() throws IOException;
 
     /**
-     *
-     * @param e
+     * @param e the exception
      */
     public void setException(final IOException e) {
-		this.ioException = e;
-	}
-	
-	public IOException getException() {
-		return this.ioException;
-	}
+        this.ioException = e;
+    }
+
+    /**
+     * @param e the exception
+     */
+    public void setException(final SQLException e) {
+        this.sqlException = e;
+    }
+
+    public IOException getIOException() {
+        return this.ioException;
+    }
+
+    public SQLException getSQLException() {
+        return this.sqlException;
+    }
 }

@@ -134,9 +134,9 @@ public class CSVBulkLoader {
             public void run() {
                 try {
                     copyManager.copyIn(copyQuery, reader);
-                } catch (final SQLException e) {
-                    e.printStackTrace();
                 } catch (final IOException e) {
+                    reader.setException(e);
+                } catch (final SQLException e) {
                     reader.setException(e);
                 } finally {
                     try {
@@ -156,9 +156,13 @@ public class CSVBulkLoader {
         // wait for the end of flood
         thread.join();
 
-        final IOException exception = reader.getException();
-        if (exception != null) {
-            throw exception;
+        final IOException ioException = reader.getIOException();
+        if (ioException != null) {
+            throw ioException;
+        }
+        final SQLException sqlException = reader.getSQLException();
+        if (sqlException != null) {
+            throw sqlException;
         }
 
         final Statement statement = connection.createStatement();
