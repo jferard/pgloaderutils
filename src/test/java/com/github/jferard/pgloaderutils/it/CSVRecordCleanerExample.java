@@ -22,12 +22,12 @@
 
 package com.github.jferard.pgloaderutils.it;
 
-import com.github.jferard.pgloaderutils.reader.CSVRecordCleaner;
+import com.github.jferard.pgloaderutils.reader.CSVRecordProcessor;
 import org.apache.commons.csv.CSVRecord;
 
 import java.util.Iterator;
 
-public class CSVRecordCleanerExample implements CSVRecordCleaner {
+public class CSVRecordCleanerExample implements CSVRecordProcessor {
 
 	/* (non-Javadoc)
 	 * @see com.github.jferard.csv.CSVRecordCleaner#cleanRecord(org.apache.commons.csv.CSVRecord)

@@ -38,9 +38,9 @@ import java.util.List;
 public class CSVCleanerFileReaderTest {
     @Test
     public void test() throws IOException {
-        final CSVCleanerFileReader r =
-                CSVCleanerFileReader.fromReader(new StringReader("a;b;c\n1,0;2;3"),
-                        CSVFormat.RFC4180.withDelimiter(';'), new CSVRecordCleaner() {
+        final CSVProcessorFileReader r =
+                CSVProcessorFileReader.fromReader(new StringReader("a;b;c\n1,0;2;3"),
+                        CSVFormat.RFC4180.withDelimiter(';'), new CSVRecordProcessor() {
                             @Override
                             public Iterable<String> cleanRecord(final CSVRecord record) {
                                 final List<String> ret = new ArrayList<>(record.size());
@@ -58,8 +58,8 @@ public class CSVCleanerFileReaderTest {
 
     @Test
     public void testFromStream() throws IOException {
-        final CSVCleanerFileReader r =
-                CSVCleanerFileReader.fromStream(new ByteArrayInputStream("a;b;c\n1,0;2;3".getBytes(
+        final CSVProcessorFileReader r =
+                CSVProcessorFileReader.fromStream(new ByteArrayInputStream("a;b;c\n1,0;2;3".getBytes(
                                 StandardCharsets.UTF_8)), StandardCharsets.UTF_8,
                         CSVFormat.RFC4180.withDelimiter(';'), record -> {
                             final List<String> ret = new ArrayList<>(record.size());

@@ -25,8 +25,8 @@ package com.github.jferard.pgloaderutils;
 import com.github.jferard.pgloaderutils.loader.CSVRegularLoader;
 import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
 import com.github.jferard.pgloaderutils.provider.CSVRowsSelectedColsProvider;
-import com.github.jferard.pgloaderutils.reader.CSVCleanerFileReader;
-import com.github.jferard.pgloaderutils.reader.CSVRecordCleaner;
+import com.github.jferard.pgloaderutils.reader.CSVProcessorFileReader;
+import com.github.jferard.pgloaderutils.reader.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
 import com.github.jferard.pgloaderutils.sql.Table;
@@ -96,12 +96,12 @@ public class CSVData {
     /**
      * @param destTable The table
      */
-    public CSVCleanerFileReader asOpenableReader(final Table destTable) throws IOException {
+    public CSVProcessorFileReader asOpenableReader(final Table destTable) throws IOException {
         final List<Object> commonValues = this.commonValues;
         final Normalizer normalizer = this.normalizer;
         this.skipFirstRows();
         final List<DataType> types = destTable.getTypes();
-        return new CSVCleanerFileReader(this.parser, new CSVRecordCleaner() {
+        return new CSVProcessorFileReader(this.parser, new CSVRecordProcessor() {
             @Override
             public Iterable<String> cleanRecord(final CSVRecord record) {
                 final int commonSize = commonValues.size();

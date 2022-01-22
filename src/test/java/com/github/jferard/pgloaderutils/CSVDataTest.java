@@ -22,7 +22,7 @@
 
 package com.github.jferard.pgloaderutils;
 
-import com.github.jferard.pgloaderutils.reader.CSVCleanerFileReader;
+import com.github.jferard.pgloaderutils.reader.CSVProcessorFileReader;
 import com.github.jferard.pgloaderutils.sql.Column;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
@@ -50,7 +50,7 @@ public class CSVDataTest {
                 return value + "*";
             }
         });
-        final CSVCleanerFileReader reader =
+        final CSVProcessorFileReader reader =
                 csvData.asOpenableReader(new Table("table", Arrays.asList(
                         new Column("foo", GeneralDataType.TEXT),
                         new Column("a", GeneralDataType.TEXT),
@@ -67,7 +67,7 @@ public class CSVDataTest {
         final CSVParser parser = new CSVParser(new StringReader("a,b,c\n1,2,3\n4,5,C\n7,8,9"), CSVFormat.DEFAULT);
         final CSVData csvData = new CSVData(parser, Collections.emptyList(), 1,
                 (value, type) -> Integer.parseInt(value));
-        final CSVCleanerFileReader reader =
+        final CSVProcessorFileReader reader =
                 csvData.asOpenableReader(new Table("table", Arrays.asList(
                         new Column("a", GeneralDataType.INTEGER),
                         new Column("b", GeneralDataType.INTEGER),

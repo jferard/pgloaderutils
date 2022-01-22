@@ -45,36 +45,35 @@ import java.util.logging.Logger;
  *
  * @author Julien Férard
  */
-public class CSVCleanerFileReader extends OpenableReader {
+public class CSVProcessorFileReader extends OpenableReader {
     private static final int BUFFER_SIZE = 4096;
 
-    public static CSVCleanerFileReader fromStream(final InputStream stream, final Charset charset,
-                                                  final CSVFormat format,
-                                                  final CSVRecordCleaner recordCleaner)
+    public static CSVProcessorFileReader fromStream(final InputStream stream, final Charset charset,
+                                                    final CSVFormat format,
+                                                    final CSVRecordProcessor recordCleaner)
             throws IOException {
         final Reader streamReader = new InputStreamReader(stream, charset);
         final CSVParser parser = new CSVParser(streamReader, format);
-        return new CSVCleanerFileReader(parser, recordCleaner);
+        return new CSVProcessorFileReader(parser, recordCleaner);
     }
 
-    public static CSVCleanerFileReader fromReader(final Reader reader, final CSVFormat format,
-                                                  final CSVRecordCleaner recordCleaner)
+    public static CSVProcessorFileReader fromReader(final Reader reader, final CSVFormat format,
+                                                    final CSVRecordProcessor recordCleaner)
             throws IOException {
         final CSVParser parser = new CSVParser(reader, format);
-        return new CSVCleanerFileReader(parser, recordCleaner);
+        return new CSVProcessorFileReader(parser, recordCleaner);
     }
 
     private final Logger logger;
     private final Reader modifiedStreamReader;
     private final CSVPrinter printer;
-    private final CSVRecordCleaner recordCleaner;
+    private final CSVRecordProcessor recordProcessor;
     private final CSVParser parser;
-    private Iterator<CSVRecord> iterator;
     private final List<CSVRecord> ignoredRecords;
 
-    public CSVCleanerFileReader(final CSVParser parser, final CSVRecordCleaner recordCleaner)
+    public CSVProcessorFileReader(final CSVParser parser, final CSVRecordProcessor recordProcessor)
             throws IOException {
-        this.recordCleaner = recordCleaner;
+        this.recordProcessor = recordProcessor;
         final PipedWriter pipedWriter = new PipedWriter();
         this.modifiedStreamReader = new PipedReader(pipedWriter, BUFFER_SIZE);
 
@@ -88,14 +87,14 @@ public class CSVCleanerFileReader extends OpenableReader {
     public void open() throws IOException {
         int i = 0;
         CSVRecord record = null;
-        this.iterator = this.parser.iterator();
+        final Iterator<CSVRecord> iterator = this.parser.iterator();
         try {
-            while (this.iterator.hasNext()) {
-                record = this.iterator.next();
+            while (iterator.hasNext()) {
+                record = iterator.next();
                 try {
-                    final Iterable<String> l = this.recordCleaner.cleanRecord(record);
+                    final Iterable<String> l = this.recordProcessor.cleanRecord(record);
                     this.printer.printRecord(l);
-                } catch (ParseException | RuntimeException e) {
+                } catch (final ParseException | RuntimeException e) {
                     this.logger.log(Level.SEVERE, String.format("Error at line %s. Last record was %s",
                             this.parser.getRecordNumber(), record), e);
                     this.ignoredRecords.add(record);
