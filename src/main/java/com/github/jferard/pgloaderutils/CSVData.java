@@ -73,13 +73,13 @@ public class CSVData {
     public CSVRegularLoader toRegularLoader(final Table destTable) {
         this.skipFirstRows();
         return new CSVRegularLoader(
-                new CSVRowsProvider(this.parser.iterator(), this.commonValues, this.normalizer),
+                CSVRowsProvider.create(this.parser.iterator(), this.commonValues, this.normalizer),
                 destTable);
     }
 
     /**
      * @param destTable The table
-     * @param factory a factory to create the set of selected cols
+     * @param factory   a factory to create the set of selected cols
      * @return a loader
      */
     public CSVRegularLoader toRegularLoader(final Table destTable,
@@ -87,8 +87,21 @@ public class CSVData {
         final List<CSVRecord> firstRows = this.skipFirstRows();
         final ColSelector selector = factory.create(firstRows);
         return new CSVRegularLoader(
-                new CSVRowsProvider(this.parser.iterator(), this.commonValues,
+                CSVRowsProvider.create(this.parser.iterator(), this.commonValues,
                         this.normalizer, selector), destTable);
+    }
+
+    /**
+     * @param destTable       The table
+     * @param recordProcessor a record processor
+     * @return a loader
+     */
+    public CSVRegularLoader toRegularLoader(final Table destTable,
+                                            final CSVRecordProcessor recordProcessor) {
+        this.skipFirstRows();
+        return new CSVRegularLoader(
+                new CSVRowsProvider(this.parser.iterator(), this.commonValues,
+                        this.normalizer, recordProcessor), destTable);
     }
 
     /**

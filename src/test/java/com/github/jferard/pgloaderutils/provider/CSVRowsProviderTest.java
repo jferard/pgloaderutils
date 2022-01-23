@@ -22,8 +22,6 @@
 
 package com.github.jferard.pgloaderutils.provider;
 
-import com.github.jferard.pgloaderutils.CSVRecordProcessor;
-import com.github.jferard.pgloaderutils.ColSelector;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
 import org.apache.commons.csv.CSVRecord;
 import org.easymock.EasyMock;
@@ -55,9 +53,9 @@ public class CSVRowsProviderTest {
         preparedStatement.setNull(2, Types.VARCHAR);
 
         PowerMock.replayAll();
-        final CSVRowsProvider provider = new CSVRowsProvider(
+        final CSVRowsProvider provider = CSVRowsProvider.create(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, (ColSelector)  i -> i % 2 == 0);
+                (value, type) -> value, i -> i % 2 == 0);
         provider.setStatementParameters(preparedStatement,
                 Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
         PowerMock.verifyAll();
@@ -76,9 +74,9 @@ public class CSVRowsProviderTest {
         preparedStatement.setObject(2, "baz", Types.VARCHAR);
 
         PowerMock.replayAll();
-        final CSVRowsProvider provider = new CSVRowsProvider(
+        final CSVRowsProvider provider = CSVRowsProvider.create(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, (ColSelector) i -> i % 2 == 0);
+                (value, type) -> value, i -> i % 2 == 0);
         provider.setStatementParameters(preparedStatement,
                 Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
         PowerMock.verifyAll();
@@ -98,9 +96,9 @@ public class CSVRowsProviderTest {
         preparedStatement.setObject(2, "baz", Types.VARCHAR);
 
         PowerMock.replayAll();
-        final CSVRowsProvider provider = new CSVRowsProvider(
+        final CSVRowsProvider provider = CSVRowsProvider.create(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, (ColSelector) i -> i % 2 == 0);
+                (value, type) -> value, i -> i % 2 == 0);
         provider.setStatementParameters(preparedStatement,
                 Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
         PowerMock.verifyAll();
@@ -116,7 +114,7 @@ public class CSVRowsProviderTest {
         preparedStatement.setObject(1, "foo", 4);
 
         PowerMock.replayAll();
-        final CSVRowsProvider provider = new CSVRowsProvider(
+        final CSVRowsProvider provider = CSVRowsProvider.create(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
                 (value, type) -> value);
         provider.setStatementParameters(preparedStatement,
@@ -135,7 +133,7 @@ public class CSVRowsProviderTest {
         preparedStatement.setObject(2, "bar", 12);
 
         PowerMock.replayAll();
-        final CSVRowsProvider provider = new CSVRowsProvider(
+        final CSVRowsProvider provider = CSVRowsProvider.create(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
                 (value, type) -> value);
         provider.setStatementParameters(preparedStatement,
@@ -149,12 +147,12 @@ public class CSVRowsProviderTest {
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
         PowerMock.resetAll();
-        EasyMock.expect(rec1.iterator()).andReturn(Arrays.asList("foo").iterator());
+        EasyMock.expect(rec1.iterator()).andReturn(Collections.singletonList("foo").iterator());
         preparedStatement.setObject(1, "foo", 4);
         preparedStatement.setNull(2, 12);
 
         PowerMock.replayAll();
-        final CSVRowsProvider provider = new CSVRowsProvider(
+        final CSVRowsProvider provider = CSVRowsProvider.create(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
                 (value, type) -> value);
         provider.setStatementParameters(preparedStatement,
@@ -174,7 +172,7 @@ public class CSVRowsProviderTest {
         PowerMock.replayAll();
         final CSVRowsProvider provider = new CSVRowsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, (CSVRecordProcessor)  record -> Arrays.asList(null, null));
+                (value, type) -> value, record -> Arrays.asList(null, null));
         provider.setStatementParameters(preparedStatement,
                 Arrays.asList(GeneralDataType.INTEGER, GeneralDataType.TEXT));
         PowerMock.verifyAll();

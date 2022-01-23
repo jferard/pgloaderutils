@@ -100,15 +100,4 @@ public class Util {
         }
     }
 
-    public static CSVRecordProcessor processorFromSelector(final ColSelector selector) {
-        return record -> {
-            final List<String> ret = new ArrayList<>(record.size());
-            for (int i = 0; i < record.size(); i++) {
-                if (selector.select(i)) {
-                    ret.add(record.get(i));
-                }
-            }
-            return ret;
-        };
-    }
 }

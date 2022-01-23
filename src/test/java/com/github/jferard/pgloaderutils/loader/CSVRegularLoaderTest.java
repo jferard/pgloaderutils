@@ -62,7 +62,7 @@ public class CSVRegularLoaderTest {
         final Iterator<CSVRecord> iterator =
                 CSVFormat.DEFAULT.parse(new StringReader("foo\n1\n2")).iterator();
         iterator.next();
-        final RowsProvider rp = new CSVRowsProvider(
+        final RowsProvider rp = CSVRowsProvider.create(
                 iterator,
                 Collections.emptyList(),
                 normalizer);
@@ -95,7 +95,7 @@ public class CSVRegularLoaderTest {
         insertStatement.addBatch();
         insertStatement.setObject(1, 2, Types.INTEGER);
         insertStatement.addBatch();
-        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[] {1, 1});
+        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[]{1, 1});
         connection.commit();
 
         indexStatement.setBoolean(1, true);
@@ -124,7 +124,7 @@ public class CSVRegularLoaderTest {
         final Iterator<CSVRecord> iterator =
                 CSVFormat.DEFAULT.parse(new StringReader("foo\n1\nA")).iterator();
         iterator.next();
-        final RowsProvider rp = new CSVRowsProvider(
+        final RowsProvider rp = CSVRowsProvider.create(
                 iterator,
                 Collections.emptyList(),
                 normalizer);
@@ -155,7 +155,7 @@ public class CSVRegularLoaderTest {
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, 1, Types.INTEGER);
         insertStatement.addBatch();
-        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[] {1, 1});
+        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[]{1, 1});
         connection.commit();
 
         indexStatement.setBoolean(1, true);
@@ -230,7 +230,7 @@ public class CSVRegularLoaderTest {
         insertStatement.setObject(3, "8*", Types.VARCHAR);
         insertStatement.setObject(4, "9*", Types.VARCHAR);
         insertStatement.addBatch();
-        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[] {1, 1, 1});
+        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[]{1, 1, 1});
         connection.commit();
 
         connection.setAutoCommit(true);
@@ -295,14 +295,14 @@ public class CSVRegularLoaderTest {
         insertStatement.setObject(2, 4, Types.INTEGER);
         insertStatement.setObject(3, "6*", Types.VARCHAR);
         insertStatement.addBatch();
-        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[] {1, 1});
+        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[]{1, 1});
         connection.commit();
 
         insertStatement.setObject(1, "foo", Types.VARCHAR);
         insertStatement.setObject(2, 7, Types.INTEGER);
         insertStatement.setObject(3, "9*", Types.VARCHAR);
         insertStatement.addBatch();
-        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[] {1});
+        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[]{1});
         connection.commit();
 
         indexStatement.setBoolean(1, true);

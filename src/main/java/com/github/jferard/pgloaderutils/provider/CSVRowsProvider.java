@@ -25,7 +25,6 @@ package com.github.jferard.pgloaderutils.provider;
 import com.github.jferard.pgloaderutils.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.ColSelector;
 import com.github.jferard.pgloaderutils.DummyCSVRecordProcessor;
-import com.github.jferard.pgloaderutils.Util;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
 import org.apache.commons.csv.CSVRecord;
@@ -33,6 +32,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,9 +51,23 @@ public class CSVRowsProvider implements RowsProvider {
     private final CSVRecordProcessor recordProcessor;
     private CSVRecord curRecord;
 
-    public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
+    public static CSVRowsProvider create(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
                            final Normalizer normalizer, final ColSelector selector) {
-        this(iterator, commonValues, normalizer, Util.processorFromSelector(selector));
+        final CSVRecordProcessor recordProcessor = record -> {
+            final List<String> ret = new ArrayList<>(record.size());
+            for (int i = 0; i < record.size(); i++) {
+                if (selector.select(i)) {
+                    ret.add(record.get(i));
+                }
+            }
+            return ret;
+        };
+        return new CSVRowsProvider(iterator, commonValues, normalizer, recordProcessor);
+    }
+
+    public static CSVRowsProvider create(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
+                           final Normalizer normalizer) {
+        return new CSVRowsProvider(iterator, commonValues, normalizer, DummyCSVRecordProcessor.INSTANCE);
     }
 
     public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
@@ -63,11 +77,6 @@ public class CSVRowsProvider implements RowsProvider {
         this.normalizer = normalizer;
         this.recordProcessor = recordProcessor;
         this.curRecord = null;
-    }
-
-    public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                           final Normalizer normalizer) {
-        this(iterator, commonValues, normalizer, DummyCSVRecordProcessor.INSTANCE);
     }
 
     @Override
