@@ -47,7 +47,7 @@ public class CSVRowsSelectedColsProviderTest {
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
         PowerMock.resetAll();
-        EasyMock.expect(rec1.size()).andReturn(2);
+        EasyMock.expect(rec1.size()).andReturn(2).anyTimes();
         EasyMock.expect(rec1.get(0)).andReturn("foo");
         preparedStatement.setObject(1, "foo", Types.VARCHAR);
         preparedStatement.setNull(2, Types.VARCHAR);
@@ -67,7 +67,7 @@ public class CSVRowsSelectedColsProviderTest {
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
         PowerMock.resetAll();
-        EasyMock.expect(rec1.size()).andReturn(3);
+        EasyMock.expect(rec1.size()).andReturn(3).anyTimes();
         EasyMock.expect(rec1.get(0)).andReturn("foo");
         EasyMock.expect(rec1.get(2)).andReturn("baz");
         preparedStatement.setObject(1, "foo", Types.VARCHAR);
@@ -88,9 +88,10 @@ public class CSVRowsSelectedColsProviderTest {
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
         PowerMock.resetAll();
-        EasyMock.expect(rec1.size()).andReturn(5);
+        EasyMock.expect(rec1.size()).andReturn(5).anyTimes();
         EasyMock.expect(rec1.get(0)).andReturn("foo");
         EasyMock.expect(rec1.get(2)).andReturn("baz");
+        EasyMock.expect(rec1.get(4)).andReturn("x");
         preparedStatement.setObject(1, "foo", Types.VARCHAR);
         preparedStatement.setObject(2, "baz", Types.VARCHAR);
 

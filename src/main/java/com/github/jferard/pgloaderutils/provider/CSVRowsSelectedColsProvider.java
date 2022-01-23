@@ -22,6 +22,7 @@
 
 package com.github.jferard.pgloaderutils.provider;
 
+import com.github.jferard.pgloaderutils.reader.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.ColSelector;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
@@ -30,6 +31,7 @@ import org.apache.commons.csv.CSVRecord;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -39,7 +41,7 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
      * The normalizer
      */
     private final Normalizer normalizer;
-    private final ColSelector selector;
+//    private final ColSelector selector;
 
     /**
      * Additional values: not in the file and common to all records, typically the souce name.
@@ -47,6 +49,7 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
     private final List<Object> commonValues;
 
     private final Iterator<CSVRecord> iterator;
+    private final CSVRecordProcessor recordProcessor;
     private CSVRecord curRecord;
 
     public CSVRowsSelectedColsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
@@ -55,7 +58,16 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
         this.iterator = iterator;
         this.commonValues = commonValues;
         this.normalizer = normalizer;
-        this.selector = selector;
+        this.recordProcessor = record -> {
+            final List<String> ret = new ArrayList<>(record.size());
+            for (int i=0; i<record.size(); i++) {
+                if (selector.select(i)) {
+                    ret.add(record.get(i));
+                }
+            }
+            return ret;
+        };
+//        this.selector = selector;
         this.curRecord = null;
     }
 
@@ -69,26 +81,25 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
                                        final List<DataType> types)
             throws ParseException, SQLException {
         final int commonSize = this.commonValues.size();
-        final CSVRecord record = this.iterator.next();
-        this.curRecord = record;
+        final CSVRecord rawRecord = this.iterator.next();
+        this.curRecord = rawRecord;
+        final Iterable<String> record = this.recordProcessor.cleanRecord(rawRecord);
+
         for (int i = 0; i < commonSize; i++) {
             final DataType dataType = types.get(i);
             final Object value = this.commonValues.get(i);
             preparedStatement.setObject(1 + i, value, dataType.getSqlType());
         }
-        final int recordSize = record.size();
+//        final int recordSize = record.size();
         int k = commonSize; // column index
         final int colsCount = types.size();
-        for (int i = commonSize; i < commonSize + recordSize; i++) { // record index
+        for (final String v : record) {
             final DataType type = types.get(k);
-            final int j = i - commonSize; // record index
-            if (this.selector.select(j)) {
-                final Object value = this.normalizer.normalize(record.get(j), type);
-                preparedStatement.setObject(1 + k, value, type.getSqlType());
-                k++;
-                if (k >= colsCount) {
-                    return;
-                }
+            final Object value = this.normalizer.normalize(v, type);
+            preparedStatement.setObject(1 + k, value, type.getSqlType());
+            k++;
+            if (k >= colsCount) {
+                return;
             }
         }
         while (k < colsCount) { // short record
