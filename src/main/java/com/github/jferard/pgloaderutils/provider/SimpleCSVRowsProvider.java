@@ -22,10 +22,6 @@
 
 package com.github.jferard.pgloaderutils.provider;
 
-import com.github.jferard.pgloaderutils.CSVRecordProcessor;
-import com.github.jferard.pgloaderutils.ColSelector;
-import com.github.jferard.pgloaderutils.DummyCSVRecordProcessor;
-import com.github.jferard.pgloaderutils.Util;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
 import org.apache.commons.csv.CSVRecord;
@@ -36,7 +32,7 @@ import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 
-public class CSVRowsProvider implements RowsProvider {
+public class SimpleCSVRowsProvider implements RowsProvider {
     /**
      * The normalizer
      */
@@ -48,26 +44,15 @@ public class CSVRowsProvider implements RowsProvider {
     private final List<Object> commonValues;
 
     private final Iterator<CSVRecord> iterator;
-    private final CSVRecordProcessor recordProcessor;
     private CSVRecord curRecord;
 
-    public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                           final Normalizer normalizer, final ColSelector selector) {
-        this(iterator, commonValues, normalizer, Util.processorFromSelector(selector));
-    }
+    public SimpleCSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
+                                 final Normalizer normalizer) {
 
-    public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                           final Normalizer normalizer, final CSVRecordProcessor recordProcessor) {
         this.iterator = iterator;
         this.commonValues = commonValues;
         this.normalizer = normalizer;
-        this.recordProcessor = recordProcessor;
         this.curRecord = null;
-    }
-
-    public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                           final Normalizer normalizer) {
-        this(iterator, commonValues, normalizer, DummyCSVRecordProcessor.INSTANCE);
     }
 
     @Override
@@ -80,31 +65,35 @@ public class CSVRowsProvider implements RowsProvider {
                                        final List<DataType> types)
             throws ParseException, SQLException {
         final int commonSize = this.commonValues.size();
-        final CSVRecord rawRecord = this.iterator.next();
-        this.curRecord = rawRecord;
-        final Iterable<String> record = this.recordProcessor.cleanRecord(rawRecord);
-
+        final CSVRecord record = this.iterator.next();
+        this.curRecord = record;
         for (int i = 0; i < commonSize; i++) {
             final DataType dataType = types.get(i);
             final Object value = this.commonValues.get(i);
             preparedStatement.setObject(1 + i, value, dataType.getSqlType());
         }
-//        final int recordSize = record.size();
-        int k = commonSize; // column index
-        final int colsCount = types.size();
-        for (final String v : record) {
-            final DataType type = types.get(k);
-            final Object value = this.normalizer.normalize(v, type);
-            preparedStatement.setObject(1 + k, value, type.getSqlType());
-            k++;
-            if (k >= colsCount) {
-                return;
+        final int recordSize = record.size();
+        final int remainingColumnsCount = types.size() - commonSize;
+        if (recordSize < remainingColumnsCount) {
+            for (int i = commonSize; i < commonSize + recordSize; i++) {
+                final DataType type = types.get(i);
+                final int j = i - commonSize; // record index
+                final Object value = this.normalizer.normalize(record.get(j), type);
+                preparedStatement.setObject(1 + i, value, type.getSqlType());
             }
-        }
-        while (k < colsCount) { // short record
-            final DataType type = types.get(k);
-            preparedStatement.setNull(1 + k, type.getSqlType());
-            k++;
+            // short record: set last cols to null
+            for (int i = commonSize + recordSize; i < commonSize + remainingColumnsCount; i++) {
+                final DataType type = types.get(i);
+                preparedStatement.setNull(1 + i, type.getSqlType());
+            }
+        } else {
+            // long record: ignore last values
+            for (int i = commonSize; i < commonSize + remainingColumnsCount; i++) {
+                final DataType type = types.get(i);
+                final int j = i - commonSize; // record index
+                final Object value = this.normalizer.normalize(record.get(j), type);
+                preparedStatement.setObject(1 + i, value, type.getSqlType());
+            }
         }
     }
 

@@ -19,18 +19,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.github.jferard.pgloaderutils.reader;
+package com.github.jferard.pgloaderutils;
 
 import org.apache.commons.csv.CSVRecord;
 
-/**
- * A CSVRecordCleaner that does nothing.
- */
-public class DummyCSVRecordProcessor implements CSVRecordProcessor {
-	public static final DummyCSVRecordProcessor INSTANCE = new DummyCSVRecordProcessor();
+import java.text.ParseException;
 
-	@Override
-	public Iterable<String> cleanRecord(final CSVRecord record) {
-		return record;
-	}
+/**
+ * The class CSVRecordProcessor cleans and transforms a CSVRecord into a String iterable.
+ * It is used to clean a csv file on the fly.
+ *
+ * One may remove some fields, change the order of the fields, add common values.
+ *
+ * @author Julien Férard
+ */
+public interface CSVRecordProcessor {
+
+    /**
+     * @param record the commons csv record
+     * @return the strings cleaned
+     */
+    Iterable<String> cleanRecord(CSVRecord record) throws ParseException;
 }

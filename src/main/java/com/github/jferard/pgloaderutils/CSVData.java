@@ -24,9 +24,7 @@ package com.github.jferard.pgloaderutils;
 
 import com.github.jferard.pgloaderutils.loader.CSVRegularLoader;
 import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
-import com.github.jferard.pgloaderutils.provider.CSVRowsSelectedColsProvider;
 import com.github.jferard.pgloaderutils.reader.CSVProcessorFileReader;
-import com.github.jferard.pgloaderutils.reader.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
 import com.github.jferard.pgloaderutils.sql.Table;
@@ -75,7 +73,7 @@ public class CSVData {
     public CSVRegularLoader toRegularLoader(final Table destTable) {
         this.skipFirstRows();
         return new CSVRegularLoader(
-                new CSVRowsSelectedColsProvider(this.parser.iterator(), this.commonValues, this.normalizer),
+                new CSVRowsProvider(this.parser.iterator(), this.commonValues, this.normalizer),
                 destTable);
     }
 
@@ -89,7 +87,7 @@ public class CSVData {
         final List<CSVRecord> firstRows = this.skipFirstRows();
         final ColSelector selector = factory.create(firstRows);
         return new CSVRegularLoader(
-                new CSVRowsSelectedColsProvider(this.parser.iterator(), this.commonValues,
+                new CSVRowsProvider(this.parser.iterator(), this.commonValues,
                         this.normalizer, selector), destTable);
     }
 

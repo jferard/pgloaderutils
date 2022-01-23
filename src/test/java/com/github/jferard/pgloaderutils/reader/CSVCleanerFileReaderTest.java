@@ -22,6 +22,7 @@
 
 package com.github.jferard.pgloaderutils.reader;
 
+import com.github.jferard.pgloaderutils.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.TestHelper;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;

@@ -25,6 +25,7 @@ package com.github.jferard.pgloaderutils;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -97,5 +98,17 @@ public class Util {
         } else {
             return String.format("'%s'", str);
         }
+    }
+
+    public static CSVRecordProcessor processorFromSelector(final ColSelector selector) {
+        return record -> {
+            final List<String> ret = new ArrayList<>(record.size());
+            for (int i = 0; i < record.size(); i++) {
+                if (selector.select(i)) {
+                    ret.add(record.get(i));
+                }
+            }
+            return ret;
+        };
     }
 }

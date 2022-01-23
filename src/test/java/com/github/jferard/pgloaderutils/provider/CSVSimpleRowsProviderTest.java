@@ -22,7 +22,6 @@
 
 package com.github.jferard.pgloaderutils.provider;
 
-import com.github.jferard.pgloaderutils.ColSelector;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
 import org.apache.commons.csv.CSVRecord;
 import org.easymock.EasyMock;
@@ -34,31 +33,29 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(CSVRecord.class)
-public class CSVRowsSelectedColsProviderTest {
+public class CSVSimpleRowsProviderTest {
     @Test
-    public void testShortRecord() throws SQLException, ParseException {
+    public void testLongRecord() throws SQLException, ParseException {
         final CSVRecord rec1 = PowerMock.createMock(CSVRecord.class);
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
         PowerMock.resetAll();
-        EasyMock.expect(rec1.size()).andReturn(2).anyTimes();
+        EasyMock.expect(rec1.size()).andReturn(2);
         EasyMock.expect(rec1.get(0)).andReturn("foo");
-        preparedStatement.setObject(1, "foo", Types.VARCHAR);
-        preparedStatement.setNull(2, Types.VARCHAR);
+        preparedStatement.setObject(1, "foo", 4);
 
         PowerMock.replayAll();
-        final CSVRowsSelectedColsProvider provider = new CSVRowsSelectedColsProvider(
+        final SimpleCSVRowsProvider provider = new SimpleCSVRowsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, (ColSelector)  i -> i % 2 == 0);
+                (value, type) -> value);
         provider.setStatementParameters(preparedStatement,
-                Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
+                Collections.singletonList(GeneralDataType.INTEGER));
         PowerMock.verifyAll();
     }
 
@@ -68,40 +65,38 @@ public class CSVRowsSelectedColsProviderTest {
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
         PowerMock.resetAll();
-        EasyMock.expect(rec1.size()).andReturn(3).anyTimes();
+        EasyMock.expect(rec1.size()).andReturn(2);
         EasyMock.expect(rec1.get(0)).andReturn("foo");
-        EasyMock.expect(rec1.get(2)).andReturn("baz");
-        preparedStatement.setObject(1, "foo", Types.VARCHAR);
-        preparedStatement.setObject(2, "baz", Types.VARCHAR);
+        EasyMock.expect(rec1.get(1)).andReturn("bar");
+        preparedStatement.setObject(1, "foo", 4);
+        preparedStatement.setObject(2, "bar", 12);
 
         PowerMock.replayAll();
-        final CSVRowsSelectedColsProvider provider = new CSVRowsSelectedColsProvider(
+        final SimpleCSVRowsProvider provider = new SimpleCSVRowsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, (ColSelector) i -> i % 2 == 0);
+                (value, type) -> value);
         provider.setStatementParameters(preparedStatement,
-                Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
+                Arrays.asList(GeneralDataType.INTEGER, GeneralDataType.TEXT));
         PowerMock.verifyAll();
     }
 
     @Test
-    public void testLongRecord() throws SQLException, ParseException {
+    public void testShortRecord() throws SQLException, ParseException {
         final CSVRecord rec1 = PowerMock.createMock(CSVRecord.class);
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
         PowerMock.resetAll();
-        EasyMock.expect(rec1.size()).andReturn(5).anyTimes();
+        EasyMock.expect(rec1.size()).andReturn(1);
         EasyMock.expect(rec1.get(0)).andReturn("foo");
-        EasyMock.expect(rec1.get(2)).andReturn("baz");
-        EasyMock.expect(rec1.get(4)).andReturn("x");
-        preparedStatement.setObject(1, "foo", Types.VARCHAR);
-        preparedStatement.setObject(2, "baz", Types.VARCHAR);
+        preparedStatement.setObject(1, "foo", 4);
+        preparedStatement.setNull(2, 12);
 
         PowerMock.replayAll();
-        final CSVRowsSelectedColsProvider provider = new CSVRowsSelectedColsProvider(
+        final SimpleCSVRowsProvider provider = new SimpleCSVRowsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, (ColSelector) i -> i % 2 == 0);
+                (value, type) -> value);
         provider.setStatementParameters(preparedStatement,
-                Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
+                Arrays.asList(GeneralDataType.INTEGER, GeneralDataType.TEXT));
         PowerMock.verifyAll();
     }
 }
