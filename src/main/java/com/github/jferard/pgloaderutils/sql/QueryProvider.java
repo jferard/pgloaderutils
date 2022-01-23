@@ -33,7 +33,7 @@ import java.util.Map;
 public class QueryProvider {
     /**
      * @param template the template, keys are written between brackets.
-     * @param valueByKey the map key->value
+     * @param valueByKey the map key to value
      * @return the query
      */
     public String newQuery(final String template, final Map<String, String> valueByKey) {

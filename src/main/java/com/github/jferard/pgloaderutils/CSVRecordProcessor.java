@@ -38,6 +38,7 @@ public interface CSVRecordProcessor {
     /**
      * @param record the commons csv record
      * @return the strings cleaned
+     * @throws ParseException if a value is not parsable. Might throw a RuntimeExcepton as well.
      */
     Iterable<String> cleanRecord(CSVRecord record) throws ParseException;
 }

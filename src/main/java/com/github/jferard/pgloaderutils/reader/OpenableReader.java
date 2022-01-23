@@ -43,7 +43,7 @@ public abstract class OpenableReader extends Reader {
     /**
      * Unlock read
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs
      */
     public abstract void open() throws IOException;
 
@@ -61,10 +61,16 @@ public abstract class OpenableReader extends Reader {
         this.sqlException = e;
     }
 
+    /**
+     * @return an exception or null
+     */
     public IOException getIOException() {
         return this.ioException;
     }
 
+    /**
+     * @return an exception or null
+     */
     public SQLException getSQLException() {
         return this.sqlException;
     }

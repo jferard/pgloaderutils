@@ -106,6 +106,8 @@ public class CSVData {
 
     /**
      * @param destTable The table
+     * @return an openable reader for bulk loading
+     * @throws IOException if an I/O error occurs
      */
     public CSVProcessorFileReader asOpenableReader(final Table destTable) throws IOException {
         final List<Object> commonValues = this.commonValues;

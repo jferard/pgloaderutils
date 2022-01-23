@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 /**
  * Format is (@see https://www.postgresql.org/docs/9.1/static/populate.html,
- * 14.4.2 & 14.4.8):
+ * 14.4.2 and 14.4.8):
  *
  * <pre>
  * {@code
@@ -110,8 +110,8 @@ public class CSVBulkLoader {
      * @param reader     an OpenableReader for a CSV file
      * @param update     true to update an existing table
      * @throws IOException          if an I/O error occurs
-     * @throws SQLException
-     * @throws InterruptedException
+     * @throws SQLException if a SQL exception occurs (un-parsable value for instance)
+     * @throws InterruptedException if a thread is interrupted.
      */
     public void populate(final Connection connection, final OpenableReader reader,
                          final boolean update)
