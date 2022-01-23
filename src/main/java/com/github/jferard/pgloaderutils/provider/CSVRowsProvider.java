@@ -26,7 +26,7 @@ import com.github.jferard.pgloaderutils.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.ColSelector;
 import com.github.jferard.pgloaderutils.DummyCSVRecordProcessor;
 import com.github.jferard.pgloaderutils.sql.DataType;
-import com.github.jferard.pgloaderutils.sql.Normalizer;
+import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import org.apache.commons.csv.CSVRecord;
 
 import java.sql.PreparedStatement;
@@ -38,9 +38,9 @@ import java.util.List;
 
 public class CSVRowsProvider implements RowsProvider {
     /**
-     * The normalizer
+     * The value converter
      */
-    private final Normalizer normalizer;
+    private final ValueConverter converter;
 
     /**
      * Additional values: not in the file and common to all records, typically the souce name.
@@ -52,7 +52,7 @@ public class CSVRowsProvider implements RowsProvider {
     private CSVRecord curRecord;
 
     public static CSVRowsProvider create(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                           final Normalizer normalizer, final ColSelector selector) {
+                                         final ValueConverter converter, final ColSelector selector) {
         final CSVRecordProcessor recordProcessor = record -> {
             final List<String> ret = new ArrayList<>(record.size());
             for (int i = 0; i < record.size(); i++) {
@@ -62,19 +62,19 @@ public class CSVRowsProvider implements RowsProvider {
             }
             return ret;
         };
-        return new CSVRowsProvider(iterator, commonValues, normalizer, recordProcessor);
+        return new CSVRowsProvider(iterator, commonValues, converter, recordProcessor);
     }
 
     public static CSVRowsProvider create(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                           final Normalizer normalizer) {
-        return new CSVRowsProvider(iterator, commonValues, normalizer, DummyCSVRecordProcessor.INSTANCE);
+                           final ValueConverter converter) {
+        return new CSVRowsProvider(iterator, commonValues, converter, DummyCSVRecordProcessor.INSTANCE);
     }
 
     public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                           final Normalizer normalizer, final CSVRecordProcessor recordProcessor) {
+                           final ValueConverter converter, final CSVRecordProcessor recordProcessor) {
         this.iterator = iterator;
         this.commonValues = commonValues;
-        this.normalizer = normalizer;
+        this.converter = converter;
         this.recordProcessor = recordProcessor;
         this.curRecord = null;
     }
@@ -103,7 +103,7 @@ public class CSVRowsProvider implements RowsProvider {
         final int colsCount = types.size();
         for (final String v : record) {
             final DataType type = types.get(k);
-            final Object value = this.normalizer.normalize(v, type);
+            final Object value = this.converter.toJavaObject(v, type);
             preparedStatement.setObject(1 + k, value, type.getSqlType());
             k++;
             if (k >= colsCount) {

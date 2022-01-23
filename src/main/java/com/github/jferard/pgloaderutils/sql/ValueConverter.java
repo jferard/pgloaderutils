@@ -24,6 +24,7 @@ package com.github.jferard.pgloaderutils.sql;
 
 import java.text.ParseException;
 
-public interface Normalizer {
-    Object normalize(String value, DataType type) throws ParseException;
+/** Create a java object */
+public interface ValueConverter {
+    Object toJavaObject(String value, DataType type) throws ParseException;
 }

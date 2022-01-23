@@ -29,8 +29,8 @@ import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
 import com.github.jferard.pgloaderutils.provider.RowsProvider;
 import com.github.jferard.pgloaderutils.sql.Column;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
-import com.github.jferard.pgloaderutils.sql.Normalizer;
 import com.github.jferard.pgloaderutils.sql.Table;
+import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import com.google.common.collect.Lists;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -68,14 +68,12 @@ public class CSVRegularLoaderTest {
         final Table t =
                 new Table("table",
                         Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));
-        final Normalizer normalizer = (value, type) -> Integer.valueOf(value);
+        final ValueConverter converter = (value, type) -> Integer.valueOf(value);
         final Iterator<CSVRecord> iterator =
                 CSVFormat.DEFAULT.parse(new StringReader("foo\n1\n2")).iterator();
         iterator.next();
         final RowsProvider rp = CSVRowsProvider.create(
-                iterator,
-                Collections.emptyList(),
-                normalizer);
+                iterator, Collections.emptyList(), converter);
         final CSVRegularLoader rl = new CSVRegularLoader(rp, t);
 
         final Connection connection = PowerMock.createMock(Connection.class);
@@ -124,14 +122,12 @@ public class CSVRegularLoaderTest {
         final Table t =
                 new Table("table",
                         Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));
-        final Normalizer normalizer = (value, type) -> Integer.valueOf(value);
+        final ValueConverter converter = (value, type) -> Integer.valueOf(value);
         final Iterator<CSVRecord> iterator =
                 CSVFormat.DEFAULT.parse(new StringReader("foo\n1\nA")).iterator();
         iterator.next();
         final RowsProvider rp = CSVRowsProvider.create(
-                iterator,
-                Collections.emptyList(),
-                normalizer);
+                iterator, Collections.emptyList(), converter);
         final CSVRegularLoader rl = new CSVRegularLoader(rp, t);
 
         final Connection connection = PowerMock.createMock(Connection.class);
@@ -324,7 +320,8 @@ public class CSVRegularLoaderTest {
                         new Column("foo", GeneralDataType.TEXT),
                         new Column("a", GeneralDataType.INTEGER),
                         new Column("c", GeneralDataType.TEXT)
-                )), (CSVRecordProcessor) record -> Arrays.asList(String.valueOf(record.getRecordNumber()), "A"));
+                )), (CSVRecordProcessor) record -> Arrays.asList(
+                        String.valueOf(record.getRecordNumber()), "A"));
 
         PowerMock.resetAll();
         EasyMock.expect(connection.getAutoCommit()).andReturn(true);

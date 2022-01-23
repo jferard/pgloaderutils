@@ -29,7 +29,7 @@ import com.github.jferard.pgloaderutils.reader.SimpleFileReader;
 import com.github.jferard.pgloaderutils.sql.Column;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
-import com.github.jferard.pgloaderutils.sql.Normalizer;
+import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import com.github.jferard.pgloaderutils.sql.Table;
 import com.google.common.io.Resources;
 import org.apache.commons.csv.CSVFormat;
@@ -340,12 +340,8 @@ public class CSVLoaderForPostgreSQLIT {
 					.openStream(),
 					"ISO-8859-1");
 			final CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL.withDelimiter(';'));
-			final CSVData data = new CSVData(parser, Collections.emptyList(), 1, new Normalizer() {
-				@Override
-				public Object normalize(final String value, final DataType type) throws ParseException {
-					return value;
-				}
-			});
+			final CSVData data = new CSVData(parser, Collections.emptyList(), 1,
+                    (value, type) -> value);
 			final CSVRegularLoader loader =
 					data.toRegularLoader(table);
 			loader.load(connection, 100);

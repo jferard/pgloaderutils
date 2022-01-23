@@ -23,7 +23,7 @@
 package com.github.jferard.pgloaderutils.provider;
 
 import com.github.jferard.pgloaderutils.sql.DataType;
-import com.github.jferard.pgloaderutils.sql.Normalizer;
+import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import org.apache.commons.csv.CSVRecord;
 
 import java.sql.PreparedStatement;
@@ -34,9 +34,9 @@ import java.util.List;
 
 public class SimpleCSVRowsProvider implements RowsProvider {
     /**
-     * The normalizer
+     * The value converter
      */
-    private final Normalizer normalizer;
+    private final ValueConverter converter;
 
     /**
      * Additional values: not in the file and common to all records, typically the souce name.
@@ -47,11 +47,11 @@ public class SimpleCSVRowsProvider implements RowsProvider {
     private CSVRecord curRecord;
 
     public SimpleCSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
-                                 final Normalizer normalizer) {
+                                 final ValueConverter converter) {
 
         this.iterator = iterator;
         this.commonValues = commonValues;
-        this.normalizer = normalizer;
+        this.converter = converter;
         this.curRecord = null;
     }
 
@@ -78,7 +78,7 @@ public class SimpleCSVRowsProvider implements RowsProvider {
             for (int i = commonSize; i < commonSize + recordSize; i++) {
                 final DataType type = types.get(i);
                 final int j = i - commonSize; // record index
-                final Object value = this.normalizer.normalize(record.get(j), type);
+                final Object value = this.converter.toJavaObject(record.get(j), type);
                 preparedStatement.setObject(1 + i, value, type.getSqlType());
             }
             // short record: set last cols to null
@@ -91,7 +91,7 @@ public class SimpleCSVRowsProvider implements RowsProvider {
             for (int i = commonSize; i < commonSize + remainingColumnsCount; i++) {
                 final DataType type = types.get(i);
                 final int j = i - commonSize; // record index
-                final Object value = this.normalizer.normalize(record.get(j), type);
+                final Object value = this.converter.toJavaObject(record.get(j), type);
                 preparedStatement.setObject(1 + i, value, type.getSqlType());
             }
         }

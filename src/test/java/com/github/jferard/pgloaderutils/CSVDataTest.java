@@ -26,7 +26,7 @@ import com.github.jferard.pgloaderutils.reader.CSVProcessorFileReader;
 import com.github.jferard.pgloaderutils.sql.Column;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
-import com.github.jferard.pgloaderutils.sql.Normalizer;
+import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import com.github.jferard.pgloaderutils.sql.Table;
 import com.google.common.collect.Lists;
 import org.apache.commons.csv.CSVFormat;
@@ -36,8 +36,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,12 +45,8 @@ public class CSVDataTest {
     public void testAsOpenableReader() throws IOException {
         final CSVParser parser = new CSVParser(new StringReader("a,b,c\n1,2,3"), CSVFormat.DEFAULT);
         final CSVData csvData =
-                new CSVData(parser, Collections.singletonList("foo"), 1, new Normalizer() {
-                    @Override
-                    public Object normalize(final String value, final DataType type) {
-                        return value + "*";
-                    }
-                });
+                new CSVData(parser, Collections.singletonList("foo"), 1,
+                        (value, type) -> value + "*");
         final CSVProcessorFileReader reader =
                 csvData.asOpenableReader(new Table("table", Arrays.asList(
                         new Column("foo", GeneralDataType.TEXT),

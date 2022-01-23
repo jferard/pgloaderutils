@@ -26,15 +26,13 @@ import com.github.jferard.pgloaderutils.loader.CSVRegularLoader;
 import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
 import com.github.jferard.pgloaderutils.reader.CSVProcessorFileReader;
 import com.github.jferard.pgloaderutils.sql.DataType;
-import com.github.jferard.pgloaderutils.sql.Normalizer;
+import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import com.github.jferard.pgloaderutils.sql.Table;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -46,9 +44,9 @@ public class CSVData {
     private final CSVParser parser;
 
     /**
-     * The normalizer
+     * The value converter
      */
-    private final Normalizer normalizer;
+    private final ValueConverter converter;
 
     /**
      * Additional values: not in the file and common to all records, typically the souce name.
@@ -61,11 +59,11 @@ public class CSVData {
     private final int firstRow;
 
     public CSVData(final CSVParser parser, final List<Object> commonValues, final int firstRow,
-                   final Normalizer normalizer) {
+                   final ValueConverter converter) {
         this.parser = parser;
         this.commonValues = commonValues;
         this.firstRow = firstRow;
-        this.normalizer = normalizer;
+        this.converter = converter;
     }
 
     /**
@@ -75,7 +73,7 @@ public class CSVData {
     public CSVRegularLoader toRegularLoader(final Table destTable) {
         this.skipFirstRows();
         return new CSVRegularLoader(
-                CSVRowsProvider.create(this.parser.iterator(), this.commonValues, this.normalizer),
+                CSVRowsProvider.create(this.parser.iterator(), this.commonValues, this.converter),
                 destTable);
     }
 
@@ -90,7 +88,7 @@ public class CSVData {
         final ColSelector selector = factory.create(firstRows);
         return new CSVRegularLoader(
                 CSVRowsProvider.create(this.parser.iterator(), this.commonValues,
-                        this.normalizer, selector), destTable);
+                        this.converter, selector), destTable);
     }
 
     /**
@@ -103,7 +101,7 @@ public class CSVData {
         this.skipFirstRows();
         return new CSVRegularLoader(
                 new CSVRowsProvider(this.parser.iterator(), this.commonValues,
-                        this.normalizer, recordProcessor), destTable);
+                        this.converter, recordProcessor), destTable);
     }
 
     /**
@@ -111,7 +109,7 @@ public class CSVData {
      */
     public CSVProcessorFileReader asOpenableReader(final Table destTable) throws IOException {
         final List<Object> commonValues = this.commonValues;
-        final Normalizer normalizer = this.normalizer;
+        final ValueConverter converter = this.converter;
         this.skipFirstRows();
         final List<DataType> types = destTable.getTypes();
         return new CSVProcessorFileReader(this.parser, new CSVRecordProcessor() {
@@ -126,7 +124,7 @@ public class CSVData {
                     final int j = commonSize + i;
                     final DataType type = types.get(j);
                     try {
-                        final Object value = normalizer.normalize(record.get(i), type);
+                        final Object value = converter.toJavaObject(record.get(i), type);
                         ret.add(Util.toPGString(value));
                     } catch (final ParseException e) {
                         throw new RuntimeException(e);
