@@ -37,6 +37,8 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -44,12 +46,13 @@ public class CSVDataTest {
     @Test
     public void testAsOpenableReader() throws IOException {
         final CSVParser parser = new CSVParser(new StringReader("a,b,c\n1,2,3"), CSVFormat.DEFAULT);
-        final CSVData csvData = new CSVData(parser, Collections.singletonList("foo"), 1, new Normalizer() {
-            @Override
-            public Object normalize(final String value, final DataType type) throws ParseException {
-                return value + "*";
-            }
-        });
+        final CSVData csvData =
+                new CSVData(parser, Collections.singletonList("foo"), 1, new Normalizer() {
+                    @Override
+                    public Object normalize(final String value, final DataType type) {
+                        return value + "*";
+                    }
+                });
         final CSVProcessorFileReader reader =
                 csvData.asOpenableReader(new Table("table", Arrays.asList(
                         new Column("foo", GeneralDataType.TEXT),
@@ -64,7 +67,8 @@ public class CSVDataTest {
 
     @Test
     public void testErr() throws IOException {
-        final CSVParser parser = new CSVParser(new StringReader("a,b,c\n1,2,3\n4,5,C\n7,8,9"), CSVFormat.DEFAULT);
+        final CSVParser parser =
+                new CSVParser(new StringReader("a,b,c\n1,2,3\n4,5,C\n7,8,9"), CSVFormat.DEFAULT);
         final CSVData csvData = new CSVData(parser, Collections.emptyList(), 1,
                 (value, type) -> Integer.parseInt(value));
         final CSVProcessorFileReader reader =
@@ -77,6 +81,33 @@ public class CSVDataTest {
         Assert.assertEquals("1,2,3\r\n7,8,9\r\n", TestHelper.readAll(reader));
         reader.close();
         Assert.assertEquals(1, reader.getIgnoredRecords().size());
-        Assert.assertEquals(Arrays.asList("4", "5", "C"), Lists.newArrayList(reader.getIgnoredRecords().get(0)));
+        Assert.assertEquals(Arrays.asList("4", "5", "C"),
+                Lists.newArrayList(reader.getIgnoredRecords().get(0)));
+    }
+
+    @Test
+    public void testParseException() throws IOException {
+        final DateTimeFormatter inFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        final CSVParser parser = new CSVParser(new StringReader(
+                "a,b,c\n" +
+                        "01/01/2022,02/01/2022,03/01/2022\n" +
+                        "04/01/2022,05/01/2022,C\n" +
+                        "07/01/2022,08/01/2022,09/01/2022"),
+                CSVFormat.DEFAULT);
+        final CSVData csvData = new CSVData(parser, Collections.emptyList(), 1,
+                (value, type) -> inFormat.parse(value));
+        final CSVProcessorFileReader reader =
+                csvData.asOpenableReader(new Table("table", Arrays.asList(
+                        new Column("a", GeneralDataType.DATE),
+                        new Column("b", GeneralDataType.DATE),
+                        new Column("c", GeneralDataType.DATE)
+                )));
+        reader.open();
+        Assert.assertEquals("2022-01-01,2022-01-02,2022-01-03\r\n" +
+                "2022-01-07,2022-01-08,2022-01-09\r\n", TestHelper.readAll(reader));
+        reader.close();
+        Assert.assertEquals(1, reader.getIgnoredRecords().size());
+        Assert.assertEquals(Arrays.asList("04/01/2022", "05/01/2022", "C"),
+                Lists.newArrayList(reader.getIgnoredRecords().get(0)));
     }
 }

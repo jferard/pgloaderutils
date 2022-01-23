@@ -24,10 +24,16 @@ package com.github.jferard.pgloaderutils;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.powermock.api.easymock.PowerMock;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class UtilTest {
     @Test
@@ -79,5 +85,16 @@ public class UtilTest {
         Assert.assertEquals("'a table'", Util.pgEscapeString("a table"));
         Assert.assertEquals("E'a ''table'''", Util.pgEscapeString("a 'table'"));
         Assert.assertEquals("E'a ''''table'''''", Util.pgEscapeString("a ''table''"));
+    }
+
+    @Test
+    public void testToPGString() {
+        Assert.assertEquals("", Util.toPGString(null));
+        Assert.assertEquals("table", Util.toPGString("table"));
+        Assert.assertEquals("1970-01-01", Util.toPGString(new java.util.Date(0)));
+        Assert.assertEquals("2022-01-23", Util.toPGString(LocalDate.of(2022, 1, 23)));
+        final Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        c.set(2022, Calendar.JANUARY, 23);
+        Assert.assertEquals("2022-01-23", Util.toPGString(c));
     }
 }

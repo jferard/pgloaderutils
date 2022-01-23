@@ -23,6 +23,7 @@
 package com.github.jferard.pgloaderutils.loader;
 
 import com.github.jferard.pgloaderutils.CSVData;
+import com.github.jferard.pgloaderutils.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.HeaderColSelectorFactory;
 import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
 import com.github.jferard.pgloaderutils.provider.RowsProvider;
@@ -53,6 +54,15 @@ import java.util.Iterator;
 import java.util.List;
 
 public class CSVRegularLoaderTest {
+
+    public static final String SQL_INDEX = "UPDATE pg_index\n" +
+            "SET indisready=?\n" +
+            "WHERE indrelid = (\n" +
+            "    SELECT oid\n" +
+            "    FROM pg_class\n" +
+            "    WHERE relname=?\n" +
+            ")";
+
     @Test
     public void test() throws IOException, SQLException, ParseException {
         final Table t =
@@ -77,13 +87,7 @@ public class CSVRegularLoaderTest {
         EasyMock.expect(connection.getAutoCommit()).andReturn(true);
         connection.setAutoCommit(false);
 
-        EasyMock.expect(connection.prepareStatement("UPDATE pg_index\n" +
-                "SET indisready=?\n" +
-                "WHERE indrelid = (\n" +
-                "    SELECT oid\n" +
-                "    FROM pg_class\n" +
-                "    WHERE relname=?\n" +
-                ")")).andReturn(indexStatement);
+        EasyMock.expect(connection.prepareStatement(SQL_INDEX)).andReturn(indexStatement);
         indexStatement.setBoolean(1, false);
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
@@ -139,13 +143,7 @@ public class CSVRegularLoaderTest {
         EasyMock.expect(connection.getAutoCommit()).andReturn(true);
         connection.setAutoCommit(false);
 
-        EasyMock.expect(connection.prepareStatement("UPDATE pg_index\n" +
-                "SET indisready=?\n" +
-                "WHERE indrelid = (\n" +
-                "    SELECT oid\n" +
-                "    FROM pg_class\n" +
-                "    WHERE relname=?\n" +
-                ")")).andReturn(indexStatement);
+        EasyMock.expect(connection.prepareStatement(SQL_INDEX)).andReturn(indexStatement);
         indexStatement.setBoolean(1, false);
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
@@ -199,13 +197,7 @@ public class CSVRegularLoaderTest {
         PowerMock.resetAll();
         EasyMock.expect(connection.getAutoCommit()).andReturn(true);
         connection.setAutoCommit(false);
-        EasyMock.expect(connection.prepareStatement("UPDATE pg_index\n" +
-                "SET indisready=?\n" +
-                "WHERE indrelid = (\n" +
-                "    SELECT oid\n" +
-                "    FROM pg_class\n" +
-                "    WHERE relname=?\n" +
-                ")")).andReturn(indexStatement);
+        EasyMock.expect(connection.prepareStatement(SQL_INDEX)).andReturn(indexStatement);
         indexStatement.setBoolean(1, false);
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
@@ -272,13 +264,7 @@ public class CSVRegularLoaderTest {
         EasyMock.expect(connection.getAutoCommit()).andReturn(true);
         connection.setAutoCommit(false);
 
-        EasyMock.expect(connection.prepareStatement("UPDATE pg_index\n" +
-                "SET indisready=?\n" +
-                "WHERE indrelid = (\n" +
-                "    SELECT oid\n" +
-                "    FROM pg_class\n" +
-                "    WHERE relname=?\n" +
-                ")")).andReturn(indexStatement);
+        EasyMock.expect(connection.prepareStatement(SQL_INDEX)).andReturn(indexStatement);
         indexStatement.setBoolean(1, false);
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
@@ -301,6 +287,72 @@ public class CSVRegularLoaderTest {
         insertStatement.setObject(1, "foo", Types.VARCHAR);
         insertStatement.setObject(2, 7, Types.INTEGER);
         insertStatement.setObject(3, "9*", Types.VARCHAR);
+        insertStatement.addBatch();
+        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[]{1});
+        connection.commit();
+
+        indexStatement.setBoolean(1, true);
+        indexStatement.setString(2, "table");
+        EasyMock.expect(indexStatement.execute()).andReturn(true);
+
+        EasyMock.expect(connection.createStatement()).andReturn(statement);
+        EasyMock.expect(statement.execute("REINDEX TABLE table")).andReturn(true);
+        connection.commit();
+
+        connection.setAutoCommit(true);
+
+        PowerMock.replayAll();
+        reader.load(connection, 2);
+
+        PowerMock.verifyAll();
+    }
+
+    @Test
+    public void testToRegularLoaderProcessor() throws IOException, SQLException {
+        final Connection connection = PowerMock.createMock(Connection.class);
+        final Statement statement = PowerMock.createMock(Statement.class);
+        final PreparedStatement insertStatement = PowerMock.createMock(PreparedStatement.class);
+        final PreparedStatement indexStatement = PowerMock.createMock(PreparedStatement.class);
+
+        final CSVParser parser =
+                new CSVParser(new StringReader("a,b,c\n1,2,3\n4,5,6\n7,8,9"), CSVFormat.DEFAULT);
+        final CSVData csvData = new CSVData(parser, Collections.singletonList("foo"), 1,
+                (value, type) -> (type == GeneralDataType.TEXT ? value + "*" :
+                        Integer.valueOf(value)));
+        final CSVRegularLoader reader =
+                csvData.toRegularLoader(new Table("table", Arrays.asList(
+                        new Column("foo", GeneralDataType.TEXT),
+                        new Column("a", GeneralDataType.INTEGER),
+                        new Column("c", GeneralDataType.TEXT)
+                )), (CSVRecordProcessor) record -> Arrays.asList(String.valueOf(record.getRecordNumber()), "A"));
+
+        PowerMock.resetAll();
+        EasyMock.expect(connection.getAutoCommit()).andReturn(true);
+        connection.setAutoCommit(false);
+
+        EasyMock.expect(connection.prepareStatement(SQL_INDEX)).andReturn(indexStatement);
+        indexStatement.setBoolean(1, false);
+        indexStatement.setString(2, "table");
+        EasyMock.expect(indexStatement.execute()).andReturn(true);
+
+        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
+                "?, ?, ?\n" +
+                ")")).andReturn(insertStatement);
+        insertStatement.setObject(1, "foo", Types.VARCHAR);
+        insertStatement.setObject(2, 2, Types.INTEGER);
+        insertStatement.setObject(3, "A*", Types.VARCHAR);
+        insertStatement.addBatch();
+
+        insertStatement.setObject(1, "foo", Types.VARCHAR);
+        insertStatement.setObject(2, 3, Types.INTEGER);
+        insertStatement.setObject(3, "A*", Types.VARCHAR);
+        insertStatement.addBatch();
+        EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[]{1, 1});
+        connection.commit();
+
+        insertStatement.setObject(1, "foo", Types.VARCHAR);
+        insertStatement.setObject(2, 4, Types.INTEGER);
+        insertStatement.setObject(3, "A*", Types.VARCHAR);
         insertStatement.addBatch();
         EasyMock.expect(insertStatement.executeBatch()).andReturn(new int[]{1});
         connection.commit();

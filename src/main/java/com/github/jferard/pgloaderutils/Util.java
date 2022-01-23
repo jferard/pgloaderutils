@@ -23,18 +23,21 @@
 package com.github.jferard.pgloaderutils;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.text.Normalizer;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class Util {
-    public final static Charset UTF_8 = Charset.forName("UTF-8");
-    public final static Charset US_ASCII = Charset.forName("US-ASCII");
-
+    public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    public static final DateTimeFormatter DATE_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private final static Pattern p = Pattern
             .compile("\\p{InCombiningDiacriticalMarks}+");
 
@@ -56,7 +59,7 @@ public class Util {
                 try {
                     Util.joinInto(sb, chunks, delimiter);
                 } catch (final IOException e) {
-                    throw new AssertionError(e);
+                    throw new AssertionError(e); // this should not happen
                 }
                 return sb.toString();
 
@@ -100,4 +103,19 @@ public class Util {
         }
     }
 
+    public static String toPGString(final Object value) {
+        final String valueStr;
+        if (value == null) {
+            valueStr = "";
+        } else if (value instanceof java.util.Date) {
+            valueStr = SIMPLE_DATE_FORMAT.format(value);
+        } else if (value instanceof Calendar) {
+            valueStr = SIMPLE_DATE_FORMAT.format(((Calendar) value).getTime());
+        } else if (value instanceof TemporalAccessor) {
+            valueStr = DATE_TIME_FORMATTER.format((TemporalAccessor) value);
+        } else {
+            valueStr = value.toString();
+        }
+        return valueStr;
+    }
 }

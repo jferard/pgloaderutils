@@ -33,6 +33,8 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -118,14 +120,14 @@ public class CSVData {
                 final int commonSize = commonValues.size();
                 final List<String> ret = new ArrayList<>(commonSize + record.size());
                 for (final Object commonValue : commonValues) {
-                    ret.add(commonValue.toString());
+                    ret.add(Util.toPGString(commonValue));
                 }
                 for (int i = 0; i < record.size(); i++) {
                     final int j = commonSize + i;
                     final DataType type = types.get(j);
                     try {
                         final Object value = normalizer.normalize(record.get(i), type);
-                        ret.add(value.toString());
+                        ret.add(Util.toPGString(value));
                     } catch (final ParseException e) {
                         throw new RuntimeException(e);
                     }
