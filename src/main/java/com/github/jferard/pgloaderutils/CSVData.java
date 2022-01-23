@@ -75,7 +75,7 @@ public class CSVData {
     public CSVRegularLoader toRegularLoader(final Table destTable) {
         this.skipFirstRows();
         return new CSVRegularLoader(
-                new CSVRowsProvider(this.parser.iterator(), this.commonValues, this.normalizer),
+                new CSVRowsSelectedColsProvider(this.parser.iterator(), this.commonValues, this.normalizer),
                 destTable);
     }
 

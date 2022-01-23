@@ -22,6 +22,7 @@
 
 package com.github.jferard.pgloaderutils.provider;
 
+import com.github.jferard.pgloaderutils.ColSelector;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
 import org.apache.commons.csv.CSVRecord;
 import org.easymock.EasyMock;
@@ -55,7 +56,7 @@ public class CSVRowsSelectedColsProviderTest {
         PowerMock.replayAll();
         final CSVRowsSelectedColsProvider provider = new CSVRowsSelectedColsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, i -> i % 2 == 0);
+                (value, type) -> value, (ColSelector)  i -> i % 2 == 0);
         provider.setStatementParameters(preparedStatement,
                 Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
         PowerMock.verifyAll();
@@ -76,7 +77,7 @@ public class CSVRowsSelectedColsProviderTest {
         PowerMock.replayAll();
         final CSVRowsSelectedColsProvider provider = new CSVRowsSelectedColsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, i -> i % 2 == 0);
+                (value, type) -> value, (ColSelector) i -> i % 2 == 0);
         provider.setStatementParameters(preparedStatement,
                 Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
         PowerMock.verifyAll();
@@ -98,7 +99,7 @@ public class CSVRowsSelectedColsProviderTest {
         PowerMock.replayAll();
         final CSVRowsSelectedColsProvider provider = new CSVRowsSelectedColsProvider(
                 Collections.singletonList(rec1).iterator(), Collections.emptyList(),
-                (value, type) -> value, i -> i % 2 == 0);
+                (value, type) -> value, (ColSelector) i -> i % 2 == 0);
         provider.setStatementParameters(preparedStatement,
                 Arrays.asList(GeneralDataType.TEXT, GeneralDataType.TEXT));
         PowerMock.verifyAll();

@@ -24,6 +24,7 @@ package com.github.jferard.pgloaderutils.provider;
 
 import com.github.jferard.pgloaderutils.reader.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.ColSelector;
+import com.github.jferard.pgloaderutils.reader.DummyCSVRecordProcessor;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.Normalizer;
 import org.apache.commons.csv.CSVRecord;
@@ -54,21 +55,33 @@ public class CSVRowsSelectedColsProvider implements RowsProvider {
 
     public CSVRowsSelectedColsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
                                        final Normalizer normalizer, final ColSelector selector) {
+        this(iterator, commonValues, normalizer, CSVRowsSelectedColsProvider.getCsvRecordProcessor(selector));
+    }
 
-        this.iterator = iterator;
-        this.commonValues = commonValues;
-        this.normalizer = normalizer;
-        this.recordProcessor = record -> {
+    private static CSVRecordProcessor getCsvRecordProcessor(final ColSelector selector) {
+        return record -> {
             final List<String> ret = new ArrayList<>(record.size());
-            for (int i=0; i<record.size(); i++) {
+            for (int i = 0; i < record.size(); i++) {
                 if (selector.select(i)) {
                     ret.add(record.get(i));
                 }
             }
             return ret;
         };
-//        this.selector = selector;
+    }
+
+    public CSVRowsSelectedColsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
+                                       final Normalizer normalizer, final CSVRecordProcessor recordProcessor) {
+        this.iterator = iterator;
+        this.commonValues = commonValues;
+        this.normalizer = normalizer;
+        this.recordProcessor = recordProcessor;
         this.curRecord = null;
+    }
+
+    public CSVRowsSelectedColsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
+                                       final Normalizer normalizer) {
+        this(iterator, commonValues, normalizer, DummyCSVRecordProcessor.INSTANCE);
     }
 
     @Override

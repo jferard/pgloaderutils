@@ -25,6 +25,7 @@ package com.github.jferard.pgloaderutils.loader;
 import com.github.jferard.pgloaderutils.CSVData;
 import com.github.jferard.pgloaderutils.HeaderColSelectorFactory;
 import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
+import com.github.jferard.pgloaderutils.provider.CSVRowsSelectedColsProvider;
 import com.github.jferard.pgloaderutils.provider.RowsProvider;
 import com.github.jferard.pgloaderutils.sql.Column;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
@@ -62,7 +63,7 @@ public class CSVRegularLoaderTest {
         final Iterator<CSVRecord> iterator =
                 CSVFormat.DEFAULT.parse(new StringReader("foo\n1\n2")).iterator();
         iterator.next();
-        final RowsProvider rp = new CSVRowsProvider(
+        final RowsProvider rp = new CSVRowsSelectedColsProvider(
                 iterator,
                 Collections.emptyList(),
                 normalizer);
@@ -116,7 +117,7 @@ public class CSVRegularLoaderTest {
     }
 
     @Test
-    public void testBadRow() throws IOException, SQLException, ParseException {
+    public void testBadRow() throws IOException, SQLException {
         final Table t =
                 new Table("table",
                         Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));
@@ -124,7 +125,7 @@ public class CSVRegularLoaderTest {
         final Iterator<CSVRecord> iterator =
                 CSVFormat.DEFAULT.parse(new StringReader("foo\n1\nA")).iterator();
         iterator.next();
-        final RowsProvider rp = new CSVRowsProvider(
+        final RowsProvider rp = new CSVRowsSelectedColsProvider(
                 iterator,
                 Collections.emptyList(),
                 normalizer);

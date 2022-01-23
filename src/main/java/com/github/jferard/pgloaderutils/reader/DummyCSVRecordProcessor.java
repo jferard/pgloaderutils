@@ -27,6 +27,8 @@ import org.apache.commons.csv.CSVRecord;
  * A CSVRecordCleaner that does nothing.
  */
 public class DummyCSVRecordProcessor implements CSVRecordProcessor {
+	public static final DummyCSVRecordProcessor INSTANCE = new DummyCSVRecordProcessor();
+
 	@Override
 	public Iterable<String> cleanRecord(final CSVRecord record) {
 		return record;

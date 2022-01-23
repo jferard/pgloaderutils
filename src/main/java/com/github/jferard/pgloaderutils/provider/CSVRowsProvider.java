@@ -46,6 +46,7 @@ public class CSVRowsProvider implements RowsProvider {
     private final Iterator<CSVRecord> iterator;
     private CSVRecord curRecord;
 
+    @Deprecated
     public CSVRowsProvider(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
                            final Normalizer normalizer) {
 
@@ -72,6 +73,7 @@ public class CSVRowsProvider implements RowsProvider {
             final Object value = this.commonValues.get(i);
             preparedStatement.setObject(1 + i, value, dataType.getSqlType());
         }
+        /*
         final int recordSize = record.size();
         final int remainingColumnsCount = types.size() - commonSize;
         if (recordSize < remainingColumnsCount) {
@@ -94,6 +96,28 @@ public class CSVRowsProvider implements RowsProvider {
                 final Object value = this.normalizer.normalize(record.get(j), type);
                 preparedStatement.setObject(1 + i, value, type.getSqlType());
             }
+        }
+         */
+        for (int i = 0; i < commonSize; i++) {
+            final DataType dataType = types.get(i);
+            final Object value = this.commonValues.get(i);
+            preparedStatement.setObject(1 + i, value, dataType.getSqlType());
+        }
+        int k = commonSize; // column index
+        final int colsCount = types.size();
+        for (final String value : record) {
+            final DataType type = types.get(k);
+            final Object typedValue = this.normalizer.normalize(value, type);
+            preparedStatement.setObject(1 + k, typedValue, type.getSqlType());
+            k++;
+            if (k >= colsCount) {
+                return;
+            }
+        }
+        while (k < colsCount) { // short record
+            final DataType type = types.get(k);
+            preparedStatement.setNull(1 + k, type.getSqlType());
+            k++;
         }
     }
 
