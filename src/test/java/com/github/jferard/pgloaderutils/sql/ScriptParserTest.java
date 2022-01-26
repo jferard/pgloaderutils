@@ -22,17 +22,13 @@
 
 package com.github.jferard.pgloaderutils.sql;
 
-import com.github.jferard.pgloaderutils.sql.ScriptParser;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 
 /**
  * Created by jferard on 24/03/17.
@@ -40,14 +36,16 @@ import java.util.Map;
 public class ScriptParserTest {
     @Test
     public void test() throws IOException {
-        final Reader r = new StringReader("{a}\n\n{b}\n\n{c}");
-        final ScriptParser sc = new ScriptParser(r);
-        try {
-            final Map<String, String> m = ImmutableMap.of("a", "1", "b", "2", "c", "3");
-            final List<String> l = Lists.newArrayList("1", "2", "3");
-            Assert.assertEquals(l, sc.read(m));
-        } finally {
-            sc.close();
-        }
+        final Reader r = new StringReader("-- 1\n" +
+                "DROP TABLE IF EXISTS %s;\n" +
+                "\n" +
+                "-- 2\n" +
+                "CREATE TABLE %s (\n" +
+                "    col INT\n" +
+                ");");
+        Assert.assertEquals(Arrays.asList("DROP TABLE IF EXISTS %s",
+                "CREATE TABLE %s (\n" +
+                        "    col INT\n" +
+                        ")"), ScriptParser.parse(r));
     }
 }

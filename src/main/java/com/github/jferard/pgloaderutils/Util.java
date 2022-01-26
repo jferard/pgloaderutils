@@ -22,7 +22,9 @@
 
 package com.github.jferard.pgloaderutils;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -117,5 +119,20 @@ public class Util {
             valueStr = value.toString();
         }
         return valueStr;
+    }
+
+    /**
+     *
+     * @param reader the reader
+     * @return the same reader, buffered if necessary
+     */
+    public static BufferedReader ensureBuffered(final Reader reader) {
+        final BufferedReader bufReader;
+        if (reader instanceof BufferedReader) {
+            bufReader = (BufferedReader) reader;
+        } else {
+            bufReader = new BufferedReader(reader);
+        }
+        return bufReader;
     }
 }

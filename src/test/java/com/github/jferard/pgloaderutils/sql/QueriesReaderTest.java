@@ -22,29 +22,30 @@
 
 package com.github.jferard.pgloaderutils.sql;
 
-import com.github.jferard.pgloaderutils.sql.QueryProvider;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Map;
+import java.io.StringReader;
 
-/**
- * Created by jferard on 27/03/17.
- */
-public class QueryProviderTest {
-    private QueryProvider provider;
-
-    @Before
-    public void setUp() {
-        this.provider = new QueryProvider();
-    }
-
+public class QueriesReaderTest {
     @Test
-    public void testNewQuery() throws IOException {
-        final Map<String, String> m = ImmutableMap.of("a", "1", "b", "2", "c", "3");
-        Assert.assertEquals("a2c", this.provider.newQuery("a{b}c", m));
+    public void test() throws IOException {
+        final StringReader r = new StringReader("\"\"\"query1\n" +
+                "SELECT * FROM %s\n" +
+                "\"\"\"\n" +
+                "\n" +
+                "\"\"\"text\n" +
+                "Some\n" +
+                "\"random\"\n" +
+                "text\n" +
+                "\"\"\"");
+        Assert.assertEquals(ImmutableMap.of("text", "Some\n" +
+                    "\"random\"\n" +
+                    "text", "query1", "SELECT * FROM %s"),
+                    QueryMapParser.parse(r));
     }
+
+
 }
