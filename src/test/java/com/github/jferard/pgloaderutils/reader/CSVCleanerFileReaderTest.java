@@ -22,10 +22,8 @@
 
 package com.github.jferard.pgloaderutils.reader;
 
-import com.github.jferard.pgloaderutils.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.TestHelper;
 import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVRecord;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,17 +37,17 @@ import java.util.List;
 public class CSVCleanerFileReaderTest {
     @Test
     public void test() throws IOException {
+        final CSVFormat csvFormat =
+                CSVFormat.Builder.create(CSVFormat.RFC4180).setDelimiter(';').build();
         final CSVProcessorFileReader r =
-                CSVProcessorFileReader.fromReader(new StringReader("a;b;c\n1,0;2;3"),
-                        CSVFormat.RFC4180.withDelimiter(';'), new CSVRecordProcessor() {
-                            @Override
-                            public Iterable<String> cleanRecord(final CSVRecord record) {
-                                final List<String> ret = new ArrayList<>(record.size());
-                                ret.add(0, record.get(0).replace(',', '.'));
-                                ret.add(1, record.get(1));
-                                ret.add(2, record.get(2));
-                                return ret;
-                            }
+                CSVProcessorFileReader.fromReader(
+                        new StringReader("a;b;c\n1,0;2;3"), csvFormat,
+                        record -> {
+                            final List<String> ret = new ArrayList<>(record.size());
+                            ret.add(0, record.get(0).replace(',', '.'));
+                            ret.add(1, record.get(1));
+                            ret.add(2, record.get(2));
+                            return ret;
                         });
         r.open();
         Assert.assertEquals("a,b,c\r\n" +
@@ -59,10 +57,13 @@ public class CSVCleanerFileReaderTest {
 
     @Test
     public void testFromStream() throws IOException {
+        final CSVFormat csvFormat =
+                CSVFormat.Builder.create(CSVFormat.RFC4180).setDelimiter(';').build();
         final CSVProcessorFileReader r =
-                CSVProcessorFileReader.fromStream(new ByteArrayInputStream("a;b;c\n1,0;2;3".getBytes(
-                                StandardCharsets.UTF_8)), StandardCharsets.UTF_8,
-                        CSVFormat.RFC4180.withDelimiter(';'), record -> {
+                CSVProcessorFileReader.fromStream(
+                        new ByteArrayInputStream("a;b;c\n1,0;2;3".getBytes(
+                                StandardCharsets.UTF_8)), StandardCharsets.UTF_8, csvFormat,
+                        record -> {
                             final List<String> ret = new ArrayList<>(record.size());
                             ret.add(0, record.get(0).replace(',', '.'));
                             ret.add(1, record.get(1));

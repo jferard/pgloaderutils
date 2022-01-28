@@ -27,9 +27,7 @@ import com.github.jferard.pgloaderutils.loader.CSVBulkLoader;
 import com.github.jferard.pgloaderutils.loader.CSVRegularLoader;
 import com.github.jferard.pgloaderutils.reader.SimpleFileReader;
 import com.github.jferard.pgloaderutils.sql.Column;
-import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
-import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import com.github.jferard.pgloaderutils.sql.Table;
 import com.google.common.io.Resources;
 import org.apache.commons.csv.CSVFormat;
@@ -41,24 +39,24 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Logger;
 
 public class CSVLoaderForPostgreSQLIT {
+    @Test
     public final void test() throws IOException, InterruptedException {
         try {
             Class.forName("org.postgresql.Driver");
             try {
-                final Connection connection = DriverManager.getConnection(
+                try (final Connection connection = DriverManager.getConnection(
                         "jdbc:postgresql://127.0.0.1:5432/testdb", "postgres",
-                        "postgres");
-                try {
+                        "postgres")) {
                     final Statement statement = connection.createStatement();
                     statement.executeUpdate(
                             "DROP TABLE IF EXISTS testtable");
@@ -74,8 +72,6 @@ public class CSVLoaderForPostgreSQLIT {
                     final SimpleFileReader csvReader = new SimpleFileReader(
                             stringReader, Logger.getLogger(""), 16);
                     loader.populate(connection, csvReader, false);
-                } finally {
-                    connection.close();
                 }
             } catch (final SQLException e) {
                 e.printStackTrace();
@@ -90,10 +86,9 @@ public class CSVLoaderForPostgreSQLIT {
         try {
             Class.forName("org.postgresql.Driver");
             try {
-                final Connection connection = DriverManager.getConnection(
+                try (final Connection connection = DriverManager.getConnection(
                         "jdbc:postgresql://127.0.0.1:5432/sirene", "postgres",
-                        "postgres");
-                try {
+                        "postgres")) {
                     final Statement statement = connection.createStatement();
                     statement.executeUpdate(
                             "DROP TABLE IF EXISTS sirc");
@@ -205,13 +200,10 @@ public class CSVLoaderForPostgreSQLIT {
                             .toTable("sirc", ';', '"');
                     final Reader reader = new InputStreamReader(Resources.getResource
                                     ("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv")
-                            .openStream(),
-                            "ISO-8859-1");
+                            .openStream(), StandardCharsets.ISO_8859_1);
                     final SimpleFileReader csvReader = new SimpleFileReader(
                             reader, Logger.getLogger(""), 16);
                     loader.populate(connection, csvReader, false);
-                } finally {
-                    connection.close();
                 }
             } catch (final SQLException e) {
                 e.printStackTrace();
@@ -223,7 +215,7 @@ public class CSVLoaderForPostgreSQLIT {
 
     @Test
     public final void testResourceRegular()
-			throws IOException, InterruptedException, SQLException, ParseException {
+            throws IOException, SQLException {
         final PGSimpleDataSource source = new PGSimpleDataSource();
         source.setServerNames(new String[]{"localhost"});
         source.setDatabaseName("postgres");
@@ -335,16 +327,17 @@ public class CSVLoaderForPostgreSQLIT {
             final Statement statement = connection.createStatement();
             statement.executeUpdate(table.dropTableQuery(true));
             statement.executeUpdate(table.createTableQuery(false));
-			final Reader reader = new InputStreamReader(Resources.getResource
-							("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv")
-					.openStream(),
-					"ISO-8859-1");
-			final CSVParser parser = new CSVParser(reader, CSVFormat.EXCEL.withDelimiter(';'));
-			final CSVData data = new CSVData(parser, Collections.emptyList(), 1,
+            final Reader reader = new InputStreamReader(Resources.getResource
+                            ("sirc-17804_9075_14209_201612_L_M_20170104_171522721-part.csv")
+                    .openStream(), StandardCharsets.ISO_8859_1);
+            final CSVFormat csvFormat =
+                    CSVFormat.Builder.create(CSVFormat.EXCEL).setDelimiter(';').build();
+            final CSVParser parser = new CSVParser(reader, csvFormat);
+            final CSVData data = new CSVData(parser, Collections.emptyList(), 1,
                     (value, type) -> value);
-			final CSVRegularLoader loader =
-					data.toRegularLoader(table);
-			loader.load(connection, 100);
+            final CSVRegularLoader loader =
+                    data.toRegularLoader(table);
+            loader.load(connection, 100);
         }
     }
 }

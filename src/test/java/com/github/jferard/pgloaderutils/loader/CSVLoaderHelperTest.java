@@ -19,17 +19,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.github.jferard.pgloaderutils.loader;
 
 import org.apache.commons.csv.CSVFormat;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class CSVLoaderHelper {
-    public static CSVFormat getCSVFormat(final char delimiter, final char quote, final char escape) {
-        final CSVFormat.Builder builder =
-                CSVFormat.Builder.create().setDelimiter(delimiter).setQuote(quote);
-        if (escape != quote) {
-            builder.setEscape(escape);
-        }
-        return builder.build();
+public class CSVLoaderHelperTest {
+    @Test
+    public void test1() {
+        final CSVFormat csvFormat = CSVLoaderHelper.getCSVFormat(',', '"', '"');
+        Assert.assertEquals(",", csvFormat.getDelimiterString());
+        Assert.assertEquals((Character) '"', csvFormat.getQuoteCharacter());
+        Assert.assertNull(csvFormat.getEscapeCharacter());
+    }
+
+    @Test
+    public void test2() {
+        final CSVFormat csvFormat = CSVLoaderHelper.getCSVFormat(',', '"', '\\');
+        Assert.assertEquals(",", csvFormat.getDelimiterString());
+        Assert.assertEquals((Character) '"', csvFormat.getQuoteCharacter());
+        Assert.assertEquals((Character) '\\', csvFormat.getEscapeCharacter());
     }
 }
