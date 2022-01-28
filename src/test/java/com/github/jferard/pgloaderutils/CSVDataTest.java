@@ -24,9 +24,7 @@ package com.github.jferard.pgloaderutils;
 
 import com.github.jferard.pgloaderutils.reader.CSVProcessorFileReader;
 import com.github.jferard.pgloaderutils.sql.Column;
-import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.GeneralDataType;
-import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import com.github.jferard.pgloaderutils.sql.Table;
 import com.google.common.collect.Lists;
 import org.apache.commons.csv.CSVFormat;

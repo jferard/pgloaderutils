@@ -98,7 +98,7 @@ public class FromMetaCSVFileReader
         this.iterator = this.metaReader.iterator();
         final MetaCSVRecord record = this.iterator.next();
         final MetaCSVMetaData metaData = this.metaReader.getMetaData();
-        final List<String> fields = new ArrayList<String>(record.size());
+        final List<String> fields = new ArrayList<>(record.size());
         for (int i=0; i<record.size(); i++) {
             final String fieldName = (String) record.getObject(i);
             // TODO: process fieldName

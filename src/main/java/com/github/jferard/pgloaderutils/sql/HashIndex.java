@@ -43,7 +43,7 @@ public class HashIndex implements Index {
 
     @Override
     public String createIndexQuery() {
-        final List<String> columnNames = new ArrayList<String>(this.columns.size());
+        final List<String> columnNames = new ArrayList<>(this.columns.size());
         for (final Column column : this.columns) {
             columnNames.add(column.getName());
         }

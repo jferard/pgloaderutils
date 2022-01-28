@@ -36,7 +36,7 @@ public class OpenableReaderTest {
             private StringReader r;
 
             @Override
-            public void open() throws IOException {
+            public void open() {
                 this.r = new StringReader("abc");
             }
 
@@ -46,7 +46,7 @@ public class OpenableReaderTest {
             }
 
             @Override
-            public void close() throws IOException {
+            public void close() {
                 this.r = null;
             }
         };

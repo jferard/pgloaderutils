@@ -23,8 +23,6 @@ package com.github.jferard.pgloaderutils;
 
 import org.apache.commons.csv.CSVRecord;
 
-import java.text.ParseException;
-
 /**
  * The class CSVRecordProcessor cleans and transforms a CSVRecord into a String iterable.
  * It is used to clean a csv file on the fly.
@@ -38,7 +36,7 @@ public interface CSVRecordProcessor {
     /**
      * @param record the commons csv record
      * @return the strings cleaned
-     * @throws ParseException if a value is not parsable. Might throw a RuntimeExcepton as well.
+     * @throws RuntimeException if a value is not parsable.
      */
-    Iterable<String> cleanRecord(CSVRecord record) throws ParseException;
+    Iterable<String> cleanRecord(CSVRecord record);
 }

@@ -26,13 +26,12 @@ import com.github.jferard.pgloaderutils.loader.CSVRegularLoader;
 import com.github.jferard.pgloaderutils.provider.CSVRowsProvider;
 import com.github.jferard.pgloaderutils.reader.CSVProcessorFileReader;
 import com.github.jferard.pgloaderutils.sql.DataType;
-import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import com.github.jferard.pgloaderutils.sql.Table;
+import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -49,7 +48,7 @@ public class CSVData {
     private final ValueConverter converter;
 
     /**
-     * Additional values: not in the file and common to all records, typically the souce name.
+     * Additional values: not in the file and common to all records, typically the source name.
      */
     private final List<Object> commonValues;
 
@@ -114,26 +113,19 @@ public class CSVData {
         final ValueConverter converter = this.converter;
         this.skipFirstRows();
         final List<DataType> types = destTable.getTypes();
-        return new CSVProcessorFileReader(this.parser, new CSVRecordProcessor() {
-            @Override
-            public Iterable<String> cleanRecord(final CSVRecord record) {
-                final int commonSize = commonValues.size();
-                final List<String> ret = new ArrayList<>(commonSize + record.size());
-                for (final Object commonValue : commonValues) {
-                    ret.add(Util.toPGString(commonValue));
-                }
-                for (int i = 0; i < record.size(); i++) {
-                    final int j = commonSize + i;
-                    final DataType type = types.get(j);
-                    try {
-                        final Object value = converter.toJavaObject(record.get(i), type);
-                        ret.add(Util.toPGString(value));
-                    } catch (final ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                return ret;
+        return new CSVProcessorFileReader(this.parser, record -> {
+            final int commonSize = commonValues.size();
+            final List<String> ret = new ArrayList<>(commonSize + record.size());
+            for (final Object commonValue : commonValues) {
+                ret.add(Util.toPGString(commonValue));
             }
+            for (int i = 0; i < record.size(); i++) {
+                final int j = commonSize + i;
+                final DataType type = types.get(j);
+                final Object value = converter.toJavaObject(record.get(i), type);
+                ret.add(Util.toPGString(value));
+            }
+            return ret;
         });
     }
 

@@ -44,6 +44,7 @@ public class BitTest {
     @Test
     public void testEquals() {
         final Bit b = Bit.BIT6;
+        Assert.assertEquals(Bit.BIT6, b);
         Assert.assertEquals(Bit.BIT6, Bit.BIT6);
         Assert.assertEquals(new Bit(6), Bit.BIT6);
 

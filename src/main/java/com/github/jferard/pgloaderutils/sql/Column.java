@@ -33,7 +33,7 @@ public class Column {
     }
 
     /**
-     * @return la définition de la colonne au format texte
+     * @return the column def in text format
      */
     public String getDefinition() {
         return String.format("\"%s\" %s", this.name, this.type);

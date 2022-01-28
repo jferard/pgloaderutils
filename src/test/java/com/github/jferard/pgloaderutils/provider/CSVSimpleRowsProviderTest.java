@@ -33,7 +33,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -41,7 +40,7 @@ import java.util.Collections;
 @PrepareForTest(CSVRecord.class)
 public class CSVSimpleRowsProviderTest {
     @Test
-    public void testLongRecord() throws SQLException, ParseException {
+    public void testLongRecord() throws SQLException {
         final CSVRecord rec1 = PowerMock.createMock(CSVRecord.class);
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
@@ -60,7 +59,7 @@ public class CSVSimpleRowsProviderTest {
     }
 
     @Test
-    public void testExpectedRecord() throws SQLException, ParseException {
+    public void testExpectedRecord() throws SQLException {
         final CSVRecord rec1 = PowerMock.createMock(CSVRecord.class);
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 
@@ -81,7 +80,7 @@ public class CSVSimpleRowsProviderTest {
     }
 
     @Test
-    public void testShortRecord() throws SQLException, ParseException {
+    public void testShortRecord() throws SQLException {
         final CSVRecord rec1 = PowerMock.createMock(CSVRecord.class);
         final PreparedStatement preparedStatement = PowerMock.createMock(PreparedStatement.class);
 

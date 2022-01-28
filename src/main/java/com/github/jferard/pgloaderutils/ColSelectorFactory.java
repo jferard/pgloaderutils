@@ -3,7 +3,6 @@ package com.github.jferard.pgloaderutils;
 import org.apache.commons.csv.CSVRecord;
 
 import java.util.List;
-import java.util.Set;
 
 public interface ColSelectorFactory {
     /**

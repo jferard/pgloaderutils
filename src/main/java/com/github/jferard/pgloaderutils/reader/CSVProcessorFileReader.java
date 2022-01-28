@@ -34,7 +34,6 @@ import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.Reader;
 import java.nio.charset.Charset;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -95,7 +94,7 @@ public class CSVProcessorFileReader extends OpenableReader {
                 try {
                     final Iterable<String> l = this.recordProcessor.cleanRecord(record);
                     this.printer.printRecord(l);
-                } catch (final ParseException | RuntimeException e) {
+                } catch (final RuntimeException e) {
                     this.logger.log(Level.SEVERE, String.format("Error at line %s. Last record was %s",
                             this.parser.getRecordNumber(), record), e);
                     this.ignoredRecords.add(record);

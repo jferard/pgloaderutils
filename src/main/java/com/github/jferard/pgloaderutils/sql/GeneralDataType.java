@@ -107,7 +107,7 @@ public enum GeneralDataType implements DataType {
 
     @Override
     public int getSqlType() {
-        return sqlType;
+        return this.sqlType;
     }
 
     @Override

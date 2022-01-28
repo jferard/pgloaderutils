@@ -92,7 +92,7 @@ public class CSVBulkLoaderTest {
                 .andReturn(copyOp);
         // might fail
         copyOp.writeToCopy(new byte[]{'a', ',', 'b', ',', 'c'}, 0, 5);
-        EasyMock.expect(copyOp.endCopy()).andReturn(1l);
+        EasyMock.expect(copyOp.endCopy()).andReturn(1L);
         EasyMock.expect(copyOp.isActive()).andReturn(false);
         EasyMock.expect(connection.createStatement()).andReturn(statement2);
         EasyMock.expect(statement2.executeUpdate("ANALYZE \"table\"")).andReturn(1);

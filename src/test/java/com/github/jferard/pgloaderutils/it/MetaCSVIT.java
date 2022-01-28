@@ -54,14 +54,13 @@ public class MetaCSVIT {
         try {
             Class.forName("org.postgresql.Driver");
             try {
-                final Connection connection = DriverManager.getConnection(
+                try (final Connection connection = DriverManager.getConnection(
                         "jdbc:postgresql://127.0.0.1:5432/testdb", "postgres",
-                        "postgres");
-                try {
+                        "postgres")) {
                     final Statement statement = connection.createStatement();
                     final String tableName = "testtable2";
                     statement.executeUpdate(
-                            "DROP TABLE IF EXISTS "+ tableName);
+                            "DROP TABLE IF EXISTS " + tableName);
                     // read first line;
                     // data.getDescription(c);
                     final String sql = fromMetaCSVFileReader.createSQL(tableName);
@@ -171,8 +170,6 @@ public class MetaCSVIT {
                     final CSVBulkLoader loader = CSVBulkLoader
                             .toTable(tableName);
                     loader.populate(connection, fromMetaCSVFileReader, false);
-                } finally {
-                    connection.close();
                 }
             } catch (final SQLException e) {
                 e.printStackTrace();

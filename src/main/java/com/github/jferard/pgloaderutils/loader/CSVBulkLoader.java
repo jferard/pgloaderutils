@@ -129,24 +129,21 @@ public class CSVBulkLoader {
 
         final BaseConnection baseConnection = (BaseConnection) connection;
         final CopyManager copyManager = new CopyManager(baseConnection);
-        final Thread thread = new Thread() {
-            @Override
-            public void run() {
+        final Thread thread = new Thread(() -> {
+            try {
+                copyManager.copyIn(copyQuery, reader);
+            } catch (final IOException e) {
+                reader.setException(e);
+            } catch (final SQLException e) {
+                reader.setException(e);
+            } finally {
                 try {
-                    copyManager.copyIn(copyQuery, reader);
+                    reader.close();
                 } catch (final IOException e) {
                     reader.setException(e);
-                } catch (final SQLException e) {
-                    reader.setException(e);
-                } finally {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        reader.setException(e);
-                    }
                 }
             }
-        };
+        });
         // ready to copy, but the reader is still not opened
         thread.start();
 

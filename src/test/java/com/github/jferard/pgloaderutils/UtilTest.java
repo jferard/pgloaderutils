@@ -24,15 +24,12 @@ package com.github.jferard.pgloaderutils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.powermock.api.easymock.PowerMock;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 public class UtilTest {

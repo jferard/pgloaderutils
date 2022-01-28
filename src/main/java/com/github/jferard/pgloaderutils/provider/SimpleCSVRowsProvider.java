@@ -28,7 +28,6 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class SimpleCSVRowsProvider implements RowsProvider {
     private final ValueConverter converter;
 
     /**
-     * Additional values: not in the file and common to all records, typically the souce name.
+     * Additional values: not in the file and common to all records, typically the source name.
      */
     private final List<Object> commonValues;
 
@@ -63,7 +62,7 @@ public class SimpleCSVRowsProvider implements RowsProvider {
     @Override
     public void setStatementParameters(final PreparedStatement preparedStatement,
                                        final List<DataType> types)
-            throws ParseException, SQLException {
+            throws SQLException {
         final int commonSize = this.commonValues.size();
         final CSVRecord record = this.iterator.next();
         this.curRecord = record;

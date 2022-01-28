@@ -24,7 +24,6 @@ package com.github.jferard.pgloaderutils.sql;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,12 +31,8 @@ import java.util.Collections;
 public class HashIndexTest {
     @Test
     public void testEmpty() {
-        Assert.assertThrows(AssertionError.class, new ThrowingRunnable() {
-            @Override
-            public void run() throws Throwable {
-                new HashIndex("index", "table", Collections.emptyList());
-            }
-        });
+        Assert.assertThrows(AssertionError.class,
+                () -> new HashIndex("index", "table", Collections.emptyList()));
     }
 
     @Test

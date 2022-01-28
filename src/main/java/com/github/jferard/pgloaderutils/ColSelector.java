@@ -24,7 +24,7 @@ package com.github.jferard.pgloaderutils;
 
 public interface ColSelector {
     /**
-     * Chekc if this col must be selected
+     * Check if this col must be selected
      * @param i index of the col
      * @return true if the col is selected
      */

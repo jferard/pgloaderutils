@@ -31,6 +31,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.logging.LogRecord;
 import java.util.stream.Collectors;
 
@@ -125,7 +126,7 @@ public class QueryMapParserTest {
                 QueryMapParser.parse(reader));
 
         Assert.assertEquals(
-                Arrays.asList("Missing closing quotes at line 3"),
+                Collections.singletonList("Missing closing quotes at line 3"),
                 store.getRecords().stream().map(LogRecord::getMessage)
                         .collect(Collectors.toList()));
     }

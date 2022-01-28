@@ -27,7 +27,6 @@ import org.apache.commons.csv.CSVRecord;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.List;
 
 public interface RowsProvider {
@@ -35,7 +34,7 @@ public interface RowsProvider {
 
     void setStatementParameters(PreparedStatement preparedStatement,
                                 List<DataType> types)
-            throws ParseException, SQLException;
+            throws SQLException;
 
     CSVRecord getCurRecord();
 }

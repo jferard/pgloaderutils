@@ -58,7 +58,7 @@ Here is an example:
 * delimiter, quote, escape are ASCII chars (0..127), but can't be letters, digits or space char.
 
 ### Optional constraints
-It is possible to specifiy :
+It is possible to specify :
 * the minimum number of columns allowed ;
 * the set of chars accepted for delimiter, quote or escape.
 Those optional constraints highly improve the reliability of the result.
@@ -71,7 +71,7 @@ All bytes are processed. If all bytes are less than 128, then the encoding is ex
 
 ### Delimiter
 The chunk is split into lines on CR, LF or CRLF.
-All lines are processed, splitted on all possible delimiter chars. The winner depends on mean and variance in thee set of lines.
+All lines are processed, split on all possible delimiter chars. The winner depends on mean and variance in the set of lines.
 
 ### Quote
 Each line is split on the winner delimiter. First and last char may be the quote char. The winner depends on the number of apparitions as first and last char, and (less) as first or last char. 

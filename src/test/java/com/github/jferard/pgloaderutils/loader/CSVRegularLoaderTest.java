@@ -47,7 +47,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
@@ -64,7 +63,7 @@ public class CSVRegularLoaderTest {
             ")";
 
     @Test
-    public void test() throws IOException, SQLException, ParseException {
+    public void test() throws IOException, SQLException {
         final Table t =
                 new Table("table",
                         Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));

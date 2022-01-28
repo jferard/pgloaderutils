@@ -3,7 +3,6 @@
 .classpath
 .pmd
 .ruleset
-.settings
 *.iml
 
 # directories
@@ -11,6 +10,7 @@
 .idea
 target
 reports
+annotations
 
 # files
 *.old

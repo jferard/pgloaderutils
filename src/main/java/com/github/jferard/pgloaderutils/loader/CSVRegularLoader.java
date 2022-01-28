@@ -83,7 +83,7 @@ public class CSVRegularLoader {
                     insertStatement.executeBatch();
                     connection.commit();
                 }
-            } catch (final ParseException | RuntimeException | SQLException e) {
+            } catch (final RuntimeException | SQLException e) {
                 final CSVRecord ignoredRecord = this.rowsProvider.getCurRecord();
                 CSVRegularLoader.logger.log(Level.SEVERE,
                         String.format("Error when adding record %s", ignoredRecord), e);
