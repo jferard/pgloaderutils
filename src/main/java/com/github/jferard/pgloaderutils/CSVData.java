@@ -1,5 +1,5 @@
 /*
- * Some utilities for loading csv data into a PosgtreSQL database:
+ * Some utilities for loading csv data into a PostgreSQL database:
  * detect file encoding, CSV format and populate database
  *
  *     Copyright (C) 2016, 2018, 2020-2022 J. Férard <https://github.com/jferard>

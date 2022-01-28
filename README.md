@@ -4,7 +4,7 @@
 # pgLoader Utils
 (C) J. Férard 2016-2018 & 2020-2022
 
-Some utilities for loading csv data into a PosgtreSQL database: detect file encoding, CSV format and populate database, under GPL v3.
+Some utilities for loading csv data into a PostgreSQL database: detect file encoding, CSV format and populate database, under GPL v3.
 
 ## Presentation
 pgLoader Utils is a small set of classes to make PostgreSQL bulk load simpler.

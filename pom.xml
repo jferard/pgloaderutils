@@ -1,5 +1,5 @@
 <!--
-  ~ Some utilities for loading csv data into a PosgtreSQL database:
+  ~ Some utilities for loading csv data into a PostgreSQL database:
   ~ detect file encoding, CSV format and populate database
   ~
   ~     Copyright (C) 2016, 2018, 2020-2022 J. Férard <https://github.com/jferard>
@@ -26,7 +26,7 @@
     <artifactId>pgloaderutils</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <name>pgLoader Utils</name>
-    <description>Some utilities for loading csv data into a PosgtreSQL database: detect file encoding, CSV format and
+    <description>Some utilities for loading csv data into a PostgreSQL database: detect file encoding, CSV format and
         populate database.
     </description>
 
