@@ -20,32 +20,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.github.jferard.pgloaderutils.sql;
+package com.github.jferard.pgloaderutils;
 
-import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.List;
+import java.util.logging.LogRecord;
 
-import java.io.IOException;
-import java.io.StringReader;
-
-public class QueriesReaderTest {
-    @Test
-    public void test() throws IOException {
-        final StringReader r = new StringReader("\"\"\"query1\n" +
-                "SELECT * FROM %s\n" +
-                "\"\"\"\n" +
-                "\n" +
-                "\"\"\"text\n" +
-                "Some\n" +
-                "\"random\"\n" +
-                "text\n" +
-                "\"\"\"");
-        Assert.assertEquals(ImmutableMap.of("text", "Some\n" +
-                    "\"random\"\n" +
-                    "text", "query1", "SELECT * FROM %s"),
-                    QueryMapParser.parse(r));
-    }
-
-
+public interface RecordsStore {
+    List<LogRecord> getRecords();
 }

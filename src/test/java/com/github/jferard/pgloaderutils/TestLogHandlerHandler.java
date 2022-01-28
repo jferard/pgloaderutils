@@ -22,41 +22,30 @@
 
 package com.github.jferard.pgloaderutils;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Handler;
-import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
-public class TestHelper {
-    public static final int BUFFER_SIZE = 8 * 1024;
+public class TestLogHandlerHandler extends Handler implements RecordsStore {
+    final List<LogRecord> records;
 
-    public static String readAll(final Reader reader) throws IOException {
-        final char[] buffer = new char[BUFFER_SIZE];
-        final StringBuilder ret = new StringBuilder();
-        int count = reader.read(buffer, 0, buffer.length);
-        while (count != -1) {
-            ret.append(buffer, 0, count);
-            count = reader.read(buffer, 0, buffer.length);
-        }
-        return ret.toString();
+    public TestLogHandlerHandler() {
+        this.records = new ArrayList<>();
     }
 
-    public static RecordsStore configLog(final Class<?> clazz) {
-        return configLog(clazz.getName());
+    public void publish(final LogRecord record) {
+        this.records.add(record);
     }
 
-    public static RecordsStore configLog(final String name) {
-        final Logger logger = Logger.getLogger(name);
-        final TestLogHandlerHandler handler = new TestLogHandlerHandler();
-        handler.setLevel(Level.ALL);
-        logger.setUseParentHandlers(false);
-        logger.addHandler(handler);
-        logger.setLevel(Level.ALL);
-        return handler;
+    public void close() {
+    }
+
+    public void flush() {
+    }
+
+    @Override
+    public List<LogRecord> getRecords() {
+        return this.records;
     }
 }
-
