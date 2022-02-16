@@ -25,39 +25,40 @@ package com.github.jferard.pgloaderutils.sql;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class HashIndexTest {
+
+    public static final Column COL1 = new Column("foo", GeneralDataType.INTEGER);
+    public static final Column COL2 = new Column("2bar", GeneralDataType.BOOLEAN);
+    public static final Table TABLE = Table.create("table", COL1, COL2);
+
     @Test
     public void testEmpty() {
         Assert.assertThrows(AssertionError.class,
-                () -> new HashIndex("index", "table", Collections.emptyList()));
+                () -> HashIndex.create(
+                        TABLE, Collections.emptyList())
+        );
     }
 
     @Test
     public void testCreateOneCol() {
-        final HashIndex index = new HashIndex("index", "table",
-                Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));
-        Assert.assertEquals("CREATE INDEX index ON table (foo) USING hash",
+        final HashIndex index = HashIndex.create(TABLE, COL1);
+        Assert.assertEquals("CREATE INDEX table_foo_idx ON table USING hash(foo)",
                 index.createIndexQuery());
     }
 
     @Test
     public void testTwoCols() {
-        final HashIndex index = new HashIndex("index", "table",
-                Arrays.asList(new Column("foo", GeneralDataType.INTEGER),
-                        new Column("2bar", GeneralDataType.BOOLEAN)));
-        Assert.assertEquals("CREATE INDEX index ON table (foo, \"2bar\") USING hash",
+        final HashIndex index = HashIndex.create(TABLE, COL1, COL2);
+        Assert.assertEquals("CREATE INDEX table_foo_2bar_idx ON table USING hash(foo, \"2bar\")",
                 index.createIndexQuery());
     }
 
     @Test
     public void testDrop() {
-        final HashIndex index = new HashIndex("index", "table",
-                Collections.singletonList(new Column("foo", GeneralDataType.INTEGER)));
-        Assert.assertEquals("DROP INDEX index",
-                index.dropIndexQuery());
+        final HashIndex index = HashIndex.create(TABLE, COL1);
+        Assert.assertEquals("DROP INDEX table_foo_idx", index.dropIndexQuery());
     }
 
 }

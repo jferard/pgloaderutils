@@ -27,6 +27,7 @@ import com.github.jferard.javamcsv.MetaCSVMetaData;
 import com.github.jferard.javamcsv.MetaCSVReadException;
 import com.github.jferard.javamcsv.MetaCSVReader;
 import com.github.jferard.javamcsv.MetaCSVRecord;
+import com.github.jferard.pgloaderutils.Util;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 
@@ -104,11 +105,11 @@ public class FromMetaCSVFileReader
             // TODO: process fieldName
             final DataType dataType = metaData.getDataType(i);
             final String sqlType = this.dataTypeToSQLType(dataType);
-            final String field = String.format("\"%s\" %s", fieldName, sqlType);
+            final String field = String.format("%s %s", Util.pgEscapeIdentifier(fieldName), sqlType);
             fields.add(field);
         }
         final StringBuilder sb = new StringBuilder();
-        sb.append("CREATE TABLE \"").append(tableName).append("\" (\n");
+        sb.append("CREATE TABLE ").append(Util.pgEscapeIdentifier(tableName)).append(" (\n");
         final Iterator<String> it = fields.iterator();
         sb.append("    ").append(it.next());
         while (it.hasNext()) {

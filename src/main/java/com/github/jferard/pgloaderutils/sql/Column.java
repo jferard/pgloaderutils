@@ -22,6 +22,8 @@
 
 package com.github.jferard.pgloaderutils.sql;
 
+import com.github.jferard.pgloaderutils.Util;
+
 /** A column in table */
 public class Column {
     private final String name;
@@ -36,7 +38,7 @@ public class Column {
      * @return the column def in text format
      */
     public String getDefinition() {
-        return String.format("\"%s\" %s", this.name, this.type);
+        return String.format("%s %s", Util.pgEscapeIdentifier(this.name), this.type);
     }
 
     /**

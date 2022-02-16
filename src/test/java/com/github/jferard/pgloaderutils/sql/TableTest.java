@@ -32,13 +32,13 @@ public class TableTest {
     public void testCreate() {
         final Table table = new Table("table", Arrays.asList(new Column("foo", GeneralDataType.INTEGER),
                 new Column("bar", GeneralDataType.BOOLEAN)));
-        Assert.assertEquals("CREATE TABLE \"table\" (\n" +
-                "    \"foo\" INTEGER,\n" +
-                "    \"bar\" BOOLEAN\n" +
+        Assert.assertEquals("CREATE TABLE table (\n" +
+                "    foo INTEGER,\n" +
+                "    bar BOOLEAN\n" +
                 ")", table.createTableQuery(false));
-        Assert.assertEquals("CREATE TABLE IF NOT EXISTS \"table\" (\n" +
-                "    \"foo\" INTEGER,\n" +
-                "    \"bar\" BOOLEAN\n" +
+        Assert.assertEquals("CREATE TABLE IF NOT EXISTS table (\n" +
+                "    foo INTEGER,\n" +
+                "    bar BOOLEAN\n" +
                 ")", table.createTableQuery(true));
     }
 
@@ -46,8 +46,8 @@ public class TableTest {
     public void testDrop() {
         final Table table = new Table("table", Arrays.asList(new Column("foo", GeneralDataType.INTEGER),
                 new Column("bar", GeneralDataType.BOOLEAN)));
-        Assert.assertEquals("DROP TABLE \"table\"", table.dropTableQuery(false));
-        Assert.assertEquals("DROP TABLE IF EXISTS \"table\"", table.dropTableQuery(true));
+        Assert.assertEquals("DROP TABLE table", table.dropTableQuery(false));
+        Assert.assertEquals("DROP TABLE IF EXISTS table", table.dropTableQuery(true));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class TableTest {
     public void testInsert() {
         final Table table = new Table("table", Arrays.asList(new Column("foo", GeneralDataType.INTEGER),
                 new Column("bar", GeneralDataType.BOOLEAN)));
-        Assert.assertEquals("INSERT INTO \"table\" VALUES (\n" +
+        Assert.assertEquals("INSERT INTO table VALUES (\n" +
                 "?, ?\n" +
                 ")", table.insertValuesQuery());
     }

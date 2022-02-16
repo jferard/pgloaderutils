@@ -72,7 +72,6 @@ public class UtilTest {
         Assert.assertEquals("\"1table\"", Util.pgEscapeIdentifier("1table"));
         Assert.assertEquals("\"a table\"", Util.pgEscapeIdentifier("a table"));
         Assert.assertEquals("\"a \"\"table\"\"\"", Util.pgEscapeIdentifier("a \"table\""));
-        Assert.assertEquals("\"a \"\"\"\"table\"\"\"\"\"", Util.pgEscapeIdentifier("a \"\"table\"\""));
     }
 
     @Test

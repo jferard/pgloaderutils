@@ -21,6 +21,7 @@
  */
 package com.github.jferard.pgloaderutils.loader;
 
+import com.github.jferard.pgloaderutils.Util;
 import com.github.jferard.pgloaderutils.reader.OpenableReader;
 import com.github.jferard.pgloaderutils.sql.Column;
 import org.postgresql.copy.CopyManager;
@@ -50,41 +51,45 @@ import java.util.stream.Collectors;
  */
 public class CSVBulkLoader {
     public static CSVBulkLoader toTable(final String tableName) {
-        return new CSVBulkLoader(String.format("TRUNCATE \"%s\"", tableName),
-                String.format("COPY \"%s\" FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
-                        tableName),
-                String.format("ANALYZE \"%s\"", tableName));
+        final String escapedTableName = Util.pgEscapeIdentifier(tableName);
+        return new CSVBulkLoader("TRUNCATE " + escapedTableName,
+                String.format("COPY %s FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
+                        escapedTableName),
+                "ANALYZE " + escapedTableName);
     }
 
     public static CSVBulkLoader toTable(final String tableName, final List<Column> columns) {
-        return new CSVBulkLoader(String.format("TRUNCATE \"%s\"", tableName),
+        final String escapedTableName = Util.pgEscapeIdentifier(tableName);
+        return new CSVBulkLoader("TRUNCATE " + escapedTableName,
                 String.format(
-                        "COPY \"%s\" %s FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
-                        tableName, columnsToString(columns)),
-                String.format("ANALYZE \"%s\"", tableName));
+                        "COPY %s %s FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')",
+                        escapedTableName, columnsToString(columns)),
+                "ANALYZE " + escapedTableName);
     }
 
     public static CSVBulkLoader toTable(final String tableName, final char delimiter,
                                         final char quote) {
-        return new CSVBulkLoader(String.format("TRUNCATE \"%s\"", tableName),
+        final String escapedTableName = Util.pgEscapeIdentifier(tableName);
+        return new CSVBulkLoader("TRUNCATE " + escapedTableName,
                 String.format(
-                        "COPY \"%s\" FROM STDIN WITH (FORMAT csv, DELIMITER '%s', QUOTE '%s')",
-                        tableName, delimiter, quote),
-                String.format("ANALYZE \"%s\"", tableName));
+                        "COPY %s FROM STDIN WITH (FORMAT csv, DELIMITER '%s', QUOTE '%s')",
+                        escapedTableName, delimiter, quote),
+                "ANALYZE " + escapedTableName);
     }
 
     public static CSVBulkLoader toTable(final String tableName, final List<Column> columns,
                                         final char delimiter, final char quote) {
-        return new CSVBulkLoader(String.format("TRUNCATE \"%s\"", tableName),
+        final String escapedTableName = Util.pgEscapeIdentifier(tableName);
+        return new CSVBulkLoader("TRUNCATE " + escapedTableName,
                 String.format(
-                        "COPY \"%s\" %s FROM STDIN WITH (FORMAT csv, DELIMITER '%s', QUOTE '%s')",
-                        tableName, columnsToString(columns), delimiter, quote),
-                String.format("ANALYZE \"%s\"", tableName));
+                        "COPY %s %s FROM STDIN WITH (FORMAT csv, DELIMITER '%s', QUOTE '%s')",
+                        escapedTableName, columnsToString(columns), delimiter, quote),
+                "ANALYZE "+escapedTableName);
     }
 
     private static String columnsToString(final List<Column> columns) {
-        return "(\"" + columns.stream().map(Column::getName)
-                .collect(Collectors.joining("\", \"")) + "\")";
+        return "(" + columns.stream().map(c -> Util.pgEscapeIdentifier(c.getName()))
+                .collect(Collectors.joining(", ")) + ")";
     }
 
     private final String truncateQuery;
@@ -110,7 +115,7 @@ public class CSVBulkLoader {
      * @param reader     an OpenableReader for a CSV file
      * @param update     true to update an existing table
      * @throws IOException          if an I/O error occurs
-     * @throws SQLException if a SQL exception occurs (un-parsable value for instance)
+     * @throws SQLException         if a SQL exception occurs (un-parsable value for instance)
      * @throws InterruptedException if a thread is interrupted.
      */
     public void populate(final Connection connection, final OpenableReader reader,

@@ -31,7 +31,7 @@ public class ColumnTest {
         final Column c = new Column("foo", Bit.BIT4);
         Assert.assertEquals("foo", c.getName());
         Assert.assertEquals(Bit.BIT4, c.getType());
-        Assert.assertEquals("\"foo\" BIT(4)", c.getDefinition());
+        Assert.assertEquals("foo BIT(4)", c.getDefinition());
     }
 
     @Test
@@ -39,6 +39,6 @@ public class ColumnTest {
         final Column c = new Column("foo", GeneralDataType.TEXT);
         Assert.assertEquals("foo", c.getName());
         Assert.assertEquals(GeneralDataType.TEXT, c.getType());
-        Assert.assertEquals("\"foo\" TEXT", c.getDefinition());
+        Assert.assertEquals("foo TEXT", c.getDefinition());
     }
 }

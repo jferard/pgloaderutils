@@ -89,7 +89,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
                 "?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, 1, Types.INTEGER);
@@ -143,7 +143,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
                 "?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, 1, Types.INTEGER);
@@ -197,7 +197,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
                 "?, ?, ?, ?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, "foo", Types.VARCHAR);
@@ -264,7 +264,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
                 "?, ?, ?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, "foo", Types.VARCHAR);
@@ -331,7 +331,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
                 "?, ?, ?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, "foo", Types.VARCHAR);

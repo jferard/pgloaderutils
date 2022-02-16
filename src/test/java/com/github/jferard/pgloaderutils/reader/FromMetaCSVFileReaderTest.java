@@ -51,15 +51,15 @@ public class FromMetaCSVFileReaderTest {
                         "data,col/4/type,\"float/,/.\"", "data,col/5/type,\"integer/ \"",
                         "data,col/6/type,\"percentage/post/%/float/,/.\"");
         final FromMetaCSVFileReader fromReader = new FromMetaCSVFileReader(reader);
-        Assert.assertEquals("CREATE TABLE \"table\" (\n" +
-                "    \"boolean\" BOOLEAN,\n" +
-                "    \"currency\" DECIMAL,\n" +
-                "    \"date\" DATE,\n" +
-                "    \"datetime\" TIMESTAMP,\n" +
-                "    \"float\" FLOAT,\n" +
-                "    \"integer\" INTEGER,\n" +
-                "    \"percentage\" FLOAT,\n" +
-                "    \"text\" TEXT\n" +
+        Assert.assertEquals("CREATE TABLE table (\n" +
+                "    boolean BOOLEAN,\n" +
+                "    currency DECIMAL,\n" +
+                "    date DATE,\n" +
+                "    datetime TIMESTAMP,\n" +
+                "    float FLOAT,\n" +
+                "    integer INTEGER,\n" +
+                "    percentage FLOAT,\n" +
+                "    text TEXT\n" +
                 ")", fromReader.createSQL("table"));
         fromReader.open();
         Assert.assertEquals("true,15,2020-12-01,,10000.5,12354,0.565,Foo\r\n" +

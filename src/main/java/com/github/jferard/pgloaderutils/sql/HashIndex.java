@@ -24,33 +24,46 @@ package com.github.jferard.pgloaderutils.sql;
 
 import com.github.jferard.pgloaderutils.Util;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class HashIndex implements Index {
+    public static HashIndex create(final Table table, final Column... columns) {
+        return HashIndex.create(table, Arrays.asList(columns));
+    }
+
+    public static HashIndex create(final Table table, final List<Column> columns) {
+        assert !columns.isEmpty();
+        final Stream<Column> stream1 = columns.stream();
+        final Stream<Column> stream2 = columns.stream();
+        final String tableName1 = table.getName();
+        final String name1 = tableName1 + "_" +
+                stream1.map(Column::getName)
+                        .collect(Collectors.joining("_")) + "_idx";
+        final String expression1 =
+                stream2.map(c -> Util.pgEscapeIdentifier(c.getName()))
+                        .collect(Collectors.joining(", "));
+        return new HashIndex(name1, tableName1, expression1);
+    }
+
     private final String name;
     private final String tableName;
-    private final List<Column> columns;
+    private final String expression;
 
     public HashIndex(final String name, final String tableName,
-                     final List<Column> columns) {
-        assert !columns.isEmpty();
+                     final String expression) {
         this.name = name;
         this.tableName = tableName;
-        this.columns = columns;
+        this.expression = expression;
     }
 
     @Override
     public String createIndexQuery() {
-        final List<String> columnNames = new ArrayList<>(this.columns.size());
-        for (final Column column : this.columns) {
-            columnNames.add(column.getName());
-        }
-        return String.format("CREATE INDEX %s ON %s (%s) USING hash",
+        return String.format("CREATE INDEX %s ON %s USING hash(%s)",
                 Util.pgEscapeIdentifier(this.name), Util.pgEscapeIdentifier(this.tableName),
-                Util.join(columnNames.stream().map(Util::pgEscapeIdentifier)
-                        .collect(Collectors.toList()), ", "));
+                this.expression);
     }
 
     @Override

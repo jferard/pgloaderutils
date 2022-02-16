@@ -22,10 +22,26 @@
 
 package com.github.jferard.pgloaderutils.sql;
 
+import com.github.jferard.pgloaderutils.Util;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class Table {
+    public static Table create(final String name, final Column... columns) {
+        return new Table(name, Arrays.asList(columns));
+    }
+
+    public static String indIsReadyQuery() {
+        return "UPDATE pg_index\n" +
+                "SET indisready=?\n" +
+                "WHERE indrelid = (\n" +
+                "    SELECT oid\n" +
+                "    FROM pg_class\n" +
+                "    WHERE relname=?\n" +
+                ")";
+    }
     private final String name;
     private final List<Column> columns;
 
@@ -38,48 +54,34 @@ public class Table {
     public String createTableQuery(final boolean ifNotExists) {
         final StringBuilder sb = new StringBuilder();
         if (ifNotExists) {
-            sb.append("CREATE TABLE IF NOT EXISTS \"");
+            sb.append("CREATE TABLE IF NOT EXISTS ");
         } else {
-            sb.append("CREATE TABLE \"");
+            sb.append("CREATE TABLE ");
         }
-        sb.append(this.name).append("\" (\n");
-        sb.append("    ").append(this.columns.get(0).getDefinition());
-        for (int i = 1; i < this.columns.size(); i++) {
-            sb.append(",\n    ");
-            sb.append(this.columns.get(i).getDefinition());
-        }
+        sb.append(Util.pgEscapeIdentifier(this.name)).append(" (\n    ");
+        sb.append(this.columns.stream().map(Column::getDefinition)
+                .collect(Collectors.joining(",\n    ")));
         sb.append("\n)");
         return sb.toString();
     }
 
-
     public String dropTableQuery(final boolean ifExists) {
         if (ifExists) {
-            return String.format("DROP TABLE IF EXISTS \"%s\"", this.name);
+            return "DROP TABLE IF EXISTS "+Util.pgEscapeIdentifier(this.name);
         } else {
-            return String.format("DROP TABLE \"%s\"", this.name);
+            return "DROP TABLE "+Util.pgEscapeIdentifier(this.name);
         }
     }
 
     public String insertValuesQuery() {
         final StringBuilder sb =
-                new StringBuilder("INSERT INTO \"").append(this.name).append("\" VALUES (\n");
+                new StringBuilder("INSERT INTO ").append(Util.pgEscapeIdentifier(this.name)).append(" VALUES (\n");
         sb.append("?");
         for (int i = 1; i < this.columns.size(); i++) {
             sb.append(", ?");
         }
         sb.append("\n)");
         return sb.toString();
-    }
-
-    public static String indIsReadyQuery() {
-        return "UPDATE pg_index\n" +
-                "SET indisready=?\n" +
-                "WHERE indrelid = (\n" +
-                "    SELECT oid\n" +
-                "    FROM pg_class\n" +
-                "    WHERE relname=?\n" +
-                ")";
     }
 
     public List<DataType> getTypes() {
