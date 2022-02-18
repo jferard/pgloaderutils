@@ -27,8 +27,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-public class HashIndexTest {
-
+public class SimpleIndexTest {
     public static final Column COL1 = new Column("foo", GeneralDataType.INTEGER);
     public static final Column COL2 = new Column("2bar", GeneralDataType.BOOLEAN);
     public static final Table TABLE = Table.create("table", COL1, COL2);
@@ -36,28 +35,28 @@ public class HashIndexTest {
     @Test
     public void testEmpty() {
         Assert.assertThrows(AssertionError.class,
-                () -> HashIndex.create(
+                () -> SimpleIndex.create(IndexMethod.HASH,
                         TABLE, Collections.emptyList())
         );
     }
 
     @Test
     public void testCreateOneCol() {
-        final HashIndex index = HashIndex.create(TABLE, COL1);
-        Assert.assertEquals("CREATE INDEX table_foo_idx ON table USING hash(foo)",
+        final SimpleIndex index = SimpleIndex.create(IndexMethod.BTREE, TABLE, COL1);
+        Assert.assertEquals("CREATE INDEX table_foo_idx ON table USING btree(foo)",
                 index.createIndexQuery());
     }
 
     @Test
     public void testTwoCols() {
-        final HashIndex index = HashIndex.create(TABLE, COL1, COL2);
+        final SimpleIndex index = SimpleIndex.create(IndexMethod.HASH, TABLE, COL1, COL2);
         Assert.assertEquals("CREATE INDEX table_foo_2bar_idx ON table USING hash(foo, \"2bar\")",
                 index.createIndexQuery());
     }
 
     @Test
     public void testDrop() {
-        final HashIndex index = HashIndex.create(TABLE, COL1);
+        final SimpleIndex index = SimpleIndex.create(IndexMethod.HASH, TABLE, COL1);
         Assert.assertEquals("DROP INDEX table_foo_idx", index.dropIndexQuery());
     }
 

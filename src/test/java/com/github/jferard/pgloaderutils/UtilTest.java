@@ -68,10 +68,12 @@ public class UtilTest {
 
     @Test
     public void testEscapeId() {
-        Assert.assertEquals("table", Util.pgEscapeIdentifier("table"));
-        Assert.assertEquals("\"1table\"", Util.pgEscapeIdentifier("1table"));
-        Assert.assertEquals("\"a table\"", Util.pgEscapeIdentifier("a table"));
-        Assert.assertEquals("\"a \"\"table\"\"\"", Util.pgEscapeIdentifier("a \"table\""));
+        Assert.assertEquals("foo", Util.pgEscapeIdentifier("FOO"));
+        Assert.assertEquals("\"table\"", Util.pgEscapeIdentifier("table"));
+        Assert.assertEquals("\"from\"", Util.pgEscapeIdentifier("from"));
+        Assert.assertEquals("\"1foo\"", Util.pgEscapeIdentifier("1foo"));
+        Assert.assertEquals("\"a foo\"", Util.pgEscapeIdentifier("a foo"));
+        Assert.assertEquals("\"a \"\"foo\"\"\"", Util.pgEscapeIdentifier("a \"foo\""));
     }
 
     @Test

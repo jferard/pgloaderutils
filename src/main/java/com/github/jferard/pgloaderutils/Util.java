@@ -30,16 +30,35 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.Calendar;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Util {
     public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     public static final DateTimeFormatter DATE_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static final Set<String> RESERVED_KEYWORDS =
+            Stream.of("ALL", "ANALYSE", "ANALYZE", "AND", "ANY", "ARRAY", "AS", "ASC", "ASYMMETRIC",
+                            "AUTHORIZATION", "BINARY", "BOTH", "CASE", "CAST", "CHECK", "COLLATE",
+                            "COLLATION", "COLUMN", "CONCURRENTLY", "CONSTRAINT", "CREATE", "CROSS",
+                            "CURRENT_CATALOG", "CURRENT_DATE", "CURRENT_ROLE", "CURRENT_SCHEMA",
+                            "CURRENT_TIME", "CURRENT_TIMESTAMP", "CURRENT_USER", "DEFAULT", "DEFERRABLE",
+                            "DESC", "DISTINCT", "DO", "ELSE", "END", "EXCEPT", "FALSE", "FETCH", "FOR",
+                            "FOREIGN", "FREEZE", "FROM", "FULL", "GRANT", "GROUP", "HAVING", "ILIKE", "IN",
+                            "INITIALLY", "INNER", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "LATERAL",
+                            "LEADING", "LEFT", "LIKE", "LIMIT", "LOCALTIME", "LOCALTIMESTAMP", "NATURAL",
+                            "NOT", "NOTNULL", "NULL", "OFFSET", "ON", "ONLY", "OR", "ORDER", "OUTER",
+                            "OVERLAPS", "PLACING", "PRIMARY", "REFERENCES", "RETURNING", "RIGHT", "SELECT",
+                            "SESSION_USER", "SIMILAR", "SOME", "SYMMETRIC", "TABLE", "TABLESAMPLE", "THEN",
+                            "TO", "TRAILING", "TRUE", "UNION", "UNIQUE", "USER", "USING", "VARIADIC",
+                            "VERBOSE", "WHEN", "WHERE", "WINDOW", "WITH")
+                    .collect(Collectors.toCollection(HashSet::new));
     private final static Pattern p = Pattern
             .compile("\\p{InCombiningDiacriticalMarks}+");
 
@@ -88,13 +107,19 @@ public class Util {
     }
 
     // https://www.postgresql.org/docs/current/sql-syntax-lexical.html
+    // https://www.postgresql.org/docs/current/sql-keywords-appendix.html
     public static String pgEscapeIdentifier(final String identifier) {
-        if (Character.isJavaIdentifierStart(identifier.charAt(0))
-                && identifier.chars().skip(1).allMatch(Character::isJavaIdentifierPart)) {
+        if (isValidIdentifier(identifier)) {
             return identifier.toLowerCase(Locale.ROOT);
         } else {
             return String.format("\"%s\"", identifier.replaceAll("\"", "\"\""));
         }
+    }
+
+    private static boolean isValidIdentifier(final String identifier) {
+        return Character.isJavaIdentifierStart(identifier.charAt(0))
+                && identifier.chars().skip(1).allMatch(Character::isJavaIdentifierPart)
+                && !RESERVED_KEYWORDS.contains(identifier.toUpperCase(Locale.ROOT));
     }
 
     public static String pgEscapeString(final String str) {
@@ -122,7 +147,6 @@ public class Util {
     }
 
     /**
-     *
      * @param reader the reader
      * @return the same reader, buffered if necessary
      */

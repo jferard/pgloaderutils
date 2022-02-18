@@ -26,34 +26,42 @@ import com.github.jferard.pgloaderutils.Util;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class HashIndex implements Index {
-    public static HashIndex create(final Table table, final Column... columns) {
-        return HashIndex.create(table, Arrays.asList(columns));
+public class SimpleIndex implements Index {
+    public static SimpleIndex create(final IndexMethod method, final Table table,
+                                     final Column... columns) {
+        return SimpleIndex.create(method, table, Arrays.asList(columns));
     }
 
-    public static HashIndex create(final Table table, final List<Column> columns) {
+    public static SimpleIndex create(final IndexMethod method, final Table table,
+                                     final List<Column> columns) {
         assert !columns.isEmpty();
-        final Stream<Column> stream1 = columns.stream();
-        final Stream<Column> stream2 = columns.stream();
-        final String tableName1 = table.getName();
-        final String name1 = tableName1 + "_" +
-                stream1.map(Column::getName)
-                        .collect(Collectors.joining("_")) + "_idx";
-        final String expression1 =
-                stream2.map(c -> Util.pgEscapeIdentifier(c.getName()))
+        final String expression =
+                columns.stream().map(c -> Util.pgEscapeIdentifier(c.getName()))
                         .collect(Collectors.joining(", "));
-        return new HashIndex(name1, tableName1, expression1);
+        return create(method, table, columns, expression);
+    }
+
+    public static SimpleIndex create(final IndexMethod method, final Table table,
+                                     final List<Column> columns,
+                                     final String expression) {
+        final String tableName = table.getName();
+        final String name = tableName + "_" +
+                columns.stream().map(Column::getName)
+                        .collect(Collectors.joining("_")) + "_idx";
+        return new SimpleIndex(method, name, tableName, expression);
     }
 
     private final String name;
     private final String tableName;
     private final String expression;
+    private final IndexMethod method;
 
-    public HashIndex(final String name, final String tableName,
-                     final String expression) {
+    public SimpleIndex(final IndexMethod method, final String name, final String tableName,
+                       final String expression) {
+        this.method = method;
         this.name = name;
         this.tableName = tableName;
         this.expression = expression;
@@ -61,9 +69,9 @@ public class HashIndex implements Index {
 
     @Override
     public String createIndexQuery() {
-        return String.format("CREATE INDEX %s ON %s USING hash(%s)",
+        return String.format("CREATE INDEX %s ON %s USING %s(%s)",
                 Util.pgEscapeIdentifier(this.name), Util.pgEscapeIdentifier(this.tableName),
-                this.expression);
+                this.method.toString().toLowerCase(Locale.ROOT), this.expression);
     }
 
     @Override
