@@ -88,8 +88,8 @@ public class CSVBulkLoader {
     }
 
     private static String columnsToString(final List<Column> columns) {
-        return "(" + columns.stream().map(c -> Util.pgEscapeIdentifier(c.getName()))
-                .collect(Collectors.joining(", ")) + ")";
+        return columns.stream().map(c -> Util.pgEscapeIdentifier(c.getName()))
+                .collect(Collectors.joining(", ", "(", ")"));
     }
 
     private final String truncateQuery;
