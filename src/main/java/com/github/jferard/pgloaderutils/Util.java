@@ -69,24 +69,6 @@ public class Util {
                 .replaceAll("").trim();
     }
 
-    public static String join(final List<String> chunks, final String delimiter) {
-        switch (chunks.size()) {
-            case 0:
-                return "";
-            case 1:
-                return chunks.get(0);
-            default:
-                final StringBuilder sb = new StringBuilder();
-                try {
-                    Util.joinInto(sb, chunks, delimiter);
-                } catch (final IOException e) {
-                    throw new AssertionError(e); // this should not happen
-                }
-                return sb.toString();
-
-        }
-    }
-
     public static void joinInto(final Appendable appendable, final List<String> chunks,
                                 final String delimiter)
             throws IOException {

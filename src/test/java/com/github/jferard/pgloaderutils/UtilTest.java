@@ -40,9 +40,9 @@ public class UtilTest {
 
     @Test
     public void testJoin() {
-        Assert.assertEquals("", Util.join(Collections.emptyList(), ","));
-        Assert.assertEquals("a", Util.join(Collections.singletonList("a"), ","));
-        Assert.assertEquals("a,b,c", Util.join(Arrays.asList("a", "b", "c"), ","));
+        Assert.assertEquals("", String.join(",", Collections.<String>emptyList()));
+        Assert.assertEquals("a", String.join(",", Collections.singletonList("a")));
+        Assert.assertEquals("a,b,c", String.join(",", Arrays.asList("a", "b", "c")));
     }
 
     @Test
