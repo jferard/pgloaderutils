@@ -43,14 +43,14 @@ public class SimpleIndexTest {
     @Test
     public void testCreateOneCol() {
         final SimpleIndex index = SimpleIndex.create(IndexMethod.BTREE, TABLE, COL1);
-        Assert.assertEquals("CREATE INDEX table_foo_idx ON table USING btree(foo)",
+        Assert.assertEquals("CREATE INDEX table_foo_idx ON \"table\" USING btree(foo)",
                 index.createIndexQuery());
     }
 
     @Test
     public void testTwoCols() {
         final SimpleIndex index = SimpleIndex.create(IndexMethod.HASH, TABLE, COL1, COL2);
-        Assert.assertEquals("CREATE INDEX table_foo_2bar_idx ON table USING hash(foo, \"2bar\")",
+        Assert.assertEquals("CREATE INDEX table_foo_2bar_idx ON \"table\" USING hash(foo, \"2bar\")",
                 index.createIndexQuery());
     }
 

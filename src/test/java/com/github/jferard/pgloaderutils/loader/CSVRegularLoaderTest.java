@@ -89,7 +89,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
                 "?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, 1, Types.INTEGER);
@@ -104,7 +104,7 @@ public class CSVRegularLoaderTest {
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
         EasyMock.expect(connection.createStatement()).andReturn(statement);
-        EasyMock.expect(statement.execute("REINDEX TABLE table")).andReturn(true);
+        EasyMock.expect(statement.execute("REINDEX TABLE \"table\"")).andReturn(true);
         connection.commit();
 
         connection.setAutoCommit(true);
@@ -143,7 +143,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
                 "?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, 1, Types.INTEGER);
@@ -156,7 +156,7 @@ public class CSVRegularLoaderTest {
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
         EasyMock.expect(connection.createStatement()).andReturn(statement);
-        EasyMock.expect(statement.execute("REINDEX TABLE table")).andReturn(true);
+        EasyMock.expect(statement.execute("REINDEX TABLE \"table\"")).andReturn(true);
         connection.commit();
 
         connection.setAutoCommit(true);
@@ -197,7 +197,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
                 "?, ?, ?, ?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, "foo", Types.VARCHAR);
@@ -227,7 +227,7 @@ public class CSVRegularLoaderTest {
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
         EasyMock.expect(connection.createStatement()).andReturn(statement);
-        EasyMock.expect(statement.execute("REINDEX TABLE table")).andReturn(true);
+        EasyMock.expect(statement.execute("REINDEX TABLE \"table\"")).andReturn(true);
         connection.commit();
 
         PowerMock.replayAll();
@@ -264,7 +264,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
                 "?, ?, ?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, "foo", Types.VARCHAR);
@@ -291,7 +291,7 @@ public class CSVRegularLoaderTest {
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
         EasyMock.expect(connection.createStatement()).andReturn(statement);
-        EasyMock.expect(statement.execute("REINDEX TABLE table")).andReturn(true);
+        EasyMock.expect(statement.execute("REINDEX TABLE \"table\"")).andReturn(true);
         connection.commit();
 
         connection.setAutoCommit(true);
@@ -331,7 +331,7 @@ public class CSVRegularLoaderTest {
         indexStatement.setString(2, "table");
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
-        EasyMock.expect(connection.prepareStatement("INSERT INTO table VALUES (\n" +
+        EasyMock.expect(connection.prepareStatement("INSERT INTO \"table\" VALUES (\n" +
                 "?, ?, ?\n" +
                 ")")).andReturn(insertStatement);
         insertStatement.setObject(1, "foo", Types.VARCHAR);
@@ -358,7 +358,7 @@ public class CSVRegularLoaderTest {
         EasyMock.expect(indexStatement.execute()).andReturn(true);
 
         EasyMock.expect(connection.createStatement()).andReturn(statement);
-        EasyMock.expect(statement.execute("REINDEX TABLE table")).andReturn(true);
+        EasyMock.expect(statement.execute("REINDEX TABLE \"table\"")).andReturn(true);
         connection.commit();
 
         connection.setAutoCommit(true);

@@ -45,13 +45,13 @@ public class CSVBulkLoaderTest {
     @Test
     public void test1() throws IOException, SQLException, InterruptedException {
         final CSVBulkLoader bl = CSVBulkLoader.toTable("table");
-        this.aTest(bl, "COPY table FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')");
+        this.aTest(bl, "COPY \"table\" FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')");
     }
 
     @Test
     public void test2() throws IOException, SQLException, InterruptedException {
         final CSVBulkLoader bl = CSVBulkLoader.toTable("table", ';', '"');
-        this.aTest(bl, "COPY table FROM STDIN WITH (FORMAT csv, DELIMITER ';', QUOTE '\"')");
+        this.aTest(bl, "COPY \"table\" FROM STDIN WITH (FORMAT csv, DELIMITER ';', QUOTE '\"')");
     }
 
     @Test
@@ -59,7 +59,7 @@ public class CSVBulkLoaderTest {
         final List<Column> columns = Arrays.asList(new Column("foo",
                 GeneralDataType.TEXT), new Column("bar", GeneralDataType.INTEGER));
         final CSVBulkLoader bl = CSVBulkLoader.toTable("table", columns);
-        this.aTest(bl, "COPY table (foo, bar) FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')");
+        this.aTest(bl, "COPY \"table\" (foo, bar) FROM STDIN WITH (FORMAT csv, DELIMITER ',', QUOTE '\"')");
     }
 
     @Test
@@ -67,7 +67,7 @@ public class CSVBulkLoaderTest {
         final List<Column> columns = Arrays.asList(new Column("foo",
                 GeneralDataType.TEXT), new Column("bar", GeneralDataType.INTEGER));
         final CSVBulkLoader bl = CSVBulkLoader.toTable("table", columns, ';', '"');
-        this.aTest(bl, "COPY table (foo, bar) FROM STDIN WITH (FORMAT csv, DELIMITER ';', QUOTE '\"')");
+        this.aTest(bl, "COPY \"table\" (foo, bar) FROM STDIN WITH (FORMAT csv, DELIMITER ';', QUOTE '\"')");
     }
 
     private void aTest(final CSVBulkLoader bl, final String copySQL)
@@ -82,7 +82,7 @@ public class CSVBulkLoaderTest {
         EasyMock.expect(connection.getAutoCommit()).andReturn(true);
         connection.setAutoCommit(false);
         EasyMock.expect(connection.createStatement()).andReturn(statement1);
-        EasyMock.expect(statement1.executeUpdate("TRUNCATE table")).andReturn(1);
+        EasyMock.expect(statement1.executeUpdate("TRUNCATE \"table\"")).andReturn(1);
         statement1.close();
         EasyMock.expect(connection.getEncoding()).andReturn(Encoding.defaultEncoding());
         EasyMock.expect(connection.getQueryExecutor()).andReturn(queryExecutor);
@@ -95,7 +95,7 @@ public class CSVBulkLoaderTest {
         EasyMock.expect(copyOp.endCopy()).andReturn(1L);
         EasyMock.expect(copyOp.isActive()).andReturn(false);
         EasyMock.expect(connection.createStatement()).andReturn(statement2);
-        EasyMock.expect(statement2.executeUpdate("ANALYZE table")).andReturn(1);
+        EasyMock.expect(statement2.executeUpdate("ANALYZE \"table\"")).andReturn(1);
         statement2.close();
         connection.commit();
         connection.setAutoCommit(true);
