@@ -25,6 +25,7 @@ package com.github.jferard.pgloaderutils.provider;
 import com.github.jferard.pgloaderutils.CSVRecordProcessor;
 import com.github.jferard.pgloaderutils.ColSelector;
 import com.github.jferard.pgloaderutils.DummyCSVRecordProcessor;
+import com.github.jferard.pgloaderutils.FixedCols;
 import com.github.jferard.pgloaderutils.sql.DataType;
 import com.github.jferard.pgloaderutils.sql.ValueConverter;
 import org.apache.commons.csv.CSVRecord;
@@ -57,6 +58,24 @@ public class CSVRowsProvider implements RowsProvider {
             for (int i = 0; i < record.size(); i++) {
                 if (selector.select(i)) {
                     ret.add(record.get(i));
+                }
+            }
+            return ret;
+        };
+        return new CSVRowsProvider(iterator, commonValues, converter, recordProcessor);
+    }
+
+    public static CSVRowsProvider create(final Iterator<CSVRecord> iterator, final List<Object> commonValues,
+                                         final ValueConverter converter, final FixedCols fixedCols) {
+        final CSVRecordProcessor recordProcessor = record -> {
+            final int size = fixedCols.size();
+            final List<String> ret = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                Integer j = fixedCols.get(i);
+                if (j == null) {
+                    ret.add("");
+                } else {
+                    ret.add(record.get(j));
                 }
             }
             return ret;

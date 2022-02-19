@@ -91,6 +91,21 @@ public class CSVData {
     }
 
     /**
+     * @param destTable The table
+     * @param factory   a factory to create the set of selected cols
+     * @return a loader
+     */
+    public CSVRegularLoader toRegularLoader(final Table destTable,
+                                            final FixedColsFactory factory) {
+        final List<CSVRecord> firstRows = this.skipFirstRows();
+        final FixedCols fixedCols = factory.create(firstRows);
+        return new CSVRegularLoader(
+                CSVRowsProvider.create(this.parser.iterator(), this.commonValues,
+                        this.converter, fixedCols), destTable);
+    }
+
+
+    /**
      * @param destTable       The table
      * @param recordProcessor a record processor
      * @return a loader
