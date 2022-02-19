@@ -25,7 +25,10 @@ package com.github.jferard.pgloaderutils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -94,5 +97,25 @@ public class UtilTest {
         final Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         c.set(2022, Calendar.JANUARY, 23);
         Assert.assertEquals("2022-01-23", Util.toPGString(c));
+    }
+
+    @Test
+    public void testEnsureBufferedUnbuffered() throws IOException {
+        final Reader r = new StringReader("foo\nbar");
+        final BufferedReader br = Util.ensureBuffered(r);
+        Assert.assertNotSame(br, r);
+        Assert.assertEquals("foo", br.readLine());
+        Assert.assertEquals("bar", br.readLine());
+        Assert.assertNull(br.readLine());
+    }
+
+    @Test
+    public void testEnsureBufferedBuffered() throws IOException {
+        final Reader r = new BufferedReader(new StringReader("foo\nbar"));
+        final BufferedReader br = Util.ensureBuffered(r);
+        Assert.assertSame(br, r);
+        Assert.assertEquals("foo", br.readLine());
+        Assert.assertEquals("bar", br.readLine());
+        Assert.assertNull(br.readLine());
     }
 }
